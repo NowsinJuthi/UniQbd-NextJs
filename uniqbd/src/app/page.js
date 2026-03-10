@@ -3,6 +3,7 @@ import HomeSlider from './components/HomePage/Slider'
 import Topup from './components/HomePage/GameTopUp/Topup'
 import GiftCard from './components/HomePage/GiftCard/GiftCard'
 import Footer from './components/Footer/Footer'
+import Choose from './components/HomePage/choose/page'
 
 function page() {
   return (
@@ -11,6 +12,7 @@ function page() {
         <HomeSlider/>
         <Topup/>
         <GiftCard/>
+        <Choose/>
       </h1>
     </div>
   )

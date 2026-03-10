@@ -1,5 +1,5 @@
 import React from 'react'
-
+import Link from 'next/link'
 const Cart = () => {
     return (
         <div className="min-h-screen bg-gray-800 py-10 px-4">
@@ -89,7 +89,7 @@ const Cart = () => {
                         </div>
 
                         <button className="mt-6 w-full bg-black text-white py-3 rounded-xl hover:bg-gray-800 transition">
-                            PROCEED TO CHECKOUT
+                            <Link href='/checkout'>PROCEED TO CHECKOUT</Link>
                         </button>
 
                     </div>

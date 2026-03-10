@@ -1,59 +1,81 @@
+"use client"
+
 import React from "react";
 import { FiSearch, FiShoppingCart, FiUser } from "react-icons/fi";
-import Link from 'next/link'
+import Link from "next/link";
+import { ThemeToggle } from "../../theme-toggle";
 
 const Navbar = () => {
   return (
-    <nav className="bg-black text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 shadow-md bg-bgmain">
+
+      <div className="mx-5 px-6 py-4 grid grid-cols-12 items-center">
+
+        {/* Theme Toggle */}
+        <div className="col-span- items-center">
+          <ThemeToggle />
+        </div>
 
         {/* Logo */}
-        <div className="text-2xl font-bold text-orange-500 cursor-pointer">
-          UniQbd
+        <div className="col-span-2">
+          <Link
+            href="/"
+            className="text-3xl font-bold text-button"
+          >
+            UniQbd
+          </Link>
         </div>
 
         {/* Menu */}
-        <div className="hidden md:flex gap-8 font-medium">
-          <Link className="hover:text-orange-500 transition" href='/'>Home</Link>
-          <Link className="hover:text-orange-500 transition" href='/shop'>Shop</Link>
-          <Link className="hover:text-orange-500 transition" href='/about'>GameTopUo</Link>
-          <Link className="hover:text-orange-500 transition" href='/about'>Gift Card</Link>
-          <Link className="hover:text-orange-500 transition" href='/contact'>Contact</Link>
-
+        <div className="col-span-5 hidden md:grid grid-cols-5 text-center font-medium">
+          <Link href="/" className="hover:text-blue-600 transition">
+            Home
+          </Link>
+          <Link href="/shop" className="hover:text-blue-600 transition">
+            Shop
+          </Link>
+          <Link href="/topup" className="hover:text-blue-600 transition">
+            Game TopUp
+          </Link>
+          <Link href="/giftcard" className="hover:text-blue-600 transition">
+            Gift Card
+          </Link>
+          <Link href="/contact" className="hover:text-blue-600 transition">
+            Contact
+          </Link>
         </div>
 
-        {/* Right Side Icons */}
-        <div className="flex items-center gap-6">
+        {/* Right Side */}
+        <div className="col-span-4 flex items-center justify-end gap-10">
 
           {/* Search */}
-          <div className="hidden md:flex items-center bg-gray-800 px-3 py-1 rounded-md">
+          <div className="hidden lg:flex items-center bg-card px-3 py-1 rounded-md">
             <FiSearch className="text-gray-400 mr-2" />
             <input
               type="text"
               placeholder="Search products..."
-              className="bg-transparent outline-none text-sm placeholder-gray-400"
+              className="bg-transparent outline-none text-sm"
             />
           </div>
 
           {/* Account */}
-          <div className="account">
-            <Link href='/dashboard/login'> <FiUser className="text-xl cursor-pointer hover:text-orange-500 transition" />
-            </Link>
-          </div>
+          <Link href="/dashboard/login">
+            <FiUser className="text-xl cursor-pointer hover:text-blue-600 transition" />
+          </Link>
 
           {/* Cart */}
-          <div className="relative cursor-pointer">
-            <Link href= '/cart'>
-              <FiShoppingCart className="text-xl hover:text-orange-500 transition" />
-              <span className="absolute -top-2 -right-2 bg-orange-500 text-xs px-1.5 rounded-full">
-                2
-              </span>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </nav>
+          <Link href="/cart" className="relative">
+            <FiShoppingCart className="text-xl hover:text-blue-600 transition" />
+            <span className="absolute -top-2 -right-2 bg-orange-500 text-xs px-1.5 rounded-full text-white">
+              2
+            </span>
+          </Link>
 
+        </div>
+
+      </div>
+
+    </nav>
   );
 };
 
