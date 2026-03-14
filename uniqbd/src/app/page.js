@@ -1,21 +1,33 @@
-import React from 'react'
-import HomeSlider from './components/HomePage/Slider'
-import Topup from './components/HomePage/GameTopUp/Topup'
-import GiftCard from './components/HomePage/GiftCard/GiftCard'
-import Footer from './components/Footer/Footer'
-import Choose from './components/HomePage/choose/page'
+import React from "react";
+import HomeSlider from "./components/HomePage/Slider";
+import Topup from "./components/HomePage/GameTopUp/Topup";
+import GiftCard from "./components/HomePage/GiftCard/GiftCard";
+import Choose from "./components/HomePage/Choose/choose";
 
-function page() {
+
+function Page() { 
   return (
-    <div>
-      <h1 className=''>
-        <HomeSlider/>
-        <Topup/>
-        <GiftCard/>
+    <div className="relative overflow-hidden min-h-screen">
+
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 
+        bg-cover bg-center bg-no-repeat opacity-50"
+      ></div>
+
+      {/* Optional Dark Overlay */}
+      <div className="absolute inset-0 "></div>
+
+      {/* Page Content */}
+      <div className="relative z-10">
+        <HomeSlider />
+        <Topup />
+        <GiftCard />
         <Choose/>
-      </h1>
+      </div>
+
     </div>
-  )
+  );
 }
 
-export default page
+export default Page; 

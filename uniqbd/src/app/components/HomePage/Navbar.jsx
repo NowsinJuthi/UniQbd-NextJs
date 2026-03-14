@@ -12,7 +12,7 @@ const Navbar = () => {
       <div className="mx-5 px-6 py-4 grid grid-cols-12 items-center">
 
         {/* Theme Toggle */}
-        <div className="col-span- items-center">
+        <div className="col-span-1 items-center">
           <ThemeToggle />
         </div>
 

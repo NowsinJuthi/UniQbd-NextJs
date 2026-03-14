@@ -2,7 +2,11 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+.dark .bg-dark-image {
+  background-image: url("/images/wallpapersden.jpg");
+  background-size: cover;
+  background-position: center;
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -47,7 +51,9 @@
   --radius-4xl: calc(var(--radius) + 16px);
   --color-bgmain: var(--bg);
   --color-card: var(--card);
-  --color-button: var(--button)
+  --color-button: var(--button);
+  --img-bgimg: var(--bgimg);
+  --color-box: var(--box);
 }
 
 :root {
@@ -86,9 +92,12 @@
   --bg: oklch(93.333% 0.00322 15.4 / 0.363);
   --card: oklch(93.333% 0.00322 15.4 / 0.685);
   --button:oklch(39.716% 0.06984 227.223 / 0.925);
+  --box: oklch(92.8% 0.006 264.5); 
 }
 
 .dark {
+  --box: oklch(0.21 0 0 / 0.5); 
+  --bgimg: url('/images/wallpapersden.jpg');
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);

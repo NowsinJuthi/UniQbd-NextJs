@@ -3,7 +3,7 @@ import React from 'react'
 const Choose = () => {
     return (
         <div>
-            <section className="relative py-20 bg-gradient-to-br from-slate-200 to-slate-300 overflow-hidden">
+            <section className="relative py-20  overflow-hidden">
 
                 {/* Glow Effect */}
                 <div className="absolute w-96 h-96 bg-purple-400 blur-[120px] opacity-30 top-10 left-20"></div>
