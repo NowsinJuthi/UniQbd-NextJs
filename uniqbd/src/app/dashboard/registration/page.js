@@ -1,7 +1,44 @@
-import React from "react";
+"use client"
+
+import React, { useState } from "react";
 import Link from "next/link";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const RegistrationPage = () => {
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
+
+  const onChangeHandler = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((form) => ({
+      ...form,
+      [name]: value
+    }));
+
+    console.log(name, value);
+  };
+
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    try {
+
+      const response = await axios.post('/api', formData)
+      setFormData({ name: "", email: "", password: "" });
+      toast.success("Success")
+
+    } catch (error) {
+      // Toast.error("Error");
+      toast.error("Error")
+    }
+  };
+
+
   return (
     <div className="min-h-screen flex items-center justify-center 
      bg-cover bg-center bg-no-repeat">
@@ -18,71 +55,79 @@ const RegistrationPage = () => {
           Register to get started
         </p>
 
-        {/* Name Field */}
-        <div className="relative">
-          <input
-            type="text"
-            name="name"
-            required
-            placeholder="Full Name"
-            className="peer p-4 rounded-2xl w-full outline-none border-b-3
+        <form action="" onSubmit={onSubmitHandler}>
+          {/* Name Field */}
+          <div className="relative">
+            <input
+              type="text"
+              name="name"
+              required
+              placeholder="Full Name"
+              onChange={onChangeHandler}
+              value={formData.name}
+              className="peer p-4 rounded-2xl w-full outline-none border-b-3
             border-button focus:border-button text-gray-100 placeholder-transparent 
             shadow-lg bg-box transition"
-          />
-          <label
-            className="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none
+            />
+            <label
+              className="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none
             peer-focus:text-gray-300 peer-focus:text-sm peer-focus:-translate-y-3 transition-all
             peer-valid:text-button peer-valid:text-xs peer-valid:-translate-y-3"
-          >
-            Full Name
-          </label>
-        </div>
+            >
+              Full Name
+            </label>
+          </div>
 
-        {/* Email Field */}
-        <div className="relative mt-4">
-          <input
-            type="email"
-            name="email"
-            required
-            placeholder="Email Address"
-            className="peer p-4 rounded-2xl w-full outline-none border-b-3
+          {/* Email Field */}
+          <div className="relative mt-4">
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="Email Address"
+              onChange={onChangeHandler}
+              value={formData.email}
+              className="peer p-4 rounded-2xl w-full outline-none border-b-3
             border-button focus:border-button text-gray-100 placeholder-transparent 
             shadow-lg bg-box transition"
-          />
-          <label
-            className="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none
+            />
+            <label
+              className="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none
             peer-focus:text-gray-300 peer-focus:text-sm peer-focus:-translate-y-3 transition-all
             peer-valid:text-button peer-valid:text-xs peer-valid:-translate-y-3"
-          >
-            Email Address
-          </label>
-        </div>
+            >
+              Email Address
+            </label>
+          </div>
 
-        {/* Password Field */}
-        <div className="relative mt-4">
-          <input
-            type="password"
-            name="password"
-            required
-            placeholder="Password"
-            className="peer p-4 rounded-2xl w-full outline-none border-b-3
+          {/* Password Field */}
+          <div className="relative mt-4">
+            <input
+              type="password"
+              name="password"
+              required
+              placeholder="Password"
+              onChange={onChangeHandler}
+              value={formData.password}
+              className="peer p-4 rounded-2xl w-full outline-none border-b-3
             border-button focus:border-button text-gray-100 placeholder-transparent 
             shadow-lg bg-box transition"
-          />
-          <label
-            className="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none
+            />
+            <label
+              className="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none
             peer-focus:text-gray-300 peer-focus:text-sm peer-focus:-translate-y-3 transition-all
             peer-valid:text-button peer-valid:text-xs peer-valid:-translate-y-3"
-          >
-            Password
-          </label>
-        </div>
+            >
+              Password
+            </label>
+          </div>
 
-        {/* Register Button */}
-        <button className="w-full mt-6 bg-button text-white py-3 rounded-lg font-semibold 
+          {/* Register Button */}
+          <button className="w-full mt-6 bg-button text-white py-3 rounded-lg font-semibold 
         hover:bg-button/90 transition duration-300 shadow-lg shadow-button-500/30">
-          Register
-        </button>
+            Register
+          </button>
+        </form>
 
         {/* Login Link */}
         <p className="text-center text-sm text-button mt-6">

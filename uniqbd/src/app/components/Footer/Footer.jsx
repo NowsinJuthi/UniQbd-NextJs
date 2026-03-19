@@ -5,7 +5,7 @@ import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-card pt-14 pb-8 px-6">
+    <footer className=" pt-14 pb-8 px-6">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
         {/* Address */}

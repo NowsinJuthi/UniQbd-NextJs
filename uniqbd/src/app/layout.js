@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "./components/HomePage/Navbar";
 import Footer from "./components/Footer/Footer";
 import { ThemeProvider } from "next-themes";
+import BubbleRain from "./components/BubbleRain";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -18,14 +19,17 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" enableSystem defaultTheme="system">
           <Navbar />
-          <main className="relative min-h-screen bg-bgmain bg-dark-image">
+          <main className="relative min-h-screen overflow-hidden">
 
-            <div className="absolute inset-0 "></div>
+
 
             <div className="relative z-10">
-              {children}
-            </div>
+              <div className="color">
 
+                {children}
+              </div>
+            </div>
+           <BubbleRain count={50} sizeRange={[10, 25]} durationRange={[15, 35]} delayRange={[0, 3]} />
           </main>
           <Footer />
         </ThemeProvider>

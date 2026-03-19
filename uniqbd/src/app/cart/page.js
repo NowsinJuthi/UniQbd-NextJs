@@ -8,7 +8,7 @@ const Cart = () => {
 
       {/* Container */}
       <div className="max-w-6xl mx-auto bg-button/5 backdrop-blur-md 
-      border border-button/40 rounded-2xl shadow-2xl p-8">
+       rounded-2xl shadow-lg shadow-button/30 p-8">
 
         {/* Title */}
         <h1 className="text-3xl font-bold mb-10 text-button">
@@ -30,7 +30,7 @@ const Cart = () => {
 
             {/* Product Card */}
             <div className="grid grid-cols-1 md:grid-cols-4 items-center 
-            gap-4 bg-button/20 rounded-xl p-5 border border-button/30">
+            gap-4 bg-button/5 rounded-xl p-5 shadow-lg shadow-button/30">
 
               {/* Product */}
               <div className="flex items-center gap-4">
@@ -90,7 +90,7 @@ const Cart = () => {
 
             {/* Update Cart */}
             <button className="bg-button text-white px-6 py-3 rounded-xl 
-            hover:bg-button/40 transition shadow-lg shadow-button/40">
+            hover:scale-105 transition shadow-lg shadow-button/40">
               Update Cart
             </button>
 
@@ -98,8 +98,8 @@ const Cart = () => {
 
 
           {/* RIGHT SIDE */}
-          <div className="bg-button/10 border border-button/40 
-          p-6 rounded-2xl shadow-xl h-fit">
+          <div className="bg-button/5
+          p-6 rounded-2xl shadow-lg shadow-button/30 h-fit">
 
             <h2 className="text-2xl font-bold mb-6 text-button">
               Cart Totals
@@ -119,7 +119,7 @@ const Cart = () => {
             <Link href="/checkout">
 
               <button className="mt-6 w-full bg-button text-white 
-              py-3 rounded-xl hover:bg-button/40 transition 
+              py-3 rounded-xl hover:scale-105 transition 
               shadow-lg shadow-button/40">
 
                 Proceed To Checkout

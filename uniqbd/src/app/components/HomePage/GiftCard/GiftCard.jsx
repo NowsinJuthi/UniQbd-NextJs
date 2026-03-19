@@ -1,53 +1,75 @@
 "use client";
 
+import { games } from "@/app/data/games";
+import { giftcard } from "@/app/data/giftcard";
+import Link from "next/link";
 import React from "react";
 
-const GiftCard = () => {
-  const games = [
-    { id: 1, name: "PUBG UC", img: "/images/uc.png" },
-    { id: 2, name: "Free Fire Diamonds", img: "/images/diamond.png" },
-    { id: 3, name: "COD Points", img: "/images/cp.png" },
 
-  ];
+const GiftCard = () => {
+
 
   return (
     <section className="py-14 px-6 ">
+  
       <div className="">
 
         {/* Section Title */}
         <h1 className="text-4xl font-bold text-button text-center mb-10">
-          Gift Card
+          <span
+            href="/"
+            className="relative px-5 py-2 rounded-xl font-medium text-button 
+  transition-all duration-300 
+  hover:scale-105 group overflow-hidden"
+          >
+            Gift Card
+
+            <span className="absolute inset-0 rounded-xl bg-button/15 blur-md transition duration-300"></span>
+
+
+            <span className="absolute w-2 h-2 bg-button rounded-full animate-bounce top-2 left-3"></span>
+            <span className="absolute w-1.5 h-1.5 bg-button rounded-full  animate-bounce top-3 right-4 delay-100"></span>
+            <span className="absolute w-1 h-1 bg-button rounded-full animate-bounce bottom-2 left-6 delay-200"></span>
+          </span>
         </h1>
 
         {/* Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 ">
-          {games.map((game) => (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+
+          {giftcard.map((game, index) => (
             <div
               key={game.id}
-              className="
-    bg-black/8 backdrop-blur-lg rounded-2xl 
-    shadow-[inset_0_0_10px_oklch(39.716%_0.06984_227.223_/0.925)]
-    hover:shadow-2xl hover:-translate-y-2
-    transition-all duration-300 cursor-pointer p-4 flex flex-col items-center justify-center
-  "
+              className={`
+         bg-button/5 backdrop-blur-lg transition-all duration-300 cursor-pointer p-4 flex flex-col items-center justify-center
+    px-4 py-2 rounded-xl text-sm font-medium text-button 
+  hover:shadow-2xl hover:-translate-y-2 border-button shadow-lg shadow-button/30
+
+        ${index === 0 ? "col-span-2 row-span-2 " : ""}
+      `}
             >
-
-
+              {/* Image */}
               <img
                 src={game.img}
                 alt={game.name}
-                className=" object-contain "
+                className="w-full h-full object-contain transition duration-300 group-hover:scale-110"
               />
 
-              <h2 className="text-sm font-semibold  text-center">
-                {game.name}
-              </h2>
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-4">
+                <h2 className="text-sm font-semibold text-white">
+                  {game.name}
+                </h2>
 
-              <button className="mt-4 px-14 py-2 text-sm font-medium bg-button text-white rounded-lg hover:bg-gray-800 transition">
-                Buy Now
-              </button>
+                <Link href={`/products/${game.slug}`}>
+                  <button className="mt-2 px-4 py-2 text-xs bg-button rounded-md">
+                    Buy Now
+                  </button>
+                </Link>
+              </div>
+
             </div>
           ))}
+
         </div>
 
       </div>

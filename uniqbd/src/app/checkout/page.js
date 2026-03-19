@@ -4,9 +4,9 @@ const Checkout = () => {
   return (
     <div className="min-h-screen py-12 px-4 bg-cover bg-center">
 
-      <div className="max-w-6xl mx-auto bg-button/5 backdrop-blur-lg
-      border border-button/10 shadow-xl rounded-2xl p-8
-      grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="max-w-6xl mx-auto 
+      shadow-lg shadow-button/30 rounded-2xl p-8
+      grid grid-cols-1 md:grid-cols-2 gap-10 bg-button/5 backdrop-blur-3xl">
 
         {/* LEFT SIDE - BILLING DETAILS */}
         <div>
@@ -92,7 +92,7 @@ const Checkout = () => {
         </div>
 
         {/* RIGHT SIDE - ORDER SUMMARY */}
-        <div className="bg-button/5 p-6 rounded-xl shadow-lg border border-button/10">
+        <div className="bg-button/5 p-6 rounded-xl shadow-lg shadow-button/30 backdrop-blur-3xl">
 
           <h1 className="text-2xl font-bold mb-6 border-b pb-3 text-button">
             Your Order
@@ -110,7 +110,7 @@ const Checkout = () => {
             <div className="flex justify-between items-center
             bg-button/10 p-3 rounded-lg">
               <span className="text-button/80">Mechanical Keyboard</span>
-              <span className="font-medium text-button">$75</span>
+              <span className="font-medium text-button">75 TK</span>
             </div>
 
           </div>
@@ -119,7 +119,7 @@ const Checkout = () => {
           <div className="mt-6 border-t pt-4 flex justify-between
           text-lg font-semibold text-button">
             <span>Total</span>
-            <span>$100</span>
+            <span>100 TK</span>
           </div>
 
           {/* Payment Method */}

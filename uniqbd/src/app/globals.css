@@ -2,8 +2,64 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+.bubble-rain {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.bubble-rain span {
+  position: absolute;
+  bottom: 100%;
+  animation: fall linear infinite;
+  /* infinite loop */
+  animation-fill-mode: forwards;
+  width: 20px;
+  /* initial size, will override inline style */
+  height: 30px;
+  /* taller than width for water-drop effect */
+  border-radius: 50% 50% 60% 60% / 60% 60% 50% 50%;
+  background: radial-gradient(circle at 30% 30%,
+      rgba(255, 255, 255, 0.5) 0%,
+      oklch(39.716% 0.06984 227.223 / 0.925) 60%,
+      transparent 100%);
+
+  box-shadow: 0 4px 12px rgba(0, 51, 102, 0.6);
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-150px)  rotate(0deg) scale(0.5);
+    opacity: 0;
+  }
+
+  10% {
+    transform: translateY(-150px)  rotate(0deg) scale(0.10);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: translateY(50vh) rotate(15deg) ;
+  }
+
+  100% {
+    transform: translateY(100vh) rotate(-15deg) scale(1);
+    opacity: 0;
+  }
+}
+
+
+
+
 .dark .bg-dark-image {
-  background-image: url("/images/wallpapersden.jpg");
+  background-image: url("/images/bg.jpg");
   background-size: cover;
   background-position: center;
 }
@@ -91,12 +147,12 @@
   --sidebar-ring: oklch(0.708 0 0);
   --bg: oklch(93.333% 0.00322 15.4 / 0.363);
   --card: oklch(93.333% 0.00322 15.4 / 0.685);
-  --button:oklch(39.716% 0.06984 227.223 / 0.925);
-  --box: oklch(92.8% 0.006 264.5); 
+  --button: oklch(39.716% 0.06984 227.223 / 0.925);
+  --box: oklch(92.8% 0.006 264.5);
 }
 
 .dark {
-  --box: oklch(0.21 0 0 / 0.5); 
+  --box: oklch(0.21 0 0 / 0.5);
   --bgimg: url('/images/wallpapersden.jpg');
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -135,6 +191,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
