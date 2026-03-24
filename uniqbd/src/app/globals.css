@@ -32,12 +32,12 @@
 
 @keyframes fall {
   0% {
-    transform: translateY(-150px)  rotate(0deg) scale(0.5);
+    transform: translateY(-150px) rotate(0deg) scale(0.5);
     opacity: 0;
   }
 
   10% {
-    transform: translateY(-150px)  rotate(0deg) scale(0.10);
+    transform: translateY(-150px) rotate(0deg) scale(0.10);
     opacity: 0;
   }
 
@@ -46,7 +46,7 @@
   }
 
   50% {
-    transform: translateY(50vh) rotate(15deg) ;
+    transform: translateY(50vh) rotate(15deg);
   }
 
   100% {
@@ -54,8 +54,6 @@
     opacity: 0;
   }
 }
-
-
 
 
 .dark .bg-dark-image {
@@ -110,6 +108,8 @@
   --color-button: var(--button);
   --img-bgimg: var(--bgimg);
   --color-box: var(--box);
+  --color-imgcard: var(--imgcard);
+   --color-text: var(--text);
 }
 
 :root {
@@ -149,12 +149,17 @@
   --card: oklch(93.333% 0.00322 15.4 / 0.685);
   --button: oklch(39.716% 0.06984 227.223 / 0.925);
   --box: oklch(92.8% 0.006 264.5);
+  --imgcard: oklch(97.837% 0.0011 202.716 / 0.925);
+  --text: oklch(39.716% 0.06984 227.223 / 0.925);
 }
 
 .dark {
+  --package: oklch(97.837% 0.0011 202.716 / 0.925);
+  --text: oklch(100% 0.00011 271.152 / 0.877); 
+  --imgcard: oklch(30.726% 0.04077 224.582 / 0.925);
   --box: oklch(0.21 0 0 / 0.5);
   --bgimg: url('/images/wallpapersden.jpg');
-  --background: oklch(0.145 0 0);
+  --background: oklch(14.479% 0.00002 271.152);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);

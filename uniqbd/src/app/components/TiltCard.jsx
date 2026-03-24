@@ -48,7 +48,7 @@ const TiltCard = ({ product }) => {
         ref={cardRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative bg-button/5 backdrop-blur-3xl cursor-pointer
+        className="relative bg-imgcard backdrop-blur-3xl cursor-pointer
                    flex flex-col items-center justify-center px-4 py-4 rounded-xl text-sm font-medium text-button
                    hover:shadow-2xl border-button shadow-lg shadow-button/30 transform-gpu will-change-transform"
       >

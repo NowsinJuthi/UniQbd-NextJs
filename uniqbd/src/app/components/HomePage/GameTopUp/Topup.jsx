@@ -11,7 +11,7 @@ const Topup = () => {
         {/* Section Title */}
         <h1 className="text-4xl font-bold text-button text-center mb-10">
           <span
-            className="relative px-5 py-2 rounded-xl font-medium text-button 
+            className="relative px-5 py-2 rounded-xl font-medium text-text 
             transition-all duration-300 hover:scale-105 overflow-hidden"
           >
             Game Top Up
@@ -31,11 +31,12 @@ const Topup = () => {
               key={game.id}
               href={`/products/${game.slug}`}
               className={`
-                bg-button/5 backdrop-blur-3xl transition-all duration-300 cursor-pointer
-                flex flex-col items-center justify-center px-4 py-4 rounded-xl text-sm font-medium text-button 
-                hover:shadow-2xl hover:-translate-y-2 border-button shadow-lg shadow-button/30
-                ${index === 4 ? "col-span-2 row-span-2" : ""}
-              `}
+  bg-imgcard
+  backdrop-blur-3xl transition-all duration-300 cursor-pointer
+  flex flex-col items-center justify-center px-4 py-4 rounded-xl text-sm font-medium text-text 
+  hover:shadow-2xl hover:-translate-y-2 border-button shadow-lg shadow-button/30
+  ${index === 4 ? "col-span-2 row-span-2" : ""}
+`}
             >
               <img
                 src={game.img}

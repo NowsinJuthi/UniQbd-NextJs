@@ -9,7 +9,7 @@ const Choose = () => {
     <div className="absolute w-96 h-96 bg-button/20 blur-[120px] top-10 left-20"></div>
     <div className="absolute w-96 h-96 bg-button/30 blur-[120px] bottom-10 right-20"></div>
 
-    <h2 className="text-3xl font-bold text-center mb-14 relative z-10 text-gray-900">
+    <h2 className="text-3xl font-bold text-center mb-14 relative z-10">
       Why Choose UniQbd
     </h2>
 
