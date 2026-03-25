@@ -34,7 +34,7 @@ const Topup = () => {
   bg-imgcard
   backdrop-blur-3xl transition-all duration-300 cursor-pointer
   flex flex-col items-center justify-center px-4 py-4 rounded-xl text-sm font-medium text-text 
-  hover:shadow-2xl hover:-translate-y-2 border-button shadow-lg shadow-button/30
+  hover:shadow-2xl hover:-translate-y-2 border-button shadow-lg shadow-button/30 
   ${index === 4 ? "col-span-2 row-span-2" : ""}
 `}
             >

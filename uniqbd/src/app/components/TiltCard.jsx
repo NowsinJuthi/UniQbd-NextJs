@@ -66,7 +66,7 @@ const TiltCard = ({ product }) => {
         />
 
         {/* Product Name */}
-        <h3 className="mt-4 text-button font-semibold text-center z-20 relative">
+        <h3 className="mt-4 text-text font-semibold text-center z-20 relative">
           {product.name}
         </h3>
       </div>

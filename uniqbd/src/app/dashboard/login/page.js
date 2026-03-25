@@ -6,15 +6,15 @@ const LoginPage = () => {
     <div className="min-h-screen flex items-center
      justify-center bg-cover bg-center bg-no-repeat">
 
-      <div className="bg-button/5 backdrop-blur-md
+      <div className="bg-imgcard backdrop-blur-md
        shadow-lg shadow-button/30
        w-full max-w-xl rounded-[2%] px-18 py-20">
 
         {/* Title */}
-        <h1 className="text-3xl font-bold text-button text-center mb-2 [text-shadow:0_1px_0_rgba(255,255,255,0.3),0_6px_15px_rgba(0,0,0,0.35)]">
+        <h1 className="text-3xl font-bold text-text text-center mb-2 [text-shadow:0_1px_0_rgba(255,255,255,0.3),0_6px_15px_rgba(0,0,0,0.35)]">
           Welcome Back
         </h1>
-        <p className="text-center text-button mb-6 text-sm">
+        <p className="text-center text-text mb-6 text-sm">
           Login to continue
         </p>
 
@@ -69,9 +69,10 @@ const LoginPage = () => {
         </button>
 
         {/* Extra Links */}
-        <p className="text-center text-sm text-button mt-6">
+        <p className="text-center text-sm text-text
+         mt-6">
           Don't have an account?{" "}
-          <Link href="/dashboard/registration" className="text-button font-medium hover:underline">
+          <Link href="/dashboard/registration" className="text-text font-medium hover:underline">
             Register
           </Link>
         </p>

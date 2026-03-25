@@ -6,18 +6,18 @@ const Checkout = () => {
 
       <div className="max-w-6xl mx-auto 
       shadow-lg shadow-button/30 rounded-2xl p-8
-      grid grid-cols-1 md:grid-cols-2 gap-10 bg-button/5 backdrop-blur-3xl">
+      grid grid-cols-1 md:grid-cols-2 gap-10 bg-imgcard backdrop-blur-3xl">
 
         {/* LEFT SIDE - BILLING DETAILS */}
         <div>
-          <h1 className="text-2xl font-bold mb-6 border-b pb-3 text-button">
+          <h1 className="text-2xl font-bold mb-6 border-b pb-3 text-text">
             Billing Details
           </h1>
 
           <div className="space-y-5">
 
             <div>
-              <label className="block font-medium mb-1 text-button/80">
+              <label className="block font-medium mb-1 text-text/80">
                 Your Name
               </label>
               <input
@@ -31,7 +31,7 @@ const Checkout = () => {
             </div>
 
             <div>
-              <label className="block font-medium mb-1 text-button/80">
+              <label className="block font-medium mb-1 text-text/80">
                 State / Country
               </label>
               <select
@@ -48,7 +48,7 @@ const Checkout = () => {
             </div>
 
             <div>
-              <label className="block font-medium mb-1 text-button/80">
+              <label className="block font-medium mb-1 text-text/80">
                 Mobile Number
               </label>
               <input
@@ -61,7 +61,7 @@ const Checkout = () => {
             </div>
 
             <div>
-              <label className="block font-medium mb-1 text-button/80">
+              <label className="block font-medium mb-1 text-text/80">
                 Email
               </label>
               <input
@@ -75,7 +75,7 @@ const Checkout = () => {
 
             {/* Additional Info */}
             <div>
-              <h2 className="text-lg font-semibold mt-4 mb-2 text-button/80">
+              <h2 className="text-lg font-semibold mt-4 mb-2 text-text/80">
                 Additional Information
               </h2>
 
@@ -94,7 +94,7 @@ const Checkout = () => {
         {/* RIGHT SIDE - ORDER SUMMARY */}
         <div className="bg-button/5 p-6 rounded-xl shadow-lg shadow-button/30 backdrop-blur-3xl">
 
-          <h1 className="text-2xl font-bold mb-6 border-b pb-3 text-button">
+          <h1 className="text-2xl font-bold mb-6 border-b pb-3 text-text">
             Your Order
           </h1>
 
@@ -103,21 +103,21 @@ const Checkout = () => {
 
             <div className="flex justify-between items-center
             bg-button/10 p-3 rounded-lg">
-              <span className="text-button/80">PUBG Mobile UC</span>
-              <span className="font-medium text-button">125 TK</span>
+              <span className="text-text/80">PUBG Mobile UC</span>
+              <span className="font-medium text-text">125 TK</span>
             </div>
 
             <div className="flex justify-between items-center
             bg-button/10 p-3 rounded-lg">
-              <span className="text-button/80">Mechanical Keyboard</span>
-              <span className="font-medium text-button">75 TK</span>
+              <span className="text-text/80">Mechanical Keyboard</span>
+              <span className="font-medium text-text">75 TK</span>
             </div>
 
           </div>
 
           {/* Total */}
           <div className="mt-6 border-t pt-4 flex justify-between
-          text-lg font-semibold text-button">
+          text-lg font-semibold text-text">
             <span>Total</span>
             <span>100 TK</span>
           </div>
@@ -125,21 +125,21 @@ const Checkout = () => {
           {/* Payment Method */}
           <div className="mt-6 space-y-2">
 
-            <h2 className="font-semibold text-button">
+            <h2 className="font-semibold text-text">
               Payment Method
             </h2>
 
-            <label className="flex items-center gap-2 text-button/80">
+            <label className="flex items-center gap-2 text-text/80">
               <input type="radio" name="payment" />
               bKash
             </label>
 
-            <label className="flex items-center gap-2 text-button/80">
+            <label className="flex items-center gap-2 text-text/80">
               <input type="radio" name="payment" />
               Nagad
             </label>
 
-            <label className="flex items-center gap-2 text-button/80">
+            <label className="flex items-center gap-2 text-text/80">
               <input type="radio" name="payment" />
               Rocket
             </label>

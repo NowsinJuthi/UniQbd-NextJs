@@ -3,8 +3,9 @@
 import TiltCard from "@/app/components/TiltCard";
 import { games } from "@/app/data/games";
 import { giftcard } from "@/app/data/giftcard";
+import { CartContext } from "@/context/CartContext";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 const ProductDetails = () => {
   const params = useParams();
@@ -27,15 +28,37 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [gameID, setGameID] = useState("");
 
-  // Determine price based on selection (package or giftcard)
+  const { addToCart } = useContext(CartContext);
+
+
+  const handleAddToCart = () => {
+    if (!selectedPackage) return alert("Please select a package!");
+    if (!gameID.trim()) return alert("Enter your Game ID!");
+
+    const price = Number(selectedPackage.price.replace("TK", "").replace(",", "").trim());
+    const item = {
+      id: selectedPackage.id,
+      name: selectedPackage.name,
+      package: selectedPackage.label,
+      quantity,
+      price,
+      gameID,
+      img: selectedPackage.img
+    };
+
+    addToCart(item);
+    alert("Added to cart!");
+  };
+
+
   const price =
-    (selectedPackage?.price || product.price)
+    selectedPackage?.price || product.price
       ? Number(
-          (selectedPackage?.price || product.price)
-            .replace("TK", "")
-            .replace(",", "")
-            .trim()
-        )
+        (selectedPackage?.price || product.price)
+          .replace("TK", "")
+          .replace(",", "")
+          .trim(),
+      )
       : 0;
 
   const subtotal = price * quantity;
@@ -49,12 +72,15 @@ const ProductDetails = () => {
 
         {/* Product Info */}
         <div>
-          <h1 className="text-4xl text-button font-bold mb-6">{product.name}</h1>
+          <h1 className="text-text text-4xl font-bold mb-6">{product.name}</h1>
 
           {/* Game Packages */}
           {product.packages && product.packages.length > 0 && (
             <>
-              <h2 className="text-xl font-semibold mb-4 text-button">
+              <h2
+                className="text-text
+              text-xl font-semibold mb-4"
+              >
                 Select Package
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
@@ -63,42 +89,63 @@ const ProductDetails = () => {
                     key={index}
                     onClick={() => setSelectedPackage(pack)}
                     className={`
-                      relative overflow-hidden
-                      backdrop-blur-3xl transition-all duration-300 cursor-pointer
-                      flex flex-col items-center justify-center px-4 py-4 rounded-lg text-sm font-medium text-text
-                      shadow-lg shadow-button/20 hover:-translate-y-0.5 hover:shadow-xl
+   package
+        relative group cursor-pointer
 
-                      before:absolute before:top-0 before:left-0 before:w-full before:h-[10px]
-                      before:bg-gradient-to-b before:from-button before:to-transparent before:blur-lg before:opacity-80
-                      ${selectedPackage === pack ? "border-button bg-button/20 shadow-md" : ""}
-                    `}
+        transform-gpu transition-all duration-500
+        hover:-translate-y-1 hover:scale-[1.03]
+        active:scale-[0.97]
+
+        flex flex-col items-center justify-center
+        px-5 py-5 rounded-md text-sm font-semibold text-text
+
+        bg-gradient-to-br from-package/40 via-package/10 to-transparent
+        backdrop-blur-3xl
+        border border-white/10
+
+
+   ${selectedPackage === pack
+                        ? `
+            -translate-y-1 scale-[1.05]
+            shadow
+          `
+                        : `shadow-md hover:shadow-[0_20px_50px_rgba(0,0,0,0.45)]`
+                      }
+      `}
                   >
-                    <h3 className="font-semibold text-lg text-button">{pack.uc}</h3>
-                    <p className="text-gray-500">{pack.price}</p>
+                    {/* price */}
+                    <span className="text-lg font-bold tracking-wide">
+                      {pack.price}
+                    </span>
+
+                    {/* label */}
+                    <span className="text-xs opacity-70 mt-1">
+                      {pack.label}
+                    </span>
                   </div>
                 ))}
               </div>
             </>
           )}
 
-      
-
           {/* Quantity */}
           <div className="mb-6 flex flex-col gap-2">
-            <label className="block text-button font-semibold mb-1">Quantity</label>
+            <label className="block text-text font-semibold mb-1">
+              Quantity
+            </label>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                className="w-10 h-10 flex items-center justify-center bg-button/10 text-button rounded-lg hover:bg-button/20 transition"
+                className="w-10 h-10 flex text-text items-center justify-center bg-button/10 shadow-lg shadow-button/20 rounded-lg hover:bg-button/20 transition"
               >
                 -
               </button>
-              <span className="relative w-20 text-center text-button font-semibold px-4 py-2 rounded-xl bg-button/10 backdrop-blur-xl shadow-lg shadow-button/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-button/30">
+              <span className="relative w-20  text-center text-text font-semibold px-4 py-2 rounded-xl bg-button/10 backdrop-blur-xl shadow-lg shadow-button/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-button/30">
                 {quantity}
               </span>
               <button
                 onClick={() => setQuantity((prev) => prev + 1)}
-                className="w-10 h-10 flex items-center justify-center bg-button/10 text-button rounded-lg hover:bg-button/20 transition"
+                className="w-10 h-10 text-text flex items-center justify-center bg-button/10 shadow-lg shadow-button/20 rounded-lg hover:bg-button/20 transition"
               >
                 +
               </button>
@@ -107,19 +154,23 @@ const ProductDetails = () => {
 
           {/* Game ID */}
           <div className="mb-6">
-            <label className="block text-button font-semibold mb-2">Game ID</label>
+            <label className="block font-semibold mb-2 text-text">
+              Game ID
+            </label>
             <input
               type="text"
               placeholder="Enter your Game ID"
               value={gameID}
               onChange={(e) => setGameID(e.target.value)}
-              className="w-full border border-button/20 shadow-lg shadow-button/30 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-button/60"
+              className="w-full bg-imgcard  shadow-lg shadow-button/20 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-button/60"
             />
           </div>
 
           {/* Order Summary */}
-          <div className="bg-button/5 backdrop-blur-3xl transition-all duration-300 px-4 py-4 my-10 rounded-2xl border-button shadow-lg shadow-button/30">
-            <h3 className="font-bold text-lg mb-4 text-button">Order Summary</h3>
+          <div className="bg-imgcard backdrop-blur-3xl transition-all duration-300 px-4 py-4 my-10 rounded-2xl border-button shadow-lg shadow-button/30">
+            <h3 className="font-bold text-text text-lg mb-4 text-button">
+              Order Summary
+            </h3>
             <div className="flex justify-between mb-2">
               <span className="text-gray-600">Subtotal</span>
               <span className="font-semibold">{subtotal} TK</span>
@@ -135,7 +186,7 @@ const ProductDetails = () => {
             <button className="px-8 py-3 bg-button text-white rounded-lg shadow-lg transform transition active:translate-y-1 active:shadow-sm hover:scale-105">
               Buy Now
             </button>
-            <button className="px-8 py-3 bg-button text-white rounded-lg shadow-lg transform transition active:translate-y-1 active:shadow-sm hover:scale-105">
+            <button onClick={handleAddToCart} className="px-8 py-3 bg-button text-white rounded-lg shadow-lg transform transition active:translate-y-1 active:shadow-sm hover:scale-105">
               Add to Cart
             </button>
           </div>

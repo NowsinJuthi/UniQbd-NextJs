@@ -109,7 +109,8 @@
   --img-bgimg: var(--bgimg);
   --color-box: var(--box);
   --color-imgcard: var(--imgcard);
-   --color-text: var(--text);
+  --color-text: var(--text);
+  --color-package: var(--package);
 }
 
 :root {
@@ -150,16 +151,47 @@
   --button: oklch(39.716% 0.06984 227.223 / 0.925);
   --box: oklch(92.8% 0.006 264.5);
   --imgcard: oklch(97.837% 0.0011 202.716 / 0.925);
-  --text: oklch(39.716% 0.06984 227.223 / 0.925);
-}
+  --text: oklch(39.716% 0.06984 227.223 / 0.925);;
 
+}
+:root .package{
+  position: relative;
+  overflow: hidden;
+}
+:root .package::before{
+  content: "";
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+
+  border-radius: 2rem;
+  filter: blur(14px);
+
+  box-shadow:
+    0 1px 30px rgba(0,0,0,0.55),
+    0 5px 15px rgba(0,0,0,0.4),
+    inset 0 1px 2px rgba(12, 125, 170, 0.788);
+}
+:root .shadow {
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45),
+              0 15px 40px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.dark .shadow {
+  box-shadow: 0 0px 30px oklch(65.121% 0.12567 228.841 / 0.1),
+              0 0px 20px oklch(64.262% 0.12597 229.676 / 0.418);
+              transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
 .dark {
-  --package: oklch(97.837% 0.0011 202.716 / 0.925);
-  --text: oklch(100% 0.00011 271.152 / 0.877); 
-  --imgcard: oklch(30.726% 0.04077 224.582 / 0.925);
+  --package: oklch(64.262% 0.12597 229.676/ 0.521);
+  --text: oklch(100% 0.00011 271.152 / 0.877);
+  --imgcard: oklch(22.474% 0.03702 226.944 / 0.925);
   --box: oklch(0.21 0 0 / 0.5);
   --bgimg: url('/images/wallpapersden.jpg');
-  --background: oklch(14.479% 0.00002 271.152);
+  --background: oklch(17.398% 0.03048 223.507);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -200,4 +232,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.shadow-card {
+  box-shadow: var(--shadow-card);
 }
