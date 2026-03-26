@@ -1,7 +1,14 @@
-import React from 'react'
+"use client"
+
+import React, { useState } from 'react'
 import Link from 'next/link'
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
 
 const LoginPage = () => {
+
+  const [showPassword, setShowPassword] = useState(false)
+
   return (
     <div className="min-h-screen flex items-center
      justify-center bg-cover bg-center bg-no-repeat">
@@ -38,27 +45,47 @@ const LoginPage = () => {
         </div>
 
         {/* Password Field */}
-        <div className="relative">
+        <div className="relative mt-4">
+
+          {/* input */}
           <input
-            type="email"
-            name="email"
+            type={showPassword ? "text" : "password"}
+            name="password"
             required
-            className="peer mt-4 p-4 rounded-2xl w-full outline-none border-b-3
-             border-button focus:border-button text-gray-100 placeholder-transparent shadow-lg bg-box transition"
-            placeholder="Email Address"
+            className="peer p-4 rounded-2xl w-full outline-none border-b-2
+        border-button focus:border-button text-gray-100 placeholder-transparent
+        shadow-lg bg-box transition"
+            placeholder="Password"
           />
+
+          {/* label */}
           <label
-            className="absolute left-4 top-8 text-gray-400 text-sm pointer-events-none
-                 peer-focus:text-gray-300 peer-focus:text-sm peer-focus:-translate-y-3 transition-all
-                 peer-valid:text-butt peer-valid:text-xs peer-valid:-translate-y-3"
+            className="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none
+        transition-all
+        peer-placeholder-shown:top-4
+        peer-placeholder-shown:text-base
+        peer-focus:-translate-y-3
+        peer-focus:text-xs
+        peer-valid:-translate-y-3
+        peer-valid:text-xs"
           >
             Password
           </label>
+
+          {/* eye button */}
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
+
         </div>
 
         {/* Forgot Password */}
         <div className="text-right mb-6">
-          <Link href="/forgot-password" className="text-sm text-gray-100 hover:underline">
+          <Link href="/forgotpassword" className="text-sm text-gray-100 hover:underline">
             Forgot Password?
           </Link>
         </div>

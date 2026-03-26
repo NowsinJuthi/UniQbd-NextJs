@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { ConnectDB } from "../../../lib/config/db";
-import userModel from "../../../lib/models/Users";
+import { ConnectDB } from "../../../server/config/db";
+import userModel from "../../../server/models/Users";
 
 const LoadDB = async ()=>{
     await ConnectDB();

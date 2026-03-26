@@ -1,66 +1,93 @@
 "use client";
 
 import React, { createContext, useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
-// Create context
 export const CartContext = createContext();
 
-// Provider component
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
-
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCart(savedCart);
-  }, []);
+  const [cart, setCart] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedCart = localStorage.getItem("cart");
+      return savedCart ? JSON.parse(savedCart) : [];
+    }
+    return [];
+  });
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // Add item to cart
-  const addToCart = (item) => {
+  // Add item to cart with validation
+  const addToCart = ({ product, selectedPkg, playerId, quantity }) => {
+    // 1️⃣ Package selected?
+    if (!selectedPkg) {
+      return toast.error("⚠️ Please select a package first!");
+    }
+
+    // 2️⃣ Top-up product must have Player ID
+    if (
+      product.category?.toLowerCase().includes("top up") &&
+      (!playerId || !playerId.trim())
+    ) {
+      return toast.error("⚠️ Please enter your Player ID!");
+    }
+
+    const itemPrice = Number(
+      selectedPkg.price.replace("TK", "").replace(",", "").trim()
+    );
+
+    const newItem = {
+      id: product.id,
+      name: product.name,
+      img: selectedPkg.img,
+      package: selectedPkg.label,
+      playerId: playerId || "",
+      price: itemPrice,
+      quantity: quantity || 1,
+    };
+
+    // 3️⃣ Prevent duplicate (same product + package + playerId)
     const exists = cart.find(
-      (c) => c.id === item.id && c.package === item.package
+      (item) =>
+        item.id === newItem.id &&
+        item.package === newItem.package &&
+        item.playerId === newItem.playerId
     );
 
     if (exists) {
-      // Increase quantity if already exists
-      const updatedCart = cart.map((c) =>
-        c.id === item.id && c.package === item.package
-          ? { ...c, quantity: c.quantity + item.quantity }
-          : c
-      );
-      setCart(updatedCart);
-    } else {
-      setCart([...cart, item]);
+      return toast.warning("⚠️ This package is already in your cart!");
     }
+
+    // 4️⃣ Add to cart
+    setCart((prev) => [...prev, newItem]);
+    toast.success("🛒 Item added to cart!");
   };
 
-  // Remove item
   const removeFromCart = (index) => {
-    const updatedCart = [...cart];
-    updatedCart.splice(index, 1);
-    setCart(updatedCart);
+    setCart((prev) => prev.filter((_, i) => i !== index));
+    toast.info("🗑️ Item removed from cart!");
   };
 
-  // Update quantity
   const updateQuantity = (index, newQty) => {
-    const updatedCart = [...cart];
-    updatedCart[index].quantity = Math.max(1, newQty);
-    setCart(updatedCart);
+    if (newQty < 1) return;
+    setCart((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, quantity: newQty } : item))
+    );
   };
 
-  const subtotal = cart.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
     <CartContext.Provider
-      value={{ cart, setCart, addToCart, removeFromCart, updateQuantity, subtotal }}
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        subtotal,
+      }}
     >
       {children}
     </CartContext.Provider>

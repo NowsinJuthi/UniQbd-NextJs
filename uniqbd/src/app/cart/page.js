@@ -1,14 +1,18 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { CartContext } from "@/context/CartContext";
 
 const Cart = () => {
-  
   const { cart, removeFromCart, updateQuantity, subtotal } = useContext(CartContext);
 
- 
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   const changeQuantity = (index, delta) => {
     const newQty = cart[index].quantity + delta;
     updateQuantity(index, newQty);
@@ -17,6 +21,9 @@ const Cart = () => {
   const removeItem = (index) => {
     removeFromCart(index);
   };
+
+  // Render nothing until mounted
+  if (!hasMounted) return null;
 
   return (
     <div className="min-h-screen bg-cover bg-center py-16 px-4">
@@ -47,8 +54,6 @@ const Cart = () => {
                     alt={product.name}
                     className="w-20 h-20 rounded-lg object-cover border border-button/20"
                   />
-
-
                   <div>
                     <h2 className="font-semibold text-text">{product.name}</h2>
                     <p className="text-sm text-gray-400">{product.package}</p>

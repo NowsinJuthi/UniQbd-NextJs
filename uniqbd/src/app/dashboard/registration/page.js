@@ -1,16 +1,19 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
 
 const RegistrationPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    password: ""
+    password: "",
   });
 
   const onChangeHandler = (e) => {
@@ -18,7 +21,7 @@ const RegistrationPage = () => {
 
     setFormData((form) => ({
       ...form,
-      [name]: value
+      [name]: value,
     }));
 
     console.log(name, value);
@@ -27,31 +30,32 @@ const RegistrationPage = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-
-      const response = await axios.post('/api', formData)
+      const response = await axios.post("/api", formData);
       setFormData({ name: "", email: "", password: "" });
-      toast.success("Success")
-
+      toast.success("Success");
     } catch (error) {
       // Toast.error("Error");
-      toast.error("Error")
+      toast.error("Error");
     }
   };
 
-
   return (
-    <div className="min-h-screen flex items-center justify-center 
-     bg-cover bg-center bg-no-repeat">
-
-      <div className="bg-imgcard backdrop-blur-md 
+    <div
+      className="min-h-screen flex items-center justify-center 
+     bg-cover bg-center bg-no-repeat"
+    >
+      <div
+        className="bg-imgcard backdrop-blur-md 
       w-full max-w-xl rounded-[2%] shadow-2xl px-18 py-20 
-       shadow-lg shadow-button/30">
-
+       shadow-lg shadow-button/30"
+      >
         {/* Title */}
-       <h1 className="text-3xl font-bold text-text text-center mb-2
-[text-shadow:0_1px_0_rgba(255,255,255,0.3),0_6px_15px_rgba(0,0,0,0.35)]">
-  Create Account
-</h1>
+        <h1
+          className="text-3xl font-bold text-text text-center mb-2
+[text-shadow:0_1px_0_rgba(255,255,255,0.3),0_6px_15px_rgba(0,0,0,0.35)]"
+        >
+          Create Account
+        </h1>
         <p className="text-center text-text mb-6 text-sm">
           Register to get started
         </p>
@@ -103,29 +107,46 @@ const RegistrationPage = () => {
 
           {/* Password Field */}
           <div className="relative mt-4">
+            {/* input */}
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               required
+              className="peer p-4 rounded-2xl w-full outline-none border-b-2
+                 border-button focus:border-button text-gray-100 placeholder-transparent
+                 shadow-lg bg-box transition"
               placeholder="Password"
-              onChange={onChangeHandler}
-              value={formData.password}
-              className="peer p-4 rounded-2xl w-full outline-none border-b-3
-            border-button focus:border-button text-gray-100 placeholder-transparent 
-            shadow-lg bg-box transition"
             />
+
+            {/* label */}
             <label
               className="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none
-            peer-focus:text-gray-300 peer-focus:text-sm peer-focus:-translate-y-3 transition-all
-            peer-valid:text-button peer-valid:text-xs peer-valid:-translate-y-3"
+                 transition-all
+                 peer-placeholder-shown:top-4
+                 peer-placeholder-shown:text-base
+                 peer-focus:-translate-y-3
+                 peer-focus:text-xs
+                 peer-valid:-translate-y-3
+                 peer-valid:text-xs"
             >
               Password
             </label>
+
+            {/* eye button */}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
 
           {/* Register Button */}
-          <button className="w-full mt-6 bg-button text-white py-3 rounded-lg font-semibold 
-        hover:bg-button/90 transition duration-300 shadow-lg shadow-button-500/30">
+          <button
+            className="w-full mt-6 bg-button text-white py-3 rounded-lg font-semibold 
+        hover:bg-button/90 transition duration-300 shadow-lg shadow-button-500/30"
+          >
             Register
           </button>
         </form>
@@ -140,7 +161,6 @@ const RegistrationPage = () => {
             Log In
           </Link>
         </p>
-
       </div>
     </div>
   );
