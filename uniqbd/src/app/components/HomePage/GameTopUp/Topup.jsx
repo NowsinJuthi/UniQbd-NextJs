@@ -15,9 +15,7 @@ const Topup = () => {
             transition-all duration-300 hover:scale-105 overflow-hidden"
           >
             Game Top Up
-
             <span className="absolute inset-0 rounded-xl bg-button/15 blur-md transition duration-300"></span>
-
             <span className="absolute w-2 h-2 bg-button rounded-full animate-bounce top-2 left-3"></span>
             <span className="absolute w-1.5 h-1.5 bg-button rounded-full animate-bounce top-3 right-4 delay-100"></span>
             <span className="absolute w-1 h-1 bg-button rounded-full animate-bounce bottom-2 left-6 delay-200"></span>
@@ -34,7 +32,7 @@ const Topup = () => {
   bg-imgcard
   backdrop-blur-3xl transition-all duration-300 cursor-pointer
   flex flex-col items-center justify-center px-4 py-4 rounded-xl text-sm font-medium text-text 
-  hover:shadow-2xl hover:-translate-y-2 border-button shadow-lg shadow-button/30 
+  hover:shadow-2xl hover:-translate-y-2 border-button shadow-inner shadow-button/30 
   ${index === 4 ? "col-span-2 row-span-2" : ""}
 `}
             >
@@ -43,8 +41,9 @@ const Topup = () => {
                 alt={game.name}
                 className="object-contain mb-2"
               />
-              <h2 className="text-sm font-semibold text-center mb-2">{game.name}</h2>
-             
+              <h2 className="text-sm font-semibold text-center mb-2">
+                {game.name}
+              </h2>
             </Link>
           ))}
         </div>

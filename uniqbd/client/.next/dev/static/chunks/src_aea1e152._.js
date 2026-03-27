@@ -172,6 +172,7 @@ var _s = __turbopack_context__.k.signature();
 "use client";
 ;
 ;
+;
 const CartContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["createContext"])();
 const CartProvider = ({ children })=>{
     _s();
@@ -185,7 +186,6 @@ const CartProvider = ({ children })=>{
             ;
         }
     }["CartProvider.useState"]);
-    // Save cart to localStorage whenever it changes
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "CartProvider.useEffect": ()=>{
             localStorage.setItem("cart", JSON.stringify(cart));
@@ -193,37 +193,40 @@ const CartProvider = ({ children })=>{
     }["CartProvider.useEffect"], [
         cart
     ]);
-    // Add item to cart with validation
+    // Add or merge items
     const addToCart = ({ product, selectedPkg, playerId, quantity })=>{
-        // 1️⃣ Package selected?
-        if (!selectedPkg) {
-            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].error("⚠️ Please select a package first!");
-        }
-        // 2️⃣ Top-up product must have Player ID
-        if (product.category?.toLowerCase().includes("top up") && (!playerId || !playerId.trim())) {
+        if (!selectedPkg) return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].error("⚠️ Please select a package first!");
+        const isTopUp = product.category === "top-up";
+        if (isTopUp && (!playerId || playerId.trim() === "")) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].error("⚠️ Please enter your Player ID!");
         }
         const itemPrice = Number(selectedPkg.price.replace("TK", "").replace(",", "").trim());
         const newItem = {
             id: product.id,
             name: product.name,
-            img: selectedPkg.img,
-            package: selectedPkg.label,
+            img: product.img,
+            package: selectedPkg.uc,
             playerId: playerId || "",
             price: itemPrice,
             quantity: quantity || 1
         };
-        // 3️⃣ Prevent duplicate (same product + package + playerId)
-        const exists = cart.find((item)=>item.id === newItem.id && item.package === newItem.package && item.playerId === newItem.playerId);
-        if (exists) {
-            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].warning("⚠️ This package is already in your cart!");
-        }
-        // 4️⃣ Add to cart
-        setCart((prev)=>[
-                ...prev,
-                newItem
-            ]);
-        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].success("🛒 Item added to cart!");
+        setCart((prev)=>{
+            const existsIndex = prev.findIndex((item)=>item.id === newItem.id && item.package === newItem.package && item.playerId === newItem.playerId);
+            if (existsIndex > -1) {
+                const updated = [
+                    ...prev
+                ];
+                updated[existsIndex].quantity += newItem.quantity;
+                __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].success("🛒The product is already in your cart. Quantity has been updated successfully!");
+                return updated;
+            } else {
+                __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].success("🛒 Item added to cart!");
+                return [
+                    ...prev,
+                    newItem
+                ];
+            }
+        });
     };
     const removeFromCart = (index)=>{
         setCart((prev)=>prev.filter((_, i)=>i !== index));
@@ -237,16 +240,32 @@ const CartProvider = ({ children })=>{
                 } : item));
     };
     const subtotal = cart.reduce((acc, item)=>acc + item.price * item.quantity, 0);
+    const discount = 0;
+    const total = subtotal - discount;
+    const totalItems = cart.reduce((acc, item)=>acc + item.quantity, 0);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(CartContext.Provider, {
         value: {
             cart,
             addToCart,
             removeFromCart,
             updateQuantity,
-            subtotal
+            subtotal,
+            discount,
+            total,
+            totalItems
         },
-        children: children
-    }, void 0, false, {
+        children: [
+            children,
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ToastContainer"], {
+                position: "top-right",
+                autoClose: 3000
+            }, void 0, false, {
+                fileName: "[project]/src/context/CartContext.js",
+                lineNumber: 96,
+                columnNumber: 7
+            }, ("TURBOPACK compile-time value", void 0))
+        ]
+    }, void 0, true, {
         fileName: "[project]/src/context/CartContext.js",
         lineNumber: 83,
         columnNumber: 5
@@ -273,6 +292,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$ico
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/client/app-dir/link.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$theme$2d$toggle$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/app/theme-toggle.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$CartContext$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/context/CartContext.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/framer-motion/dist/es/render/components/motion/proxy.mjs [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$components$2f$AnimatePresence$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/framer-motion/dist/es/components/AnimatePresence/index.mjs [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
@@ -281,11 +302,13 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
+;
 const Navbar = ()=>{
     _s();
-    const { cart } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useContext"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$CartContext$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CartContext"]);
+    const { cart, removeFromCart, updateQuantity, subtotal, discount, total, totalItems } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useContext"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$CartContext$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CartContext"]);
     const [isOpen, setIsOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [mounted, setMounted] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const drawerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRef"])(null);
     // Fix hydration mismatch safely
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "Navbar.useEffect": ()=>{
@@ -297,8 +320,35 @@ const Navbar = ()=>{
             })["Navbar.useEffect"];
         }
     }["Navbar.useEffect"], []);
-    // total quantity count (client only)
-    const totalItems = mounted ? cart.reduce((acc, item)=>acc + item.quantity, 0) : 0;
+    // Close drawer if clicked outside
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "Navbar.useEffect": ()=>{
+            const handleClickOutside = {
+                "Navbar.useEffect.handleClickOutside": (event)=>{
+                    if (drawerRef.current && !drawerRef.current.contains(event.target)) {
+                        setIsOpen(false);
+                    }
+                }
+            }["Navbar.useEffect.handleClickOutside"];
+            if (isOpen) {
+                document.addEventListener("mousedown", handleClickOutside);
+            } else {
+                document.removeEventListener("mousedown", handleClickOutside);
+            }
+            return ({
+                "Navbar.useEffect": ()=>document.removeEventListener("mousedown", handleClickOutside)
+            })["Navbar.useEffect"];
+        }
+    }["Navbar.useEffect"], [
+        isOpen
+    ]);
+    // Quantity controls
+    const increaseQty = (index)=>updateQuantity(index, cart[index].quantity + 1);
+    const decreaseQty = (index)=>{
+        if (cart[index].quantity > 1) updateQuantity(index, cart[index].quantity - 1);
+    };
+    // Remove item
+    const removeItem = (index)=>removeFromCart(index);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
         className: "sticky top-0 z-50 shadow-lg shadow-button/30 bg-background/80 backdrop-blur-xl",
         children: [
@@ -309,12 +359,12 @@ const Navbar = ()=>{
                         className: "col-span-1",
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$theme$2d$toggle$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ThemeToggle"], {}, void 0, false, {
                             fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                            lineNumber: 29,
+                            lineNumber: 63,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     }, void 0, false, {
                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                        lineNumber: 28,
+                        lineNumber: 62,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -325,12 +375,12 @@ const Navbar = ()=>{
                             children: "UniQbd"
                         }, void 0, false, {
                             fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                            lineNumber: 34,
+                            lineNumber: 68,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     }, void 0, false, {
                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                        lineNumber: 33,
+                        lineNumber: 67,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -365,32 +415,32 @@ const Navbar = ()=>{
                                         className: "absolute w-2 h-2 bg-button rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce top-2 left-3"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 56,
+                                        lineNumber: 88,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         className: "absolute w-1.5 h-1.5 bg-button rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce top-3 right-4 delay-100"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 57,
+                                        lineNumber: 89,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         className: "absolute w-1 h-1 bg-button rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce bottom-2 left-6 delay-200"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 58,
+                                        lineNumber: 90,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, item.name, true, {
                                 fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                lineNumber: 48,
+                                lineNumber: 82,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)))
                     }, void 0, false, {
                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                        lineNumber: 40,
+                        lineNumber: 74,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -403,7 +453,7 @@ const Navbar = ()=>{
                                         className: "text-text/70 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 67,
+                                        lineNumber: 99,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -412,13 +462,13 @@ const Navbar = ()=>{
                                         className: "bg-transparent outline-none text-sm text-text"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 68,
+                                        lineNumber: 100,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                lineNumber: 66,
+                                lineNumber: 98,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -427,12 +477,12 @@ const Navbar = ()=>{
                                     className: "text-xl cursor-pointer hover:text-text transition"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                    lineNumber: 77,
+                                    lineNumber: 109,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                lineNumber: 76,
+                                lineNumber: 108,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -441,91 +491,82 @@ const Navbar = ()=>{
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fi$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FiShoppingCart"], {}, void 0, false, {
                                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 85,
+                                        lineNumber: 117,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     mounted && totalItems > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         className: "absolute -top-2 -right-2 bg-button text-xs px-1.5 rounded-full text-white shadow-md shadow-button/40",
-                                        children: totalItems
+                                        children: cart.length
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 87,
+                                        lineNumber: 119,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                lineNumber: 81,
+                                lineNumber: 113,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                        lineNumber: 64,
+                        lineNumber: 96,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                lineNumber: 26,
+                lineNumber: 60,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             mounted && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                onClick: ()=>setIsOpen(false),
-                className: `fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}`
-            }, void 0, false, {
-                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                lineNumber: 97,
-                columnNumber: 9
-            }, ("TURBOPACK compile-time value", void 0)),
-            mounted && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                onClick: (e)=>e.stopPropagation(),
+                ref: drawerRef,
                 className: `fixed top-0 right-0 h-screen
-          bg-gradient-to-br from-imgcard/95 via-imgcard/90 to-background/80
-          backdrop-blur-2xl border-l border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.4)]
-          z-50
-          transition-[width] duration-500 ease-out
-          overflow-hidden
-          ${isOpen ? "w-96" : "w-0"}`,
+            bg-gradient-to-br from-imgcard/95 via-imgcard/90 to-background/80
+            backdrop-blur-2xl border-l border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.4)]
+            z-50
+            transition-[width] duration-500 ease-out
+            overflow-hidden
+            ${isOpen ? "w-96" : "w-0"}`,
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "flex items-center justify-between px-5 py-4 border-b border-white/10 bg-background/40 backdrop-blur-xl",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                className: "text-lg font-semibold tracking-wide",
+                                className: "text-lg font-semibold tracking-wide flex items-center gap-2",
                                 children: [
-                                    "🛒 Cart",
-                                    " ",
-                                    mounted && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    "Cart ",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         className: "ml-2 text-xs opacity-60",
                                         children: cart.length
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 122,
-                                        columnNumber: 17
+                                        lineNumber: 142,
+                                        columnNumber: 20
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                lineNumber: 119,
+                                lineNumber: 141,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fi$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FiX"], {
                                 onClick: ()=>setIsOpen(false),
-                                className: "text-xl cursor-pointer hover:rotate-90 transition"
+                                className: "text-xl cursor-pointer hover:rotate-90 transition-transform duration-300"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                lineNumber: 125,
+                                lineNumber: 144,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                        lineNumber: 118,
+                        lineNumber: 140,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "p-4 space-y-3 overflow-y-auto h-[calc(100%-170px)] scrollbar-thin scrollbar-thumb-button/40 scrollbar-track-transparent",
+                        className: "p-4 space-y-3 overflow-y-auto h-[calc(100%-220px)] scrollbar-thin scrollbar-thumb-button/40 scrollbar-track-transparent",
                         children: cart.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "flex flex-col items-center justify-center h-full text-center opacity-70 space-y-3",
                             children: [
@@ -533,143 +574,303 @@ const Navbar = ()=>{
                                     className: "text-4xl opacity-40"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                    lineNumber: 135,
+                                    lineNumber: 154,
                                     columnNumber: 17
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-gray-300",
                                     children: "Your cart is empty"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                    lineNumber: 136,
+                                    lineNumber: 155,
                                     columnNumber: 17
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                     href: "/shop",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: ()=>setIsOpen(false),
-                                        className: "text-sm px-4 py-2 rounded-lg bg-button text-white hover:scale-105 transition",
+                                        className: "text-sm px-4 py-2 rounded-lg bg-button text-white hover:scale-105 transition-transform duration-300",
                                         children: "Browse Products"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 138,
+                                        lineNumber: 157,
                                         columnNumber: 19
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                    lineNumber: 137,
+                                    lineNumber: 156,
                                     columnNumber: 17
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                            lineNumber: 134,
+                            lineNumber: 153,
                             columnNumber: 15
-                        }, ("TURBOPACK compile-time value", void 0)) : cart.map((item, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "group flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-background/40 to-background/10 border border-white/5 hover:border-button/40 hover:shadow-lg hover:shadow-button/20 transition-all duration-300",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                        src: item.img,
-                                        className: "w-14 h-14 rounded-lg object-cover group-hover:scale-105 transition"
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 152,
-                                        columnNumber: 19
-                                    }, ("TURBOPACK compile-time value", void 0)),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex-1",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-sm font-medium leading-tight",
-                                                children: item.name
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                                lineNumber: 157,
-                                                columnNumber: 21
-                                            }, ("TURBOPACK compile-time value", void 0)),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-xs opacity-60",
-                                                children: item.package
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                                lineNumber: 158,
-                                                columnNumber: 21
-                                            }, ("TURBOPACK compile-time value", void 0)),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-xs mt-1",
-                                                children: [
-                                                    "Qty: ",
-                                                    item.quantity
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                                lineNumber: 159,
-                                                columnNumber: 21
-                                            }, ("TURBOPACK compile-time value", void 0))
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 156,
-                                        columnNumber: 19
-                                    }, ("TURBOPACK compile-time value", void 0)),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "text-sm font-semibold text-button",
-                                        children: [
-                                            "৳",
-                                            item.price * item.quantity
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                        lineNumber: 161,
-                                        columnNumber: 19
-                                    }, ("TURBOPACK compile-time value", void 0))
-                                ]
-                            }, i, true, {
-                                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                lineNumber: 148,
-                                columnNumber: 17
-                            }, ("TURBOPACK compile-time value", void 0)))
-                    }, void 0, false, {
-                        fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                        lineNumber: 132,
-                        columnNumber: 11
-                    }, ("TURBOPACK compile-time value", void 0)),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "absolute bottom-0 w-full p-4 border-t border-white/10 bg-imgcard",
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                            href: "/cart",
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                onClick: ()=>setIsOpen(false),
-                                className: "w-full bg-button text-white py-2 rounded-lg hover:opacity-90 transition",
-                                children: "Go to Cart"
-                            }, void 0, false, {
-                                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                                lineNumber: 172,
-                                columnNumber: 15
-                            }, ("TURBOPACK compile-time value", void 0))
+                        }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$components$2f$AnimatePresence$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AnimatePresence"], {
+                            children: cart.map((item, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["motion"].div, {
+                                    className: "group text-white relative flex items-center gap-4 p-4 rounded-2xl  bg-gradient-to-br from-package/60 via-package/30 to-package/10 backdrop-blur-xl border border-white/10 hover:border-button/60 shadow-button/20 shadow-inner transition-all duration-300 overflow-hidden",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "relative",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                    src: item.img,
+                                                    alt: item.name,
+                                                    className: "w-16 h-16 rounded-xl object-cover shadow-md group-hover:scale-105 transition-transform duration-300"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                    lineNumber: 178,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "absolute -top-2 -right-2 bg-button text-xs px-2 py-[2px] rounded-full font-semibold shadow",
+                                                    children: item.quantity
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                    lineNumber: 183,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                            lineNumber: 177,
+                                            columnNumber: 21
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex-1",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-sm font-semibold text-text leading-tight",
+                                                    children: item.name
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                    lineNumber: 190,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-xs text-gray-400 mt-[2px]",
+                                                    children: item.package
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                    lineNumber: 193,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex items-center gap-2 mt-1",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            onClick: ()=>decreaseQty(i),
+                                                            className: "p-1 bg-imgcard rounded-full hover:bg-white/20 transition",
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fi$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FiMinus"], {
+                                                                className: "text-xs text-text"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                                lineNumber: 201,
+                                                                columnNumber: 27
+                                                            }, ("TURBOPACK compile-time value", void 0))
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                            lineNumber: 197,
+                                                            columnNumber: 25
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "text-xs text-text",
+                                                            children: item.quantity
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                            lineNumber: 203,
+                                                            columnNumber: 25
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            onClick: ()=>increaseQty(i),
+                                                            className: "p-1 bg-imgcard rounded-full hover:bg-white/20 transition",
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fi$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FiPlus"], {
+                                                                className: "text-xs text-text"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                                lineNumber: 208,
+                                                                columnNumber: 27
+                                                            }, ("TURBOPACK compile-time value", void 0))
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                            lineNumber: 204,
+                                                            columnNumber: 25
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                    lineNumber: 196,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                            lineNumber: 189,
+                                            columnNumber: 21
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "text-right flex flex-col items-end justify-between",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-sm font-bold text-button",
+                                                    children: [
+                                                        item.price * item.quantity,
+                                                        " TK"
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                    lineNumber: 215,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    onClick: ()=>removeItem(i),
+                                                    className: "mt-1 text-[11px] text-red-400 hover:text-red-300 opacity-70 hover:opacity-100 transition",
+                                                    children: "Remove"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                                    lineNumber: 218,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                            lineNumber: 214,
+                                            columnNumber: 21
+                                        }, ("TURBOPACK compile-time value", void 0))
+                                    ]
+                                }, item.name + i, true, {
+                                    fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                    lineNumber: 168,
+                                    columnNumber: 19
+                                }, ("TURBOPACK compile-time value", void 0)))
                         }, void 0, false, {
                             fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                            lineNumber: 171,
-                            columnNumber: 13
+                            lineNumber: 166,
+                            columnNumber: 15
                         }, ("TURBOPACK compile-time value", void 0))
                     }, void 0, false, {
                         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                        lineNumber: 170,
+                        lineNumber: 151,
+                        columnNumber: 11
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "absolute bottom-0 w-full p-4 border-t border-white/10 bg-imgcard/80 backdrop-blur-xl space-y-2",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex justify-between text-text text-sm",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        children: "Subtotal"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                        lineNumber: 234,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        children: [
+                                            subtotal,
+                                            " TK"
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                        lineNumber: 235,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                lineNumber: 233,
+                                columnNumber: 13
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            discount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex justify-between text-green-400 text-sm",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        children: "Discount"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                        lineNumber: 239,
+                                        columnNumber: 17
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        children: [
+                                            "- ",
+                                            discount,
+                                            " TK"
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                        lineNumber: 240,
+                                        columnNumber: 17
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                lineNumber: 238,
+                                columnNumber: 15
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex justify-between font-bold text-text text-lg",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        children: "Total"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                        lineNumber: 244,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        children: [
+                                            total,
+                                            " TK"
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                        lineNumber: 245,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                lineNumber: 243,
+                                columnNumber: 13
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                                href: "/cart",
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                    onClick: ()=>setIsOpen(false),
+                                    className: "w-full bg-button text-white py-2 rounded-lg hover:opacity-90 transition",
+                                    children: "Go to Cart"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                    lineNumber: 248,
+                                    columnNumber: 15
+                                }, ("TURBOPACK compile-time value", void 0))
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                                lineNumber: 247,
+                                columnNumber: 13
+                            }, ("TURBOPACK compile-time value", void 0))
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
+                        lineNumber: 232,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-                lineNumber: 107,
+                lineNumber: 129,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/components/HomePage/Navbar.jsx",
-        lineNumber: 25,
+        lineNumber: 58,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(Navbar, "qAsiXNNzbYJjk9XwV3XhZfwv2RI=");
+_s(Navbar, "UQxlkxdDssBuJdW9YwB8foDsMCU=");
 _c = Navbar;
 const __TURBOPACK__default__export__ = Navbar;
 var _c;

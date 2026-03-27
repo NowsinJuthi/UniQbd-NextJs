@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useState, useEffect } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const CartContext = createContext();
 
@@ -14,23 +15,16 @@ export const CartProvider = ({ children }) => {
     return [];
   });
 
-  // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // Add item to cart with validation
+  // Add or merge items
   const addToCart = ({ product, selectedPkg, playerId, quantity }) => {
-    // 1️⃣ Package selected?
-    if (!selectedPkg) {
-      return toast.error("⚠️ Please select a package first!");
-    }
+    if (!selectedPkg) return toast.error("⚠️ Please select a package first!");
 
-    // 2️⃣ Top-up product must have Player ID
-    if (
-      product.category?.toLowerCase().includes("top up") &&
-      (!playerId || !playerId.trim())
-    ) {
+    const isTopUp = product.category === "top-up";
+    if (isTopUp && (!playerId || playerId.trim() === "")) {
       return toast.error("⚠️ Please enter your Player ID!");
     }
 
@@ -41,28 +35,31 @@ export const CartProvider = ({ children }) => {
     const newItem = {
       id: product.id,
       name: product.name,
-      img: selectedPkg.img,
-      package: selectedPkg.label,
+      img: product.img,
+      package: selectedPkg.uc,
       playerId: playerId || "",
       price: itemPrice,
       quantity: quantity || 1,
     };
 
-    // 3️⃣ Prevent duplicate (same product + package + playerId)
-    const exists = cart.find(
-      (item) =>
-        item.id === newItem.id &&
-        item.package === newItem.package &&
-        item.playerId === newItem.playerId
-    );
+    setCart((prev) => {
+      const existsIndex = prev.findIndex(
+        (item) =>
+          item.id === newItem.id &&
+          item.package === newItem.package &&
+          item.playerId === newItem.playerId
+      );
 
-    if (exists) {
-      return toast.warning("⚠️ This package is already in your cart!");
-    }
-
-    // 4️⃣ Add to cart
-    setCart((prev) => [...prev, newItem]);
-    toast.success("🛒 Item added to cart!");
+      if (existsIndex > -1) {
+        const updated = [...prev];
+        updated[existsIndex].quantity += newItem.quantity;
+        toast.success("🛒The product is already in your cart. Quantity has been updated successfully!");
+        return updated;
+      } else {
+        toast.success("🛒 Item added to cart!");
+        return [...prev, newItem];
+      }
+    });
   };
 
   const removeFromCart = (index) => {
@@ -78,6 +75,9 @@ export const CartProvider = ({ children }) => {
   };
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const discount = 0;
+  const total = subtotal - discount;
+  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <CartContext.Provider
@@ -87,9 +87,13 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         updateQuantity,
         subtotal,
+        discount,
+        total,
+        totalItems,
       }}
     >
       {children}
+      <ToastContainer position="top-right" autoClose={3000} />
     </CartContext.Provider>
   );
 };

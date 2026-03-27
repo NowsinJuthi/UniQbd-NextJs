@@ -33,7 +33,7 @@ const GiftCard = () => {
               bg-imgcard backdrop-blur-lg transition-all duration-300 cursor-pointer
               flex flex-col items-center justify-center px-4 py-2 rounded-xl
               text-sm font-medium text-text hover:shadow-2xl hover:-translate-y-2
-              border-button shadow-lg shadow-button/30
+              border-button shadow-inner shadow-button/30
               ${index === 0 ? "col-span-2 row-span-2" : ""}`}
           >
             {/* Image */}

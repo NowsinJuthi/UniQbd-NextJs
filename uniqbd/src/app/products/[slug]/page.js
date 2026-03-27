@@ -4,6 +4,7 @@ import TiltCard from "@/app/components/TiltCard";
 import { games } from "@/app/data/games";
 import { giftcard } from "@/app/data/giftcard";
 import { CartContext } from "@/context/CartContext";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useContext, useState } from "react";
 
@@ -31,8 +32,6 @@ const ProductDetails = () => {
   const { addToCart } = useContext(CartContext);
 
   const handleAddToCart = () => {
-
-    
     addToCart({
       product,
       selectedPkg: selectedPackage,
@@ -47,7 +46,7 @@ const ProductDetails = () => {
           (selectedPackage?.price || product.price)
             .replace("TK", "")
             .replace(",", "")
-            .trim()
+            .trim(),
         )
       : 0;
 
@@ -63,7 +62,7 @@ const ProductDetails = () => {
         <div>
           <h1 className="text-text text-4xl font-bold mb-6">{product.name}</h1>
 
-         {/* Game Packages */}
+          {/* Game Packages */}
           {product.packages && product.packages.length > 0 && (
             <>
               <h2 className="text-text text-xl font-semibold mb-4">
@@ -77,9 +76,9 @@ const ProductDetails = () => {
                     className={`package relative group cursor-pointer
                       transform-gpu transition-all duration-500
                       hover:-translate-y-1 hover:scale-[1.03]
-                      active:scale-[0.97]
+                      active:scale-[0.97] 
                       flex flex-col items-center justify-center
-                      px-5 py-5 rounded-md text-sm font-semibold text-text
+                      py-3 rounded-md text-sm font-semibold text-text
                       bg-gradient-to-br from-package/40 via-package/10 to-transparent
                       backdrop-blur-3xl border border-white/10
                       ${
@@ -88,18 +87,21 @@ const ProductDetails = () => {
                           : "shadow-md hover:shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
                       }`}
                   >
-                    <span className="text-lg font-bold tracking-wide">{pack.price}</span>
-                    <span className="text-xs opacity-70 mt-1">{pack.label}</span>
+                    <span className="text-lg font-bold tracking-wide">
+                      {pack.price}
+                    </span>
+                    <span className="text-xs opacity-70 mt-1">{pack.uc}</span>
                   </div>
                 ))}
               </div>
             </>
           )}
 
-
           {/* Quantity */}
           <div className="mb-6 flex flex-col gap-2">
-            <label className="block text-text font-semibold mb-1">Quantity</label>
+            <label className="block text-text font-semibold mb-1">
+              Quantity
+            </label>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
@@ -120,37 +122,48 @@ const ProductDetails = () => {
           </div>
 
           {/* Game ID for Top-Up */}
-          {product.category?.toLowerCase() === "top-up" && (
+          {product.category === "top-up" && (
             <div className="mb-8">
-              <label className="block font-semibold mb-2 text-text">Game ID</label>
+              <label className="block font-semibold mb-2 text-text">
+                Game ID
+              </label>
               <input
                 type="text"
                 value={gameID}
                 onChange={(e) => setGameID(e.target.value)}
                 placeholder="Enter Player ID"
-                className="w-full px-4 py-3 rounded-xl bg-imgcard border border-white/10 focus:border-button outline-none shadow-inner"
+                className="w-full px-4 py-3 rounded-xl bg-imgcard border
+                 border-white/10 focus:border-button outline-none shadow-inner"
               />
             </div>
           )}
 
           {/* Order Summary */}
-          <div className="bg-imgcard backdrop-blur-3xl transition-all duration-300 px-4 py-4 my-10 rounded-2xl border-button shadow-lg shadow-button/30">
-            <h3 className="font-bold text-text text-lg mb-4 text-button">Order Summary</h3>
+          <div
+            className="bg-imgcard backdrop-blur-3xl transition-all duration-300 px-4 py-4 my-10
+           rounded-2xl border-button shadow-inner shadow-button/10"
+          >
+            <h3 className="font-bold text-text text-lg mb-4 ">Order Summary</h3>
             <div className="flex justify-between mb-2">
               <span className="text-gray-600">Subtotal</span>
               <span className="font-semibold">{subtotal} TK</span>
             </div>
             <div className="flex justify-between border-t pt-3">
-              <span className="font-semibold text-lg">Total</span>
-              <span className="font-bold text-lg text-button">{subtotal} TK</span>
+              <span className="font-semibold text-text text-lg">Total</span>
+              <span className="font-bold text-lg text-button">
+                {subtotal} TK
+              </span>
             </div>
           </div>
 
           {/* Buttons */}
           <div className="flex gap-4">
-            <button className="px-8 py-3 bg-button text-white rounded-lg shadow-lg transform transition active:translate-y-1 active:shadow-sm hover:scale-105">
-              Buy Now
-            </button>
+            <Link href={"/checkout"}>
+              <button onClick={handleAddToCart} className="px-8 py-3 bg-button text-white rounded-lg shadow-lg transform transition active:translate-y-1 active:shadow-sm hover:scale-105">
+                Buy Now
+              </button>
+            </Link>
+
             <button
               onClick={handleAddToCart}
               className="px-8 py-3 bg-button text-white rounded-lg shadow-lg transform transition active:translate-y-1 active:shadow-sm hover:scale-105"

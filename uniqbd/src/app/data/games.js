@@ -7,9 +7,9 @@ export const games = [
         category: "top-up",
         img: "/images/uc.png",
         packages: [
-            { uc: "60 UC", price: "70TK" },
-            { uc: "325 UC", price: "TK350" },
-            { uc: "660 UC", price: "TK700" },
+            { uc: "60 UC", price: "70 TK" },
+            { uc: "325 UC", price: "350 TK" },
+            { uc: "660 UC", price: "700 TK" },
         ],
     },
     {
@@ -19,9 +19,9 @@ export const games = [
         category: "top-up",
         img: "/images/diamond.png",
         packages: [
-            { uc: "100 Diamonds", price: "TK90" },
-            { uc: "310 Diamonds", price: "TK260" },
-            { uc: "520 Diamonds", price: "TK420" },
+            { uc: "100 Diamonds", price: "90 TK" },
+            { uc: "310 Diamonds", price: "260 TK" },
+            { uc: "520 Diamonds", price: "420 TK" },
         ],
     },
     {
@@ -31,9 +31,9 @@ export const games = [
         category: "top-up",
         img: "/images/cp.png",
         packages: [
-            { uc: "80 CP", price: "TK90" },
-            { uc: "420 CP", price: "TK420" },
-            { uc: "880 CP", price: "TK800" },
+            { uc: "80 CP", price: "90 TK" },
+            { uc: "420 CP", price: "420 TK" },
+            { uc: "880 CP", price: "800 TK" },
         ],
     },
     {
@@ -43,9 +43,9 @@ export const games = [
         category: "top-up",
         img: "/images/cp.png",
         packages: [
-            { uc: "80 CP", price: "TK90" },
-            { uc: "420 CP", price: "TK420" },
-            { uc: "880 CP", price: "TK800" },
+            { uc: "80 CP", price: "90 TK" },
+            { uc: "420 CP", price: "420 TK" },
+            { uc: "880 CP", price: "800 TK" },
         ],
     },
     {
@@ -55,9 +55,9 @@ export const games = [
         category: "top-up",
         img: "/images/uc.png",
         packages: [
-            { uc: "60 UC", price: "70TK" },
-            { uc: "325 UC", price: "TK350" },
-            { uc: "660 UC", price: "TK700" },
+            { uc: "60 UC", price: "70 TK" },
+            { uc: "325 UC", price: "350 TK" },
+            { uc: "660 UC", price: "700 TK" },
         ],
     },
     {
@@ -67,9 +67,9 @@ export const games = [
         category: "top-up",
         img: "/images/cp.png",
         packages: [
-            { uc: "80 CP", price: "TK90" },
-            { uc: "420 CP", price: "TK420" },
-            { uc: "880 CP", price: "TK800" },
+            { uc: "80 CP", price: "90 TK" },
+            { uc: "420 CP", price: "420 TK" },
+            { uc: "880 CP", price: "800 TK" },
         ],
     },
     {
@@ -79,9 +79,9 @@ export const games = [
         category: "subscription",
         img: "/images/Emby-UniQbd.png",
         packages: [
-            { uc: "1 Month", price: "TK90" },
-            { uc: "3 Month", price: "TK260" },
-            { uc: "6 Month", price: "TK420" },
+            { uc: "1 Month", price: "90 TK" },
+            { uc: "3 Month", price: "260 TK" },
+            { uc: "6 Month", price: "420 TK" },
         ],
     },
     {
@@ -91,9 +91,9 @@ export const games = [
         category: "top-up",
         img: "/images/FIFA-Mobile.png",
         packages: [
-            { uc: "100 Points", price: "TK90" },
-            { uc: "310 Points", price: "TK260" },
-            { uc: "520 Points", price: "TK420" },
+            { uc: "100 Points", price: "90 TK" },
+            { uc: "310 Points", price: "260 TK" },
+            { uc: "520 Points", price: "420 TK" },
         ],
     },
     {
@@ -103,9 +103,9 @@ export const games = [
         category: "top-up",
         img: "/images/Once-Human.png",
         packages: [
-            { uc: "100 Credits", price: "TK90" },
-            { uc: "310 Credits", price: "TK260" },
-            { uc: "520 Credits", price: "TK420" },
+            { uc: "100 Credits", price: "90 TK" },
+            { uc: "310 Credits", price: "260 TK" },
+            { uc: "520 Credits", price: "420 TK" },
         ],
     },
 ];
