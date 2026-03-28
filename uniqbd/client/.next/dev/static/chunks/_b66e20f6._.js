@@ -50,7 +50,7 @@ const TiltCard = ({ product })=>{
             ref: cardRef,
             onMouseMove: handleMouseMove,
             onMouseLeave: handleMouseLeave,
-            className: "relative bg-imgcard backdrop-blur-3xl cursor-pointer   flex flex-col items-center justify-center px-4 py-4 rounded-xl text-sm font-medium text-button   hover:shadow-2xl border-button shadow-lg shadow-button/30 transform-gpu will-change-transform",
+            className: "relative bg-imgcard backdrop-blur-3xl cursor-pointer   flex flex-col items-center justify-center px-4 py-4 rounded-xl text-sm font-medium text-button   hover:shadow-2xl border-button shadow-inner shadow-button/30 transform-gpu will-change-transform",
             children: [
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "absolute bg-button/30 blur-3xl opacity-40 top-[-20px] left-[-20px] rounded-full pointer-events-none"

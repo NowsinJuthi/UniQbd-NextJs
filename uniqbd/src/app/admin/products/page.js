@@ -69,7 +69,7 @@ const Products = () => {
                 <input
                   type="text"
                   placeholder="Enter product name"
-                  className="w-full bg-button/10 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
+                  className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
                 />
               </div>
 
@@ -81,7 +81,7 @@ const Products = () => {
                 <input
                   type="number"
                   placeholder="Enter quantity"
-                  className="w-full bg-button/10 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
+                  className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
                 />
               </div>
 
@@ -93,7 +93,7 @@ const Products = () => {
                 <input
                   type="text"
                   placeholder="Short description"
-                  className="w-full bg-button/10 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
+                  className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
                 />
               </div>
 
@@ -105,7 +105,7 @@ const Products = () => {
                 <textarea
                   rows="4"
                   placeholder="Long product description..."
-                  className="w-full bg-button/10 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition resize-none"
+                  className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition resize-none"
                 />
               </div>
 
@@ -117,7 +117,7 @@ const Products = () => {
                 <input
                   type="number"
                   placeholder="Enter regular price"
-                  className="w-full bg-button/10 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
+                  className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
                 />
               </div>
 
@@ -129,7 +129,7 @@ const Products = () => {
                 <input
                   type="number"
                   placeholder="Enter discount price"
-                  className="w-full bg-button/10 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
+                  className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
                 />
               </div>
 

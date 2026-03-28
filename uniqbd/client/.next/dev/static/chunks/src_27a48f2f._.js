@@ -358,6 +358,7 @@ const CartProvider = ({ children })=>{
             ;
         }
     }["CartProvider.useState"]);
+    // Save cart in localStorage
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "CartProvider.useEffect": ()=>{
             localStorage.setItem("cart", JSON.stringify(cart));
@@ -365,22 +366,22 @@ const CartProvider = ({ children })=>{
     }["CartProvider.useEffect"], [
         cart
     ]);
-    // Add or merge items
+    // Add to cart
     const addToCart = ({ product, selectedPkg, playerId, quantity })=>{
-        // 1️⃣ Validate package
+        // Validate package
         if (!selectedPkg) {
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].error("⚠️ Please select a package first!");
             return;
         }
-        // 2️⃣ Check Player ID for top-up products
+        // Check Player ID for top-up products
         const isTopUp = product.category === "top-up";
         if (isTopUp && (!playerId || playerId.trim() === "")) {
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].error("⚠️ Please enter your Player ID!");
             return;
         }
-        // 3️⃣ Convert price to number
+        // Convert price to number
         const itemPrice = Number(selectedPkg.price.replace("TK", "").replace(",", "").trim());
-        // 4️⃣ Create cart item
+        // Create new cart item
         const newItem = {
             id: product.id,
             name: product.name,
@@ -390,34 +391,36 @@ const CartProvider = ({ children })=>{
             price: itemPrice,
             quantity: quantity || 1
         };
-        // 5️⃣ Update cart safely
+        let message = "";
         setCart((prev)=>{
             const existsIndex = prev.findIndex((item)=>item.id === newItem.id && item.package === newItem.package && item.playerId === newItem.playerId);
             let updatedCart;
             if (existsIndex > -1) {
-                // Update quantity if same item exists
                 updatedCart = [
                     ...prev
                 ];
                 updatedCart[existsIndex].quantity += newItem.quantity;
-                __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].success("🛒 Product already in cart. Quantity updated!");
+                message = "🛒 Quantity updated in cart!";
             } else {
-                // Add new item
                 updatedCart = [
                     ...prev,
                     newItem
                 ];
-                __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].success("🛒 Item added to cart!");
+                message = "🛒 Item added to cart!";
             }
-            // Save to localStorage
-            localStorage.setItem("cart", JSON.stringify(updatedCart));
             return updatedCart;
         });
+        // show toast AFTER state update logic defined
+        setTimeout(()=>{
+            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].success(message);
+        }, 0);
     };
+    // remove item
     const removeFromCart = (index)=>{
         setCart((prev)=>prev.filter((_, i)=>i !== index));
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].info("🗑️ Item removed from cart!");
     };
+    // update quantity
     const updateQuantity = (index, newQty)=>{
         if (newQty < 1) return;
         setCart((prev)=>prev.map((item, i)=>i === index ? {
@@ -425,6 +428,7 @@ const CartProvider = ({ children })=>{
                     quantity: newQty
                 } : item));
     };
+    // totals
     const subtotal = cart.reduce((acc, item)=>acc + item.price * item.quantity, 0);
     const discount = 0;
     const total = subtotal - discount;
@@ -444,16 +448,16 @@ const CartProvider = ({ children })=>{
             children,
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ToastContainer"], {
                 position: "top-right",
-                autoClose: 3000
+                autoClose: 2500
             }, void 0, false, {
                 fileName: "[project]/src/context/CartContext.js",
-                lineNumber: 123,
+                lineNumber: 141,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/context/CartContext.js",
-        lineNumber: 110,
+        lineNumber: 127,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };

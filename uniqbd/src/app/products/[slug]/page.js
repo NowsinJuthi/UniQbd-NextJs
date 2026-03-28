@@ -7,6 +7,7 @@ import { CartContext } from "@/context/CartContext";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useContext, useState } from "react";
+import ProductTabs from "../page";
 
 const ProductDetails = () => {
   const params = useParams();
@@ -173,6 +174,8 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
+
+      <ProductTabs/>
     </section>
   );
 };

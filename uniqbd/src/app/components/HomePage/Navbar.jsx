@@ -253,6 +253,15 @@ const Navbar = () => {
                 Go to Cart
               </button>
             </Link>
+
+            <Link href="/checkout">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="w-full bg-button text-white mt-3 py-2 rounded-lg hover:opacity-90 transition"
+              >
+                Process to chekout
+              </button>
+            </Link>
           </div>
         </div>
       )}

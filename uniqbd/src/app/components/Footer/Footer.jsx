@@ -12,8 +12,8 @@ const Footer = () => {
 
         {/* Address */}
         <div>
-          <h2 className=" text-lg font-semibold mb-4">UniQbd</h2>
-          <p className="text-sm leading-6">
+          <h2 className=" text-5xl text-text font-bold mb-4">UniQbd</h2>
+          <p className="text-sm text-text leading-6">
            Razabari, Turag, Dhaka 1711<br />
             Email: support@uniqbd.com <br />
             Phone: +880 1XXXXXXXXX
@@ -22,8 +22,8 @@ const Footer = () => {
 
         {/* Our Store */}
         <div>
-          <h2 className=" text-lg font-semibold mb-4">Our Store</h2>
-          <ul className="space-y-2 text-sm">
+          <h2 className=" text-lg text-text font-semibold mb-4">Our Store</h2>
+          <ul className="space-y-2 text-sm text-text">
             <li className="hover:text-white cursor-pointer transition">Game Top Up</li>
             <li className="hover:text-white cursor-pointer transition">Gift Cards</li>
             <li className="hover:text-white cursor-pointer transition">Software</li>
@@ -33,8 +33,8 @@ const Footer = () => {
 
         {/* Useful Links */}
         <div>
-          <h2 className=" text-lg font-semibold mb-4">Useful Links</h2>
-          <ul className="space-y-2 text-sm">
+          <h2 className=" text-lg text-text font-semibold mb-4">Useful Links</h2>
+          <ul className="space-y-2 text-sm text-text">
             <li className="hover:text-white cursor-pointer transition">About Us</li>
             <li className="hover:text-white cursor-pointer transition">Contact</li>
             <li className="hover:text-white cursor-pointer transition">Privacy Policy</li>
@@ -44,15 +44,15 @@ const Footer = () => {
 
         {/* Social Media */}
         <div>
-          <h2 className=" text-lg font-semibold mb-4">Follow Us</h2>
-          <div className="flex gap-4">
-            <div className="bg-button p-3 rounded-full hover:bg-blue-600 transition cursor-pointer">
+          <h2 className=" text-lg text-text font-semibold mb-4">Follow Us</h2>
+          <div className="flex gap-4 text-text">
+            <div className="bg-button text-white p-3 rounded-full hover:bg-blue-600 transition cursor-pointer">
               <FaFacebookF />
             </div>
-            <div className="bg-button p-3 rounded-full hover:bg-pink-600 transition cursor-pointer">
+            <div className="bg-button text-white p-3 rounded-full hover:bg-pink-600 transition cursor-pointer">
               <FaInstagram />
             </div>
-            <div className="bg-button p-3 rounded-full hover:bg-red-600 transition cursor-pointer">
+            <div className="bg-button text-white p-3 rounded-full hover:bg-red-600 transition cursor-pointer">
               <FaYoutube />
             </div>
           </div>

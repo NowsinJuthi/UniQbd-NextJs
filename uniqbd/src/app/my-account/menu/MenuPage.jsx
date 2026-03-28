@@ -30,7 +30,7 @@ export const MenuPage = () => {
       {/* menu */}
       <div className="space-y-2 text-sm">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href; // 👈 check active
+          const isActive = pathname === item.href; 
           return (
             <Link key={item.href} href={item.href}>
               <div

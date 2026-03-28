@@ -15,23 +15,16 @@ const Account = () => {
 
         <div className="grid md:grid-cols-12">
 
-          {/* Sidebar */}
-
-          <div className="md:col-span-3 bg-gradient-to-b from-imgcard to-background border-r border-white/10 p-6">
-
             {/* menu */}
 
              <MenuPage/>
-
-          </div>
-
 
           {/* Content */}
 
           <div className="md:col-span-9 p-8 bg-gradient-to-br from-background via-imgcard to-background">
 
             <h1 className="text-3xl font-bold mb-2 text-text">
-              Welcome back 👋
+              Welcome back
             </h1>
 
             <p className="text-text/70 mb-8 max-w-xl">
