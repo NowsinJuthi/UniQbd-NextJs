@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useContext, useState } from "react";
 import ProductTabs from "../page";
+import { toast, ToastContainer } from "react-toastify";
 
 const ProductDetails = () => {
   const params = useParams();
@@ -39,6 +40,7 @@ const ProductDetails = () => {
       playerId: gameID,
       quantity,
     });
+
   };
 
   const price =
@@ -55,6 +57,7 @@ const ProductDetails = () => {
 
   return (
     <section className="min-h-screen py-16 px-6">
+      <ToastContainer position="top-right" autoClose={2500} />
       <div className="mx-10 grid md:grid-cols-2 gap-10">
         {/* Product Image */}
         <TiltCard key={product.id} product={product} />

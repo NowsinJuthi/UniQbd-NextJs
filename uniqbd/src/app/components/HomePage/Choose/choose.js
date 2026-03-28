@@ -15,33 +15,33 @@ const Choose = () => {
 
     <div className="grid md:grid-cols-4 gap-10 px-6 md:px-10 max-w-7xl mx-auto relative z-10">
 
-      <div className="backdrop-blur-lg bg-white/50 border border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition">
+      <div className="backdrop-blur-lg bg-button/5 rounded-2xl p-8 shadow-inner hover:shadow-2xl transition">
         <div className="text-4xl mb-2"></div>
-        <h3 className="font-semibold mt-4 text-lg text-gray-900">Instant Delivery</h3>
+        <h3 className="font-semibold mt-4 text-lg text-text">Instant Delivery</h3>
         <p className="text-sm mt-2 text-gray-700">
           Receive your top-up instantly
         </p>
       </div>
 
-      <div className="backdrop-blur-lg bg-white/50 border border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition">
+      <div className="backdrop-blur-lg bg-button/5 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition">
         <div className="text-4xl mb-2"></div>
-        <h3 className="font-semibold mt-4 text-lg text-gray-900">Secure Payment</h3>
+        <h3 className="font-semibold mt-4 text-lg text-text">Secure Payment</h3>
         <p className="text-sm mt-2 text-gray-700">
           bKash, Nagad & Rocket supported
         </p>
       </div>
 
-      <div className="backdrop-blur-lg bg-white/50 border border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition">
+      <div className="backdrop-blur-lg bg-button/5 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition">
         <div className="text-4xl mb-2"></div>
-        <h3 className="font-semibold mt-4 text-lg text-gray-900">Trusted Store</h3>
+        <h3 className="font-semibold mt-4 text-lg text-text">Trusted Store</h3>
         <p className="text-sm mt-2 text-gray-700">
           Thousands of gamers trust us
         </p>
       </div>
 
-      <div className="backdrop-blur-lg bg-white/50 border border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition">
+      <div className="backdrop-blur-lg bg-button/5 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition">
         <div className="text-4xl mb-2"></div>
-        <h3 className="font-semibold mt-4 text-lg text-gray-900">24/7 Support</h3>
+        <h3 className="font-semibold mt-4 text-lg text-text">24/7 Support</h3>
         <p className="text-sm mt-2 text-gray-700">
           Always ready to help
         </p>
