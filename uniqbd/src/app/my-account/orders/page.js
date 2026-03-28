@@ -1,104 +1,155 @@
 import React from "react";
-import { FaUser, FaBoxOpen, FaMapMarkerAlt, FaSignOutAlt } from "react-icons/fa";
-import Link from "next/link";
+import { MenuPage } from "../menu/MenuPage";
 
 const Orders = () => {
+
   return (
-    <div className="min-h-screen py-10 px-4 ">
-      <div className="max-w-7xl mx-auto bg-text rounded-2xl overflow-hidden">
-        
-        <div className="grid md:grid-cols-12 shadow-inner shadow-button/20">
 
-          {/* Sidebar */}
-          <div className="md:col-span-3 bg-imgcard backdrop-blur-md text-text p-8">
-            <h2 className="text-2xl font-bold mb-8 border-b border-gray-600 pb-3">
-              My Account
-            </h2>
+    <div className="min-h-screen py-10 px-4">
 
-            <div className="flex flex-col gap-3 text-sm">
+      <div className="max-w-7xl mx-auto rounded-2xl overflow-hidden border border-white/10 shadow-xl">
 
-              <Link href="/my-account">
-                <div className="flex items-center gap-3 hover:bg-gray-800 p-3 rounded-lg transition cursor-pointer">
-                  <FaUser /> Dashboard
-                </div>
-              </Link>
+        <div className="grid md:grid-cols-12">
 
-              <Link href="/my-account/orders">
-                <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg transition cursor-pointer">
-                  <FaBoxOpen /> Orders
-                </div>
-              </Link>
+          <MenuPage/>
 
-              <Link href="/my-account/address">
-                <div className="flex items-center gap-3 hover:bg-gray-800 p-3 rounded-lg transition cursor-pointer">
-                  <FaMapMarkerAlt /> Address
-                </div>
-              </Link>
+          {/* content */}
 
-              <Link href="/my-account/edit-account">
-                <div className="flex items-center gap-3 hover:bg-gray-800 p-3 rounded-lg transition cursor-pointer">
-                  <FaUser /> Account Details
-                </div>
-              </Link>
+          <div className="md:col-span-9 p-8 bg-gradient-to-br from-background via-imgcard to-background">
 
-              <button className="flex items-center gap-3 bg-button text-text hover:bg-red-700 p-3 rounded-lg transition mt-6">
-                <FaSignOutAlt /> Logout
-              </button>
-
-            </div>
-          </div>
-
-          {/* Orders Content */}
-          <div className="md:col-span-9 p-8 bg-imgcard">
-
-            <h1 className="text-3xl font-bold mb-8 text-text">
+            <h1 className="text-3xl font-bold mb-6 text-text">
               My Orders
             </h1>
 
-            <div className="overflow-x-auto rounded-md">
-              <table className="w-full text-left border-collapse">
+
+            {/* table */}
+
+            <div className="rounded-xl overflow-hidden border border-white/10">
+
+              <table className="w-full text-sm">
 
                 <thead>
-                  <tr className="bg-button text-white text-sm">
-                    <th className="p-4">Order ID</th>
-                    <th className="p-4">Date</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4">Total</th>
-                    <th className="p-4 text-center">Actions</th>
+
+                  <tr className="bg-button text-white">
+
+                    <th className="p-4 text-left">Order</th>
+
+                    <th className="p-4 text-left">Date</th>
+
+                    <th className="p-4 text-left">Status</th>
+
+                    <th className="p-4 text-left">Total</th>
+
+                    <th className="p-4 text-center">Action</th>
+
                   </tr>
+
                 </thead>
 
+
                 <tbody>
-                  <tr className="border-b hover:bg-button/20 shadow-inner shadow-button/20 transition">
+
+                  <tr className="border-b border-white/5 hover:bg-white/5 transition shadow-inner shadow-button/30">
+
                     <td className="p-4 font-semibold text-text">
                       #54564
                     </td>
-                    <td className="p-4 text-text">
-                      August 31, 2026
+
+                    <td className="p-4 text-text/80">
+                      Aug 31, 2026
                     </td>
+
+
                     <td className="p-4">
-                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
-                        Complete
+
+                      <span className="px-3 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+
+                        Completed
+
                       </span>
+
                     </td>
-                    <td className="p-4 font-medium text-text">
+
+
+                    <td className="p-4 font-semibold text-button">
+
                       250 TK
+
                     </td>
+
+
                     <td className="p-4 text-center">
-                      <button className="bg-black text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition text-sm">
+
+                      <button className="px-4 py-2 rounded-lg bg-button text-white hover:opacity-90 transition">
+
                         View
+
                       </button>
+
                     </td>
+
                   </tr>
+
+
+
+                  {/* example pending */}
+
+                  <tr className="border-b border-white/5 hover:bg-white/5 transition shadow-inner shadow-button/30">
+
+                    <td className="p-4 font-semibold text-text">
+                      #54565
+                    </td>
+
+                    <td className="p-4 text-text/80">
+                      Sep 2, 2026
+                    </td>
+
+
+                    <td className="p-4">
+
+                      <span className="px-3 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400">
+
+                        Pending
+
+                      </span>
+
+                    </td>
+
+
+                    <td className="p-4 font-semibold text-button">
+
+                      700 TK
+
+                    </td>
+
+
+                    <td className="p-4 text-center">
+
+                      <button className="px-4 py-2 rounded-lg bg-button text-white hover:opacity-90 transition">
+
+                        View
+
+                      </button>
+
+                    </td>
+
+                  </tr>
+
+
                 </tbody>
 
               </table>
+
             </div>
 
           </div>
+
         </div>
+
       </div>
+
     </div>
+
   );
 };
 

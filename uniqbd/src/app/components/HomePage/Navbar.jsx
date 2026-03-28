@@ -163,15 +163,16 @@ const Navbar = () => {
                 </Link>
               </div>
             ) : (
+
               <AnimatePresence>
                 {cart.map((item, i) => (
                   <motion.div
-                    key={item.name + i}
+                    key={`cart-item-${i}-${item.name || "item"}-${item.package || "pkg"}`}
                     className="group text-white relative flex items-center gap-4 p-4 rounded-2xl 
-                      bg-gradient-to-br from-package/60 via-package/30 to-package/10
-                      backdrop-blur-xl border border-white/10
-                      hover:border-button/60 shadow-button/20 shadow-inner
-                      transition-all duration-300 overflow-hidden"
+      bg-gradient-to-br from-package/60 via-package/30 to-package/10
+      backdrop-blur-xl border border-white/10
+      hover:border-button/60 shadow-button/20 shadow-inner
+      transition-all duration-300 overflow-hidden"
                   >
                     {/* Image */}
                     <div className="relative">

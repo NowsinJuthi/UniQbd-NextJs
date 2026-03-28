@@ -1,118 +1,144 @@
+"use client";
+
 import Link from "next/link";
 import React from "react";
 import { FaUser, FaBoxOpen, FaMapMarkerAlt, FaSignOutAlt } from "react-icons/fa";
+import { MenuPage } from "./menu/MenuPage";
 
 const Account = () => {
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-10 px-4">
-      <div className="max-w-7xl mx-auto bg-black rounded-2xl shadow-2xl overflow-hidden">
-        
+
+    <div className="min-h-screen py-10 px-4">
+
+      <div className="max-w-7xl mx-auto rounded-2xl overflow-hidden border border-white/10 shadow-xl">
+
         <div className="grid md:grid-cols-12">
 
           {/* Sidebar */}
-          <div className="md:col-span-3 bg-gray-950 text-white p-8 border-r border-gray-800">
-            <h2 className="text-2xl font-bold mb-8 border-b border-gray-700 pb-3">
-              My Account
-            </h2>
 
-            <div className="flex flex-col gap-3 text-sm">
+          <div className="md:col-span-3 bg-gradient-to-b from-imgcard to-background border-r border-white/10 p-6">
 
-              <Link href="/my-account">
-                <div className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg cursor-pointer">
-                  <FaUser /> Dashboard
-                </div>
-              </Link>
+            {/* menu */}
 
-              <Link href="/my-account/orders">
-                <div className="flex items-center gap-3 hover:bg-gray-800 p-3 rounded-lg transition cursor-pointer">
-                  <FaBoxOpen /> Orders
-                </div>
-              </Link>
+             <MenuPage/>
 
-              <Link href="/my-account/address">
-                <div className="flex items-center gap-3 hover:bg-gray-800 p-3 rounded-lg transition cursor-pointer">
-                  <FaMapMarkerAlt /> Address
-                </div>
-              </Link>
-
-              <Link href="/my-account/edit-account">
-                <div className="flex items-center gap-3 hover:bg-gray-800 p-3 rounded-lg transition cursor-pointer">
-                  <FaUser /> Account Details
-                </div>
-              </Link>
-
-              <button className="flex items-center gap-3 bg-red-600 hover:bg-red-700 p-3 rounded-lg transition mt-6">
-                <FaSignOutAlt /> Logout
-              </button>
-
-            </div>
           </div>
 
-          {/* Content Area */}
-          <div className="md:col-span-9 p-10 text-gray-200">
 
-            <h1 className="text-3xl font-bold mb-4">
-              Hello, User 👋
+          {/* Content */}
+
+          <div className="md:col-span-9 p-8 bg-gradient-to-br from-background via-imgcard to-background">
+
+            <h1 className="text-3xl font-bold mb-2 text-text">
+              Welcome back 👋
             </h1>
 
-            <p className="text-gray-400 leading-relaxed mb-10">
-              From your account dashboard you can view your recent orders,
-              manage your shipping and billing addresses, and edit your
-              password and account details.
+            <p className="text-text/70 mb-8 max-w-xl">
+              Manage your orders, update your address, and edit your account details from here.
             </p>
 
-            {/* Dashboard Cards */}
-            <div className="grid sm:grid-cols-2 gap-6">
+
+            {/* dashboard cards */}
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+
+              {/* Orders */}
 
               <Link href="/my-account/orders">
-                <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl hover:border-orange-500 hover:shadow-lg transition cursor-pointer">
-                  <h3 className="text-xl font-semibold mb-2 text-white">
+
+                <div className="group p-6 shadow-inner shadow-button/10 rounded-2xl border border-white/10 bg-gradient-to-br from-package/40 to-package/10 backdrop-blur-xl hover:border-button transition-all cursor-pointer">
+
+                  <FaBoxOpen className="text-2xl mb-3 text-button group-hover:scale-110 transition"/>
+
+                  <h3 className="text-lg font-semibold text-text">
                     Orders
                   </h3>
-                  <p className="text-gray-400 text-sm">
-                    Track, return or purchase items.
+
+                  <p className="text-sm text-text/60 mt-1">
+                    View and track your orders
                   </p>
+
                 </div>
+
               </Link>
+
+
+
+              {/* Address */}
 
               <Link href="/my-account/address">
-                <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl hover:border-orange-500 hover:shadow-lg transition cursor-pointer">
-                  <h3 className="text-xl font-semibold mb-2 text-white">
-                    Addresses
+
+                <div className="group p-6 shadow-inner shadow-button/10 rounded-2xl border border-white/10 bg-gradient-to-br from-package/40 to-package/10 backdrop-blur-xl hover:border-button transition-all cursor-pointer">
+
+                  <FaMapMarkerAlt className="text-2xl mb-3 text-button group-hover:scale-110 transition"/>
+
+                  <h3 className="text-lg font-semibold text-text">
+                    Address
                   </h3>
-                  <p className="text-gray-400 text-sm">
-                    Edit your shipping & billing address.
+
+                  <p className="text-sm text-text/60 mt-1">
+                    Manage shipping address
                   </p>
+
                 </div>
+
               </Link>
+
+
+
+              {/* account */}
 
               <Link href="/my-account/edit-account">
-                <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl hover:border-orange-500 hover:shadow-lg transition cursor-pointer">
-                  <h3 className="text-xl font-semibold mb-2 text-white">
+
+                <div className="group p-6 shadow-inner shadow-button/10 rounded-2xl border border-white/10 bg-gradient-to-br from-package/40 to-package/10 backdrop-blur-xl hover:border-button transition-all cursor-pointer">
+
+                  <FaUser className="text-2xl mb-3 text-button group-hover:scale-110 transition"/>
+
+                  <h3 className="text-lg font-semibold text-text">
                     Account Details
                   </h3>
-                  <p className="text-gray-400 text-sm">
-                    Change password & profile info.
+
+                  <p className="text-sm text-text/60 mt-1">
+                    Update profile info
                   </p>
+
                 </div>
+
               </Link>
 
-              <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl hover:border-red-500 hover:shadow-lg transition cursor-pointer">
-                <h3 className="text-xl font-semibold mb-2 text-white">
+
+
+              {/* logout */}
+
+              <div className="group p-6 shadow-inner shadow-button/10 rounded-2xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 transition cursor-pointer">
+
+                <FaSignOutAlt className="text-2xl mb-3 text-red-400 group-hover:scale-110 transition"/>
+
+                <h3 className="text-lg font-semibold text-red-400">
                   Logout
                 </h3>
-                <p className="text-gray-400 text-sm">
-                  Securely sign out of your account.
+
+                <p className="text-sm text-red-300/70 mt-1">
+                  Secure sign out
                 </p>
+
               </div>
+
 
             </div>
 
           </div>
+
         </div>
+
       </div>
+
     </div>
+
   );
+
 };
 
 export default Account;

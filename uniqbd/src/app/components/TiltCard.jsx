@@ -50,7 +50,7 @@ const TiltCard = ({ product }) => {
         onMouseLeave={handleMouseLeave}
         className="relative bg-imgcard backdrop-blur-3xl cursor-pointer
                    flex flex-col items-center justify-center px-4 py-4 rounded-xl text-sm font-medium text-button
-                   hover:shadow-2xl border-button shadow-lg shadow-button/30 transform-gpu will-change-transform"
+                   hover:shadow-2xl border-button shadow-inner shadow-button/30 transform-gpu will-change-transform"
       >
         {/* Glow effect */}
         <div className="absolute bg-button/30 blur-3xl opacity-40 top-[-20px] left-[-20px] rounded-full pointer-events-none"></div>

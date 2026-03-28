@@ -20,47 +20,74 @@ export const CartProvider = ({ children }) => {
   }, [cart]);
 
   // Add or merge items
-  const addToCart = ({ product, selectedPkg, playerId, quantity }) => {
-    if (!selectedPkg) return toast.error("⚠️ Please select a package first!");
+ const addToCart = ({ product, selectedPkg, playerId, quantity }) => {
 
-    const isTopUp = product.category === "top-up";
-    if (isTopUp && (!playerId || playerId.trim() === "")) {
-      return toast.error("⚠️ Please enter your Player ID!");
-    }
+  // 1️⃣ Validate package
+  if (!selectedPkg) {
+    toast.error("⚠️ Please select a package first!");
+    return;
+  }
 
-    const itemPrice = Number(
-      selectedPkg.price.replace("TK", "").replace(",", "").trim()
+  // 2️⃣ Check Player ID for top-up products
+  const isTopUp = product.category === "top-up";
+
+  if (isTopUp && (!playerId || playerId.trim() === "")) {
+    toast.error("⚠️ Please enter your Player ID!");
+    return;
+  }
+
+  // 3️⃣ Convert price to number
+  const itemPrice = Number(
+    selectedPkg.price.replace("TK", "").replace(",", "").trim()
+  );
+
+  // 4️⃣ Create cart item
+  const newItem = {
+    id: product.id,
+    name: product.name,
+    img: product.img,
+    package: selectedPkg.uc,
+    playerId: playerId || "",
+    price: itemPrice,
+    quantity: quantity || 1,
+  };
+
+  // 5️⃣ Update cart safely
+  setCart((prev) => {
+
+    const existsIndex = prev.findIndex(
+      (item) =>
+        item.id === newItem.id &&
+        item.package === newItem.package &&
+        item.playerId === newItem.playerId
     );
 
-    const newItem = {
-      id: product.id,
-      name: product.name,
-      img: product.img,
-      package: selectedPkg.uc,
-      playerId: playerId || "",
-      price: itemPrice,
-      quantity: quantity || 1,
-    };
+    let updatedCart;
 
-    setCart((prev) => {
-      const existsIndex = prev.findIndex(
-        (item) =>
-          item.id === newItem.id &&
-          item.package === newItem.package &&
-          item.playerId === newItem.playerId
-      );
+    if (existsIndex > -1) {
 
-      if (existsIndex > -1) {
-        const updated = [...prev];
-        updated[existsIndex].quantity += newItem.quantity;
-        toast.success("🛒The product is already in your cart. Quantity has been updated successfully!");
-        return updated;
-      } else {
-        toast.success("🛒 Item added to cart!");
-        return [...prev, newItem];
-      }
-    });
-  };
+      // Update quantity if same item exists
+      updatedCart = [...prev];
+      updatedCart[existsIndex].quantity += newItem.quantity;
+
+      toast.success("🛒 Product already in cart. Quantity updated!");
+
+    } else {
+
+      // Add new item
+      updatedCart = [...prev, newItem];
+
+      toast.success("🛒 Item added to cart!");
+
+    }
+
+    // Save to localStorage
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    return updatedCart;
+  });
+
+};
 
   const removeFromCart = (index) => {
     setCart((prev) => prev.filter((_, i) => i !== index));
