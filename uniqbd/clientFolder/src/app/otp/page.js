@@ -1,11 +1,37 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import { postData } from "@/utils/api";
+import { MyContext } from "@/context/ThemeContext";
+import { useRouter } from "next/navigation";
 
 const OTPPage = () => {
+  const router = useRouter();
+  const context = useContext(MyContext);
+
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputs = useRef([]);
 
+  // resend timer state
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+
+  // timer effect
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      setCanResend(true);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [timeLeft]);
+
+  // otp input change
   const handleChange = (value, index) => {
     if (!/^[0-9]?$/.test(value)) return;
 
@@ -13,23 +39,58 @@ const OTPPage = () => {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // move next input
     if (value && index < 5) {
       inputs.current[index + 1].focus();
     }
   };
 
   const handleKeyDown = (e, index) => {
-    // backspace → go previous
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputs.current[index - 1].focus();
     }
   };
 
-  const handleSubmit = (e) => {
+  // verify otp
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const code = otp.join("");
-    console.log("OTP:", code);
+
+    if (code.length !== 6) {
+      context?.alertBox("Error", "Enter 6 digit OTP");
+      return;
+    }
+
+    const res = await postData("/api/v1/verifyEmail", {
+      email: Cookies.get("userEmail"),
+      otp: code,
+    });
+
+    if (res?.error === false) {
+      context?.alertBox("Success", res?.message);
+
+      Cookies.remove("userEmail");
+      Cookies.remove("actionType");
+
+      router.push("/");
+    } else {
+      context?.alertBox("Error", res?.message);
+    }
+  };
+
+
+  const resendOTP = async () => {
+    if (!canResend) return;
+
+    const res = await postData("/api/v1/resend-otp", {
+      email: Cookies.get("userEmail"),
+    });
+
+    context?.alertBox("Info", res?.message);
+
+
+    setTimeLeft(60);
+    setCanResend(false);
   };
 
   return (
@@ -45,9 +106,14 @@ const OTPPage = () => {
         <p className="text-gray-400 text-sm text-center mt-2">
           Enter the 6 digit code sent to your email
         </p>
+
         <p className="text-gray-400 text-sm text-center mt-2">
-          OPT send to <span className="text-text">nowsin@gmail.com</span>
+          OTP sent to{" "}
+          <span className="text-text">
+            {Cookies.get("userEmail")}
+          </span>
         </p>
+
         {/* OTP inputs */}
         <div className="flex justify-between mt-8 gap-3">
           {otp.map((digit, index) => (
@@ -79,9 +145,20 @@ const OTPPage = () => {
         {/* resend */}
         <p className="text-center text-gray-400 text-sm mt-6">
           Didn't receive code?{" "}
-          <span className="text-blue-400 cursor-pointer hover:underline">
-            Resend OTP
-          </span>
+          
+          {canResend ? (
+            <span
+              onClick={resendOTP}
+              className="text-blue-400 cursor-pointer hover:underline"
+            >
+              Resend OTP
+            </span>
+          ) : (
+            <span className="text-gray-500">
+              Resend in {timeLeft}s
+            </span>
+          )}
+
         </p>
       </form>
     </div>

@@ -55,10 +55,10 @@ const userSchema = new mongoose.Schema(
         ref: "order",
       },
     ],
-    opt: {
+    otp: {
       type: String,
     },
-    optExpires: {
+    otpExpires: {
       type: Date,
     },
     role: {
@@ -66,12 +66,17 @@ const userSchema = new mongoose.Schema(
       enum: ["ADMIN", "USER"],
       default: "USER",
     },
+    status: {
+      type: String,
+      enum: ["Active", "Inactive"],
+      default: "Inactive",
+    },
   },
   {
     timeStamps: true,
   },
 );
 
-const userModel = mongoose.model('User', userSchema)
+const userModel = mongoose.model("User", userSchema);
 
 export default userModel;

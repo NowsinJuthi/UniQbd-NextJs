@@ -15,20 +15,20 @@ export const CartProvider = ({ children }) => {
     return [];
   });
 
-  // Save cart in localStorage
+
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // Add to cart
+
   const addToCart = ({ product, selectedPkg, playerId, quantity }) => {
-    // Validate package
+  
     if (!selectedPkg) {
       toast.error("⚠️ Please select a package first!");
       return;
     }
 
-    // Check Player ID for top-up products
+
     const isTopUp = product.category === "top-up";
 
     if (isTopUp && (!playerId || playerId.trim() === "")) {
@@ -36,12 +36,12 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
-    // Convert price to number
+   
     const itemPrice = Number(
       selectedPkg.price.replace("TK", "").replace(",", "").trim(),
     );
 
-    // Create new cart item
+
     const newItem = {
       id: product.id,
       name: product.name,
@@ -78,7 +78,6 @@ export const CartProvider = ({ children }) => {
       return updatedCart;
     });
 
-    // show toast AFTER state update logic defined
     setTimeout(() => {
       toast.success(message);
     }, 0);
@@ -101,7 +100,7 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // totals
+
   const subtotal = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0,
@@ -125,11 +124,9 @@ export const CartProvider = ({ children }) => {
         totalItems,
       }}
     >
-      <p className="z-40">{children}</p>
+      {children}
 
-      
-        <ToastContainer position="top-right" autoClose={2500} />
-      
+      <ToastContainer position="top-right" autoClose={2500} />
     </CartContext.Provider>
   );
 };

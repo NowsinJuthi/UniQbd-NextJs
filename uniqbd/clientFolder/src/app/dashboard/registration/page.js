@@ -2,13 +2,19 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import axios from "axios";
 import { toast } from "react-toastify";
-import { FaEye } from "react-icons/fa";
-import { FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { postData } from "@/utils/api";
+import { useRouter } from "next/navigation";
+import CircularProgress from "@mui/material/CircularProgress";
+import Cookies from 'js-cookie'
+
 
 const RegistrationPage = () => {
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -18,146 +24,130 @@ const RegistrationPage = () => {
 
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
-
     setFormData((form) => ({
       ...form,
       [name]: value,
     }));
-
-    console.log(name, value);
   };
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-      const response = await axios.post("/api", formData);
-      setFormData({ name: "", email: "", password: "" });
-      toast.success("Success");
+      const res = await postData("/api/v1/register", formData);
+      if (res?.success) {
+        toast.success("OTP sent to your email 📩");
+
+        Cookies.set('userEmail', formData.email)
+         Cookies.set('actionType', 'verifyEmail')
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+        });
+
+        router.push("/otp");
+      } else {
+        toast.error(res?.message || "Registration failed ❌");
+      }
     } catch (error) {
-      // Toast.error("Error");
-      toast.error("Error");
+      console.log(error);
+      toast.error("Something went wrong ❌");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center 
-     bg-cover bg-center bg-no-repeat"
-    >
-      <div
-        className="bg-imgcard backdrop-blur-md 
-      w-full max-w-xl rounded-[2%] shadow-2xl px-18 py-20 
-       shadow-lg shadow-button/30"
-      >
-        {/* Title */}
-        <h1
-          className="text-3xl font-bold text-text text-center mb-2
-[text-shadow:0_1px_0_rgba(255,255,255,0.3),0_6px_15px_rgba(0,0,0,0.35)]"
-        >
+    <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat">
+      <div className="bg-imgcard backdrop-blur-md w-full max-w-xl rounded-[2%] shadow-2xl px-18 py-20 shadow-lg shadow-button/30">
+        <h1 className="text-3xl font-bold text-text text-center mb-2">
           Create Account
         </h1>
+
         <p className="text-center text-text mb-6 text-sm">
           Register to get started
         </p>
 
-        <form action="" onSubmit={onSubmitHandler}>
-          {/* Name Field */}
+        <form onSubmit={onSubmitHandler}>
+          {/* Name */}
           <div className="relative">
-            <input
-              type="text"
-              name="name"
-              required
-              placeholder="Full Name"
-              onChange={onChangeHandler}
-              value={formData.name}
-              className="peer p-4 rounded-2xl w-full outline-none border-b-3
-            border-button focus:border-button text-gray-100 placeholder-transparent 
-            shadow-lg bg-box transition"
-            />
-            <label
-              className="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none
-            peer-focus:text-gray-300 peer-focus:text-sm peer-focus:-translate-y-3 transition-all
-            peer-valid:text-button peer-valid:text-xs peer-valid:-translate-y-3"
-            >
+            <label htmlFor="name" className="sr-only">
               Full Name
             </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              autoComplete="name"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={onChangeHandler}
+              className="peer p-4 rounded-2xl w-full outline-none border-b-3 border-button text-gray-100 shadow-lg bg-box"
+            />
           </div>
 
-          {/* Email Field */}
+          {/* Email */}
           <div className="relative mt-4">
+            <label htmlFor="email" className="sr-only">
+              Email
+            </label>
             <input
               type="email"
+              id="email"
               name="email"
               required
-              placeholder="Email Address"
-              onChange={onChangeHandler}
+              autoComplete="email"
+              placeholder="Email"
               value={formData.email}
-              className="peer p-4 rounded-2xl w-full outline-none border-b-3
-            border-button focus:border-button text-gray-100 placeholder-transparent 
-            shadow-lg bg-box transition"
+              onChange={onChangeHandler}
+              className="peer p-4 rounded-2xl w-full outline-none border-b-3 border-button text-gray-100 shadow-lg bg-box"
             />
-            <label
-              className="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none
-            peer-focus:text-gray-300 peer-focus:text-sm peer-focus:-translate-y-3 transition-all
-            peer-valid:text-button peer-valid:text-xs peer-valid:-translate-y-3"
-            >
-              Email Address
-            </label>
           </div>
 
-          {/* Password Field */}
+          {/* Password */}
           <div className="relative mt-4">
-            {/* input */}
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              required
-              className="peer p-4 rounded-2xl w-full outline-none border-b-2
-                 border-button focus:border-button text-gray-100 placeholder-transparent
-                 shadow-lg bg-box transition"
-              placeholder="Password"
-            />
-
-            {/* label */}
-            <label
-              className="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none
-                 transition-all
-                 peer-placeholder-shown:top-4
-                 peer-placeholder-shown:text-base
-                 peer-focus:-translate-y-3
-                 peer-focus:text-xs
-                 peer-valid:-translate-y-3
-                 peer-valid:text-xs"
-            >
+            <label htmlFor="password" className="sr-only">
               Password
             </label>
-
-            {/* eye button */}
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              required
+              autoComplete="new-password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={onChangeHandler}
+              className="peer p-4 rounded-2xl w-full outline-none border-b-2 border-button text-gray-100 shadow-lg bg-box"
+            />
             <button
               type="button"
+              name="togglePassword"
+              aria-label={showPassword ? "Hide password" : "Show password"}
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
 
-          {/* Register Button */}
+          {/* Submit Button */}
           <button
-            className="w-full mt-6 bg-button text-white py-3 rounded-lg font-semibold 
-        hover:bg-button/90 transition duration-300 shadow-lg shadow-button-500/30"
+            type="submit"
+            disabled={loading}
+            className="w-full mt-6 bg-button text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-button/90 transition shadow-lg"
           >
-            Register
+            {loading && <CircularProgress size={20} sx={{ color: "white" }} />}
+            {loading ? "Processing..." : "Register"}
           </button>
         </form>
 
-        {/* Login Link */}
         <p className="text-center text-sm text-text mt-6">
-          Already have an account?{" "}
-          <Link
-            href="/dashboard/login"
-            className="text-text font-medium hover:underline"
-          >
+          Already have an account?
+          <Link href="/dashboard/login" className="ml-1 underline">
             Log In
           </Link>
         </p>

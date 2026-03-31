@@ -1,30 +1,45 @@
-import express, { Router } from "express";
-import path from "path";
-import { fileURLToPath } from "url";
+import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import { ConnectDb } from "./config/connectDb.js";
 import router from "./routes/api.js";
 
-
-
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
+);
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public"))); // Next.js build / frontend
+app.use(cookieParser());
 
-// API routes
-app.get("/api/hello", (req, res) => res.json({ message: "Hello" }));
 
-// Catch-all route for frontend (React/Next.js)
-app.get(/^\/.*$/, (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+app.use("/api/v1", router);
+
+
+app.get("/", (req, res) => {
+  res.json({ status: "API working ✅" });
 });
 
-app.use('/api/v1', router)
+const startServer = async () => {
+  try {
+    await ConnectDb();
+    console.log("✅ MongoDB Connected");
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+    
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error("Server failed to start:", err);
+    process.exit(1);
+  }
+};
+
+startServer();
