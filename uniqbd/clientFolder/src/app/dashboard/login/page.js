@@ -1,17 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "react-toastify";
 import { postData } from "@/utils/api";
-import Cookies from 'js-cookie'
+import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { MyContext } from "@/context/ThemeContext";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+    const { setUser, setIsLogin } = useContext(MyContext);
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -34,27 +37,39 @@ const LoginPage = () => {
 
     try {
       const { email, password } = formData;
-      const res = await postData("/api/v1/login", { email, password });
+      const res = await postData("/api/v1/login", {
+        email,
+        password,
+      });
 
       if (res?.error) {
-        toast.error(res?.message || "Login failed");
-      } else {
-        toast.success("Login successful");
+        toast.error(res?.message || "Login failed ❌");
+        return;
       }
-      Cookies.set("userEmail", formData.email);
+
+      toast.success("Login successful ✅");
+
+      // cookies set
+      Cookies.set("userEmail", res?.data?.email);
+      Cookies.set("userName", res?.data?.userName);
       Cookies.set("actionType", "verifyEmail");
-      setFormData({
-        email: "",
-        password: "",
+
+      // context update
+      setUser({
+        email: res?.data?.email,
+        name: res?.data?.userName,
       });
+
+      setIsLogin(true);
+
       router.push("/");
     } catch (err) {
-      console.error(err);
-      toast.error("Server error");
+      toast.error("Server error ⚠️");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div
       className="min-h-screen flex items-center
@@ -135,7 +150,7 @@ const LoginPage = () => {
           {/* Forgot Password */}
           <div className="text-right mb-6">
             <Link
-              href="/forgotpassword"
+              href="/forgot-password"
               className="text-sm text-gray-100 hover:underline"
             >
               Forgot Password?

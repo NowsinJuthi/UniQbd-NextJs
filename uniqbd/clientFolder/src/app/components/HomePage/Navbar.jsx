@@ -13,8 +13,14 @@ import Link from "next/link";
 import { ThemeToggle } from "../../theme-toggle";
 import { CartContext } from "@/context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { MyContext } from "@/context/ThemeContext";
+import AccountMenu from "../AccountMenu/AccountMenu";
+
 
 const Navbar = () => {
+
+
+  const context = useContext(MyContext)
   const {
     cart,
     removeFromCart,
@@ -29,13 +35,13 @@ const Navbar = () => {
   const [mounted, setMounted] = useState(false);
   const drawerRef = useRef(null);
 
-  // Fix hydration mismatch safely
+
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 0);
     return () => clearTimeout(timer);
   }, []);
 
-  // Close drawer if clicked outside
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (drawerRef.current && !drawerRef.current.contains(event.target)) {
@@ -60,7 +66,7 @@ const Navbar = () => {
       updateQuantity(index, cart[index].quantity - 1);
   };
 
-  // Remove item
+
   const removeItem = (index) => removeFromCart(index);
 
   return (
@@ -114,7 +120,18 @@ const Navbar = () => {
 
           {/* Account */}
           <Link href="/dashboard/login">
-            <FiUser className="text-xl cursor-pointer hover:text-text transition" />
+            {
+              context?.isLogin ? (
+                <Link href={'/my-account'}>
+                 <AccountMenu />
+                 </Link>
+               
+              ) : (
+                <Link href="/dashboard/login">
+                  <FiUser className="text-xl cursor-pointer hover:text-text transition" />
+                </Link>
+              )
+            }
           </Link>
 
           {/* Cart Button */}

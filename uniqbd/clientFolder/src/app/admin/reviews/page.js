@@ -1,6 +1,7 @@
 import React from "react";
 import { FaUser, FaBoxOpen, FaSignOutAlt, FaChartLine, FaComments } from "react-icons/fa";
 import Link from "next/link";
+import { AdminMenuPage } from "../Menu/page";
 
 const Review = () => {
   return (
@@ -15,34 +16,7 @@ const Review = () => {
             Admin Panel
             </h2>
 
-            <div className="flex flex-col gap-3 text-sm">
-
-              {[
-                { href: "/admin", text: "Dashboard", icon: <FaChartLine /> },
-                { href: "/admin/orders", text: "Orders", icon: <FaBoxOpen /> },
-                { href: "/admin/products", text: "Add Products", icon: <FaUser />},
-                { href: "/admin/notes", text: "Add Note", icon: <FaComments /> },
-                { href: "/admin/reviews", text: "Reviews", icon: <FaComments /> , active: true },
-              ].map((item, index) => (
-                <Link key={index} href={item.href}>
-                  <div
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-300
-                    ${item.active
-                        ? "bg-button text-white shadow-lg"
-                        : "hover:bg-gray-800"
-                      }`}
-                  >
-                    {item.icon}
-                    {item.text}
-                  </div>
-                </Link>
-              ))}
-
-              <button className="flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 px-4 py-3 rounded-xl mt-6 transition-all duration-300">
-                <FaSignOutAlt /> Logout
-              </button>
-
-            </div>
+             <AdminMenuPage/>
           </div>
 
 

@@ -35,7 +35,6 @@ export async function registerController(req, res) {
     const salt = await bcryptjs.genSalt(10);
     const hashPassword = await bcryptjs.hash(password, salt);
 
-    // Save user
     user = new userModel({
       name,
       email,
@@ -47,7 +46,6 @@ export async function registerController(req, res) {
     });
     await user.save();
 
-    // Send verification email
     await sendEmailFun({
       sendTo: email,
       subject: "Verify email from UniQbd",
@@ -55,11 +53,10 @@ export async function registerController(req, res) {
       html: VerificationEmail(name, otp),
     });
 
-    // Generate token
     const token = jwt.sign(
       { email: user.email, id: user._id },
       process.env.JSON_WEB_TOKEN_SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
 
     return res.status(200).json({
@@ -203,7 +200,12 @@ export async function loginController(req, res) {
       message: "Login successful",
       success: true,
       error: false,
-      data: { accessToken, refreshToken },
+      data: {
+        accessToken,
+        refreshToken,
+        userEmail: user?.email,
+        userName: user?.name
+      },
     });
   } catch (error) {
     return res.status(500).json({
@@ -395,9 +397,7 @@ export async function changePasswordController(req, res) {
   }
 }
 
-
 // RESEND OPT
-
 export async function resendOtpController(req, res) {
   try {
     const { email } = req.body;
@@ -444,7 +444,6 @@ export async function resendOtpController(req, res) {
       success: true,
       error: false,
     });
-
   } catch (error) {
     console.log("resendOtpController error:", error);
 

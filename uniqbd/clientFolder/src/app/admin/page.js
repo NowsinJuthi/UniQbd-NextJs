@@ -8,6 +8,7 @@ import {
   FaChartLine,
   FaComments,
 } from "react-icons/fa";
+import { AdminMenuPage } from "./Menu/page";
 
 const AdminDashboard = () => {
   return (
@@ -23,36 +24,7 @@ const AdminDashboard = () => {
               Admin Panel
             </h2>
 
-            <div className="flex flex-col gap-3 text-sm">
-
-              {[
-                { href: "/admin", icon: <FaChartLine />, text: "Dashboard", active: true },
-                { href: "/admin/orders", icon: <FaBoxOpen />, text: "Orders" },
-                { href: "/admin/products", icon: <FaUser />, text: "Add Products" },
-                { href: "/admin/notes", icon: <FaComments />, text: "Add Note" },
-                { href: "/admin/reviews", icon: <FaComments />, text: "Reviews" },
-              ].map((item, index) => (
-                <Link key={index} href={item.href}>
-                  <div
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-300
-                      ${
-                        item.active
-                          ? "bg-button text-white shadow-lg"
-                          : "hover:bg-gray-800"
-                      }
-                    `}
-                  >
-                    {item.icon}
-                    {item.text}
-                  </div>
-                </Link>
-              ))}
-
-              <button className="flex items-center justify-center gap-3 bg-red-400 hover:bg-red-700 px-4 py-3 rounded-xl mt-6 transition-all duration-300">
-                <FaSignOutAlt /> Logout
-              </button>
-
-            </div>
+            <AdminMenuPage/>
           </div>
 
           {/* ================= Content ================= */}

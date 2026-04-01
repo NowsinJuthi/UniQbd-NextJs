@@ -1,16 +1,35 @@
 "use client";
 
-import { createContext, useState } from "react";
-
+import { createContext, useEffect, useState } from "react";
+import Cookies from "js-cookie";
 export const MyContext = createContext();
 
 export const ThemeContextProvider = ({ children }) => {
+  const [isLogin, setIsLogin] = useState(false);
   const [alert, setAlert] = useState({
     open: false,
     type: "",
     message: "",
   });
 
+  const [user, setUser] = useState({
+    email: "",
+    mane: "",
+  });
+
+ useEffect(() => {
+  const name = Cookies.get("userName");
+  const email = Cookies.get("userEmail");
+
+  if (name && email) {
+    setUser({
+      name,
+      email,
+    });
+    setIsLogin(true);
+  }
+
+}, []);
 
   const alertBox = (type, message) => {
     setAlert({
@@ -31,6 +50,10 @@ export const ThemeContextProvider = ({ children }) => {
   const values = {
     alert,
     alertBox,
+    isLogin,
+    setIsLogin,
+    setUser,
+    user,
   };
 
   return (
@@ -46,8 +69,8 @@ export const ThemeContextProvider = ({ children }) => {
               alert.type === "Success"
                 ? "bg-green-500"
                 : alert.type === "Error"
-                ? "bg-red-500"
-                : "bg-blue-500"
+                  ? "bg-red-500"
+                  : "bg-blue-500"
             }`}
           >
             {alert.message}

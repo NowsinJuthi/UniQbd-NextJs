@@ -61,23 +61,39 @@ const OTPPage = () => {
       return;
     }
 
-    const res = await postData("/api/v1/verifyEmail", {
-      email: Cookies.get("userEmail"),
-      otp: code,
-    });
+    const actionType = Cookies.get("actionType");
+    if (actionType === "verifyEmail") {
+      postData("/api/v1/verifyEmail", {
+        email: Cookies.get("userEmail"),
+        otp: code,
+      }).then((res) => {
+        if (res?.error === false) {
+          context?.alertBox("Success", res?.message);
 
-    if (res?.error === false) {
-      context?.alertBox("Success", res?.message);
+          Cookies.remove("userEmail");
+          Cookies.remove("actionType");
 
-      Cookies.remove("userEmail");
-      Cookies.remove("actionType");
+          router.push("/");
+        } else {
+          context?.alertBox("Error", res?.message);
+        }
+      });
+    }
 
-      router.push("/");
-    } else {
-      context?.alertBox("Error", res?.message);
+    if(actionType === 'forgot-password'){
+      postData("/api/v1/verify-forgot-password-otp", {
+        email: Cookies.get("userEmail"),
+        otp: code,
+      }).then((res) => {
+        if (res?.error === false) {
+          context?.alertBox("Success", res?.message);
+          router.push("/change-password");
+        } else {
+          context?.alertBox("Error", res?.message);
+        }
+      });
     }
   };
-
 
   const resendOTP = async () => {
     if (!canResend) return;
@@ -87,7 +103,6 @@ const OTPPage = () => {
     });
 
     context?.alertBox("Info", res?.message);
-
 
     setTimeLeft(60);
     setCanResend(false);
@@ -109,9 +124,7 @@ const OTPPage = () => {
 
         <p className="text-gray-400 text-sm text-center mt-2">
           OTP sent to{" "}
-          <span className="text-text">
-            {Cookies.get("userEmail")}
-          </span>
+          <span className="text-text">{Cookies.get("userEmail")}</span>
         </p>
 
         {/* OTP inputs */}
@@ -145,7 +158,6 @@ const OTPPage = () => {
         {/* resend */}
         <p className="text-center text-gray-400 text-sm mt-6">
           Didn't receive code?{" "}
-          
           {canResend ? (
             <span
               onClick={resendOTP}
@@ -154,11 +166,8 @@ const OTPPage = () => {
               Resend OTP
             </span>
           ) : (
-            <span className="text-gray-500">
-              Resend in {timeLeft}s
-            </span>
+            <span className="text-gray-500">Resend in {timeLeft}s</span>
           )}
-
         </p>
       </form>
     </div>
