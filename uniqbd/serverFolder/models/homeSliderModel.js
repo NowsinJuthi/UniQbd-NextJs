@@ -15,6 +15,6 @@ const homeSlider = mongoose.Schema({
     timestamps: true
 })
 
-const homeSliderModel = mongoose.model('HomeSlider', homeSlider)
+const homeSliderModel = mongoose.model('slider', homeSlider)
 
 export default homeSliderModel

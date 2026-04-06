@@ -1,38 +1,70 @@
 import path from "path";
+import homeSliderModel from "../models/homeSliderModel.js";
+import fs from "fs";
 
-let imgesArr = [];
+const uploadDir = path.join(process.cwd(), "serverFolder/middleware/uploads");
 
 export async function homeSliderController(req, res) {
   try {
-    imgesArr = []; // reset
+    console.log("Files received:", req.files);
 
-    const images = req.files; // multer files
-
+    const images = req.files;
     if (!images || images.length === 0) {
-      return res.status(400).json({
-        message: "No images uploaded",
-        error: true,
-        success: false
-      });
+      console.log("No images uploaded");
+      return res.status(400).json({ success: false, message: "No images uploaded" });
     }
 
-    // Save filenames or relative paths in array
-    images.forEach(img => {
-      imgesArr.push("/uploads/" + img.filename); // for frontend access
-    });
+    const paths = images.map(img => "/uploads/" + img.filename);
+    console.log("Mapped paths for DB:", paths);
 
-    return res.status(200).json({
+
+    const sliderDoc = new homeSliderModel({ images: paths });
+    const savedDoc = await sliderDoc.save();
+
+    console.log("Document saved:", savedDoc);
+
+    res.status(200).json({
+      success: true,
       message: "Images uploaded successfully",
-      data: imgesArr,
-      error: false,
-      success: true
+      images: paths,
     });
+  } catch (err) {
+    console.error("Error saving HomeSlider:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
 
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || error,
-      error: true,
-      success: false
-    });
+export async function getHomeSliderImages(req, res) {
+  try {
+    const sliders = await homeSliderModel.find().sort({ createdAt: -1 });
+    const images = sliders.flatMap(slider => slider.images);
+    console.log("Fetched images:", images);
+
+    res.status(200).json({ success: true, data: images });
+  } catch (err) {
+    console.error("Error fetching HomeSlider:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+
+export async function homeSliderDeleteController(req, res) {
+   try {
+    const filename = req.params.filename;
+    const filePath = path.join(uploadDir, filename);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, message: "File not found" });
+    }
+
+    fs.unlinkSync(filePath);
+
+    homeSliderModel.updateMany({}, { $pull: { images: { $in: [`/uploads/${filename}`] } } })
+      .then(() => {
+        res.json({ success: true, message: "Deleted successfully" });
+      })
+      .catch(err => res.status(500).json({ success: false, message: err.message }));
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 }

@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { ConnectDb } from "./config/connectDb.js";
 import router from "./routes/api.js";
+import path from "path";
 
 dotenv.config();
 
@@ -19,18 +20,21 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+app.use("/uploads", express.static(path.join(process.cwd(), "serverFolder/middleware/uploads")));
 
 app.use("/api/v1", router);
 
 
 app.get("/", (req, res) => {
-  res.json({ status: "API working ✅" });
+  res.json({ status: "API working" });
 });
+
+
 
 const startServer = async () => {
   try {
     await ConnectDb();
-    console.log("✅ MongoDB Connected");
+    console.log("MongoDB Connected");
 
     
     app.listen(PORT, "0.0.0.0", () => {

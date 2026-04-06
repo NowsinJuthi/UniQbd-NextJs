@@ -1,133 +1,99 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { AdminMenuPage } from "../Menu/page";
 import UploadBox from "../uploadBox/page";
 import { RxCrossCircled } from "react-icons/rx";
+import { AdminMenuPage } from "../Menu/page";
 
 const HomeSlider = () => {
   const [images, setImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  const handleFilesChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImages(files);
 
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setPreviewImages(previews);
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/api/v1/home-slider/images", {
+          withCredentials: true,
+        });
+        if (res.data.success) {
+          setImages(res.data.data); 
+          setPreviewImages(res.data.data.map(img => `http://localhost:3001${img}`));
+        }
+      } catch (err) {
+        console.error("Error fetching images:", err);
+      }
+    };
+    fetchImages();
+  }, []);
+
+
+  const handleFilesChange = (uploadedImages = []) => {
+    if (!Array.isArray(uploadedImages)) uploadedImages = [uploadedImages];
+
+    setImages(prev => [...prev, ...uploadedImages.filter(img => !prev.includes(img))]);
+    setPreviewImages(prev => [
+      ...prev,
+      ...uploadedImages.map(img => `http://localhost:3001${img}`).filter(p => !prev.includes(p)),
+    ]);
   };
 
-  // remove single image
-  const removeImage = (index) => {
-    const updatedImages = [...images];
-    const updatedPreview = [...previewImages];
 
-    updatedImages.splice(index, 1);
-    updatedPreview.splice(index, 1);
-
-    setImages(updatedImages);
-    setPreviewImages(updatedPreview);
-  };
-
-  const handleUpload = async (e) => {
-    e.preventDefault();
-
-    if (images.length === 0) {
-      alert("Please select image");
-      return;
-    }
-
-    const formData = new FormData();
-    images.forEach((img) => formData.append("images", img));
+  const removeImage = async (index) => {
+    const imgPath = images[index]; 
+    const filename = imgPath.split("/").pop();
 
     try {
-      setLoading(true);
-
-      const res = await axios.post("/api/v1/home-slider", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      await axios.delete(`http://localhost:3001/api/v1/home-slider/${filename}`, {
+        withCredentials: true,
       });
 
-      alert("Upload success");
-      console.log(res.data);
-
-      setImages([]);
-      setPreviewImages([]);
-    } catch (error) {
-      console.log(error);
-      alert("Upload failed");
-    } finally {
-      setLoading(false);
+      setImages(prev => prev.filter((_, i) => i !== index));
+      setPreviewImages(prev => prev.filter((_, i) => i !== index));
+    } catch (err) {
+      console.error("Failed to delete image:", err);
     }
   };
 
   return (
-    <div className="min-h-screen p-6 text-button">
-      <div className="max-w-7xl mx-auto rounded-3xl bg-button/4 shadow-lg shadow-button/30 overflow-hidden">
+    <div className="min-h-screen p-6">
+      <div className="max-w-7xl mx-auto rounded-3xl bg-gray-50 shadow-lg overflow-hidden">
         <div className="grid md:grid-cols-12">
-          
-          {/* sidebar */}
-          <div className="md:col-span-3 p-8 border-r bg-button/5">
+          <div className="md:col-span-3 p-8 border-r bg-gray-100">
             <h2 className="text-2xl font-bold mb-10">Admin Panel</h2>
             <AdminMenuPage />
           </div>
 
-          {/* content */}
-          <div className="md:col-span-9 p-10 bg-card/5 rounded-2xl">
+          <div className="md:col-span-9 p-10 bg-white rounded-2xl">
             <h1 className="text-3xl font-bold mb-8">Home Slider</h1>
 
-            <form onSubmit={handleUpload}>
-              <UploadBox
-                type="file"
-                multiple
-                accept="image/*"
-                name= "images"
-                onChange={handleFilesChange}
-              />
+            <UploadBox
+              url="http://localhost:3001/api/v1/home-slider"
+              name="images"
+              multiple
+              onChange={handleFilesChange}
+            />
 
-              <button
-                disabled={loading}
-                className="mt-4 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
-              >
-                {loading ? "Uploading..." : "Upload Images"}
-              </button>
-            </form>
-
-            {/* preview */}
             {previewImages.length > 0 && (
               <div className="mt-8">
                 <h3 className="text-lg font-semibold mb-4">Preview</h3>
-
                 <div className="flex gap-4 flex-wrap">
                   {previewImages.map((src, index) => (
-                    <div
-                      key={index}
-                      className="relative w-60 h-40"
-                    >
-                      <img
-                        src={src}
-                        className="w-full h-full object-cover rounded-xl shadow"
-                      />
-
+                    <div key={index} className="relative w-60 h-40">
+                      <img src={src} className="w-full h-full object-cover rounded-xl shadow" />
                       <button
                         type="button"
                         onClick={() => removeImage(index)}
                         className="absolute -top-2 -right-2 bg-white rounded-full"
                       >
-                        <RxCrossCircled
-                          size={26}
-                          className="text-red-500"
-                        />
+                        <RxCrossCircled size={26} className="text-red-500" />
                       </button>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-
           </div>
         </div>
       </div>

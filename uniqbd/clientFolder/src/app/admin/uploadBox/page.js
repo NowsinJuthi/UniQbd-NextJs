@@ -1,51 +1,57 @@
-"use client"
+"use client";
 
-import { MyContext } from "@/context/ThemeContext";
-import { useContext, useState } from "react";
+import { useState, useContext } from "react";
 import { FaRegImage } from "react-icons/fa";
+import { MyContext } from "@/context/ThemeContext";
+import { uploadImage } from "@/utils/api";
 
-const UploadBox = ({ onChange, multiple = false, accept = "image/*", className = "" ,props}) => {
+const UploadBox = ({ onChange, multiple = false, url, name = "images", className = "" }) => {
+  const [uploading, setUploading] = useState(false);
+  const context = useContext(MyContext);
 
-    const [previews, setPreviews] = useState([])
-    const [uploading, setUploading] = useState(false)
+  const onChangeFile = async (e) => {
+    try {
+      if (!url) return console.error("Upload URL missing");
 
-    const context = useContext(MyContext)
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
 
-    let selectedImages = []
-    const formData = new FormData();
+      const formData = new FormData();
+      setUploading(true);
 
-    // const onChangeFile = async (else, apiEndPoint)=>{
-    //     try {
-    //         const files = el.target.files;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!["image/jpeg", "image/png", "image/webp", "image/svg+xml"].includes(file.type)) {
+          context?.alertBox("error", "Only JPG, PNG, WEBP or SVG allowed");
+          setUploading(false);
+          return;
+        }
+        formData.append(name, file);
+      }
 
-    //         setUploading(true)
+      const res = await uploadImage(url, formData);
+      setUploading(false);
 
-    //         for (var i=0; i<files.length; i++){
-    //             if(files[i] && files[i].type === 'image/jpeg' || files[i].type ===  'image/png' 
-    //                 && files[i].type === 'image/webp' && files[i].type === 'image/svg');
+      if (res.success) {
+        onChange?.(res.images);
+      } else {
+        console.error(res.message || "Upload failed");
+      }
+    } catch (error) {
+      console.error(error);
+      setUploading(false);
+    }
+  };
 
-    //                 {
-    //                     const file = files[i];
-    //                 selectedImages.push(file)
-    //                 formData.append(props?.name, file)
-    //                 }else{
-    //                     context?.alertBox("error", "Please select a valid JPG,PNG OR WEVP image file")
-    //                     setUploading(false)
-    //                 }
-    //         }
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
   return (
-    <div className={`relative w-[150px] h-[120px] rounded-md bg-gray-100 p-5 border border-button flex flex-col items-center justify-center ${className}`}>
+    <div className={`relative w-[150px] h-[120px] rounded-md bg-gray-100 p-5 border flex flex-col items-center justify-center ${className}`}>
       <FaRegImage size={40} className="text-gray-400 mb-2" />
-      <span className="text-gray-600 text-[13px]">Image Upload</span>
+      <span className="text-gray-600 text-[13px]">{uploading ? "Uploading..." : "Image Upload"}</span>
       <input
         type="file"
         multiple={multiple}
-        accept={accept}
-        onChange={onChange}
+        accept="image/*"
+        onChange={onChangeFile}
         className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
       />
     </div>

@@ -1,11 +1,11 @@
 "use client"
 
 import React from "react";
-import HomeSlider from "./components/HomePage/Slider";
 import Topup from "./components/HomePage/GameTopUp/Topup";
 import GiftCard from "./components/HomePage/GiftCard/GiftCard";
 import Choose from "./components/HomePage/Choose/choose";
 import BubbleRain from "./components/BubbleRain";
+import HomeSliderDisplay from "./components/HomePage/Slider";
 
 function Page() {
   return (
@@ -21,7 +21,7 @@ function Page() {
       {/* Page Content */}
       <div className="relative z-10">
         <BubbleRain />
-        <HomeSlider />
+        <HomeSliderDisplay />
         <Topup />
         <GiftCard />
         <Choose />
