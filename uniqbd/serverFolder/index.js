@@ -29,8 +29,6 @@ app.get("/", (req, res) => {
   res.json({ status: "API working" });
 });
 
-
-
 const startServer = async () => {
   try {
     await ConnectDb();

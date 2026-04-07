@@ -3,6 +3,7 @@ import express from 'express'
 import { changePasswordController, forgotPassword, loginController, logoutController, registerController, resendOtpController, verifyEmailController, verifyForgotPassword } from "../controllers/userController.js";
 import { getHomeSliderImages, homeSliderController, homeSliderDeleteController } from '../controllers/homeSliderController.js';
 import { upload } from '../middlewares/multer.js';
+import { CreatecategoryController, DeletecategoryController, GetcategoryController, UpdatecategoryController } from '../controllers/categoryController.js';
 
 
 
@@ -20,5 +21,10 @@ router.post('/resend-otp',resendOtpController);
 router.post("/home-slider", upload.array("images", 10), homeSliderController);
 router.get("/home-slider/images", getHomeSliderImages);
 router.delete("/home-slider/:filename", homeSliderDeleteController);
+
+router.post("/category", CreatecategoryController);
+router.get("/category", GetcategoryController);     
+router.delete("/category/:id", DeletecategoryController); 
+router.put("/category/:id", UpdatecategoryController);
 
 export default router;

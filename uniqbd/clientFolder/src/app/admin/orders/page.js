@@ -5,22 +5,16 @@ import { AdminMenuPage } from "../Menu/page";
 
 const Orders = () => {
   return (
-    <div className="min-h-screen p-6 text-button">
-      <div className="max-w-7xl mx-auto bg-button/5 rounded-3xl shadow-lg shadow-button/30 overflow-hidden">
-        <div className="grid md:grid-cols-12">
+    <div className="grid grid-cols-12 gap-6 p-6">
+     
 
-          {/* ================= Sidebar ================= */}
-          <div className="md:col-span-3 bg-button/5 p-8 border-r">
-
-            <h2 className="text-2xl font-bold mb-10 tracking-wide">
-            Admin Panel
-            </h2>
-
+  
+          <div className="md:col-span-3 p-8 border-r bg-button/5">
             <AdminMenuPage/>
           </div>
 
-          {/* ================= Orders Content ================= */}
-          <div className="md:col-span-9 p-10">
+
+          <div className="col-span-12 md:col-span-9">
 
             <h1 className="text-3xl font-bold mb-8">
                Customer Orders
@@ -67,8 +61,7 @@ const Orders = () => {
 
           </div>
 
-        </div>
-      </div>
+       
     </div>
   );
 };

@@ -47,7 +47,6 @@ export async function getHomeSliderImages(req, res) {
   }
 }
 
-
 export async function homeSliderDeleteController(req, res) {
    try {
     const filename = req.params.filename;

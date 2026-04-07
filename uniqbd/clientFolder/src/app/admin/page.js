@@ -1,34 +1,19 @@
 import React from "react";
-import Link from "next/link";
-import {
-  FaUser,
-  FaBoxOpen,
-  FaMapMarkerAlt,
-  FaSignOutAlt,
-  FaChartLine,
-  FaComments,
-} from "react-icons/fa";
 import { AdminMenuPage } from "./Menu/page";
 
 const AdminDashboard = () => {
   return (
-    <div className="min-h-screen text-button p-6 ">
-      <div className="max-w-7xl mx-auto bg-button/5 rounded-3xl overflow-hidden shadow-lg shadow-30">
+    <div className="grid grid-cols-12 gap-6 p-6">
+     
 
-        <div className="grid md:grid-cols-12">
-
-          {/* ================= Sidebar ================= */}
-          <div className="md:col-span-3 bg-button/5 p-8 border-r ">
-
-            <h2 className="text-2xl font-bold mb-10 tracking-wide">
-              Admin Panel
-            </h2>
+  
+          <div className="md:col-span-3 p-8 border-r bg-button/5">
 
             <AdminMenuPage/>
           </div>
 
-          {/* ================= Content ================= */}
-          <div className="md:col-span-9 p-10 bg-button/5 ">
+ 
+          <div className="col-span-12 md:col-span-9">
 
             <h1 className="text-3xl font-bold mb-8">
              Welcome Back, Admin
@@ -54,8 +39,8 @@ const AdminDashboard = () => {
 
           </div>
 
-        </div>
-      </div>
+ 
+  
     </div>
   );
 };
