@@ -6,34 +6,80 @@ import { giftcard } from "@/app/data/giftcard";
 import { CartContext } from "@/context/CartContext";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ProductTabs from "../page";
 import { toast, ToastContainer } from "react-toastify";
+import axios from "axios";
 
 const ProductDetails = () => {
   const params = useParams();
   const slug = params.slug;
 
-  // Find product
-  const product =
-    games.find((game) => game.slug === slug) ||
-    giftcard.find((gc) => gc.slug === slug);
-
-  if (!product) {
-    return (
-      <div className="text-center mt-20 text-2xl font-bold">
-        Product Not Found
-      </div>
-    );
-  }
-
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [gameID, setGameID] = useState("");
 
   const { addToCart } = useContext(CartContext);
 
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:3001/api/v1/product/${slug}`,
+        );
+
+        // convert packageType -> packages (no UI change)
+        const productWithPackages = {
+          ...data.product,
+          packages:
+            data.product.packageType?.map((pkg) => ({
+              ...pkg,
+              uc: pkg.package,
+            })) || [],
+        };
+
+        setProduct(productWithPackages);
+
+        // auto select first package so order summary works
+        if (productWithPackages.packages.length > 0) {
+          setSelectedPackage(productWithPackages.packages[0]);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [slug]);
+
+  if (loading) return <div className="text-center mt-20">Loading...</div>;
+
+  if (!product)
+    return (
+      <div className="text-center mt-20 text-2xl font-bold">
+        Product Not Found
+      </div>
+    );
+
+  const price =
+    selectedPackage?.discountPrice ||
+    selectedPackage?.price ||
+    product.price ||
+    0;
+
+  const subtotal = price * quantity;
+
   const handleAddToCart = () => {
+    // require GameID if topup
+    if (product?.category?.name?.toLowerCase() === "top-up" && !gameID) {
+      toast.error("Enter Game ID");
+      return;
+    }
+
     addToCart({
       product,
       selectedPkg: selectedPackage,
@@ -41,23 +87,13 @@ const ProductDetails = () => {
       quantity,
     });
 
+    toast.success("Added to cart!");
   };
-
-  const price =
-    selectedPackage?.price || product.price
-      ? Number(
-          (selectedPackage?.price || product.price)
-            .replace("TK", "")
-            .replace(",", "")
-            .trim(),
-        )
-      : 0;
-
-  const subtotal = price * quantity;
 
   return (
     <section className="min-h-screen py-16 px-6">
       <ToastContainer position="top-right" autoClose={2500} />
+
       <div className="mx-10 grid md:grid-cols-2 gap-10">
         {/* Product Image */}
         <TiltCard key={product.id} product={product} />
@@ -66,12 +102,17 @@ const ProductDetails = () => {
         <div>
           <h1 className="text-text text-4xl font-bold mb-6">{product.name}</h1>
 
+          <p className="text-text/70 mb-6">
+            {product.shortDescription}
+          </p>
+
           {/* Game Packages */}
           {product.packages && product.packages.length > 0 && (
             <>
               <h2 className="text-text text-xl font-semibold mb-4">
                 Select Package
               </h2>
+
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                 {product.packages.map((pack, index) => (
                   <div
@@ -92,8 +133,9 @@ const ProductDetails = () => {
                       }`}
                   >
                     <span className="text-lg font-bold tracking-wide">
-                      {pack.price}
+                      {pack.discountPrice || pack.price} TK
                     </span>
+
                     <span className="text-xs opacity-70 mt-1">{pack.uc}</span>
                   </div>
                 ))}
@@ -106,6 +148,7 @@ const ProductDetails = () => {
             <label className="block text-text font-semibold mb-1">
               Quantity
             </label>
+
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
@@ -113,9 +156,11 @@ const ProductDetails = () => {
               >
                 -
               </button>
+
               <span className="relative w-20 text-center text-text font-semibold px-4 py-2 rounded-xl bg-button/10 backdrop-blur-xl shadow-lg shadow-button/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-button/30">
                 {quantity}
               </span>
+
               <button
                 onClick={() => setQuantity((prev) => prev + 1)}
                 className="w-10 h-10 text-text flex items-center justify-center bg-button/10 shadow-lg shadow-button/20 rounded-lg hover:bg-button/20 transition"
@@ -126,11 +171,12 @@ const ProductDetails = () => {
           </div>
 
           {/* Game ID for Top-Up */}
-          {product.category === "top-up" && (
+          {product?.category?.name?.toLowerCase() === "top-up" && (
             <div className="mb-8">
               <label className="block font-semibold mb-2 text-text">
                 Game ID
               </label>
+
               <input
                 type="text"
                 value={gameID}
@@ -148,12 +194,16 @@ const ProductDetails = () => {
            rounded-2xl border-button shadow-inner shadow-button/10"
           >
             <h3 className="font-bold text-text text-lg mb-4 ">Order Summary</h3>
+
             <div className="flex justify-between mb-2">
               <span className="text-gray-600">Subtotal</span>
+
               <span className="font-semibold">{subtotal} TK</span>
             </div>
+
             <div className="flex justify-between border-t pt-3">
               <span className="font-semibold text-text text-lg">Total</span>
+
               <span className="font-bold text-lg text-button">
                 {subtotal} TK
               </span>
@@ -163,7 +213,10 @@ const ProductDetails = () => {
           {/* Buttons */}
           <div className="flex gap-4">
             <Link href={"/checkout"}>
-              <button onClick={handleAddToCart} className="px-8 py-3 bg-button text-white rounded-lg shadow-lg transform transition active:translate-y-1 active:shadow-sm hover:scale-105">
+              <button
+                onClick={handleAddToCart}
+                className="px-8 py-3 bg-button text-white rounded-lg shadow-lg transform transition active:translate-y-1 active:shadow-sm hover:scale-105"
+              >
                 Buy Now
               </button>
             </Link>
@@ -178,7 +231,7 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      <ProductTabs/>
+      <ProductTabs />
     </section>
   );
 };

@@ -69,7 +69,9 @@ const CategoryPage = () => {
   const saveEditing = async (id) => {
     if (!editingName) return alert("Category name required");
     try {
-      await axios.put(`http://localhost:3001/api/v1/category/${id}`, { name: editingName });
+      await axios.put(`http://localhost:3001/api/v1/category/${id}`, {
+        name: editingName,
+      });
       setEditingId(null);
       setEditingName("");
       fetchCategories();

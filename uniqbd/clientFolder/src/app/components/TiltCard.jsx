@@ -1,10 +1,54 @@
 "use client";
-import { useRef } from "react";
 
-const TiltCard = ({ product }) => {
+import { useParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+
+const TiltCard = () => {
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const params = useParams();
+  const slug = params.slug;
+
   const cardRef = useRef(null);
   const imgRef = useRef(null);
 
+  // Fetch product by slug
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:3001/api/v1/product/${slug}`
+        );
+        setProduct(data.product);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [slug]);
+
+  // Show loading if product is not ready
+  if (loading) {
+    return (
+      <div className="text-center mt-20 text-xl font-semibold">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="text-center mt-20 text-2xl font-bold">
+        Product Not Found
+      </div>
+    );
+  }
+
+  // Tilt effect handlers
   const handleMouseMove = (e) => {
     const card = cardRef.current;
     const img = imgRef.current;
@@ -19,7 +63,6 @@ const TiltCard = ({ product }) => {
     const rotateX = ((y - centerY) / centerY) * 10;
     const rotateY = ((x - centerX) / centerX) * -10;
 
-    // small transition for smooth real-time response
     card.style.transition = "transform 0.05s ease-out";
     img.style.transition = "transform 0.05s ease-out";
 
@@ -31,7 +74,6 @@ const TiltCard = ({ product }) => {
     const card = cardRef.current;
     const img = imgRef.current;
 
-    // Smooth reset
     card.style.transition = "transform 0.3s ease-out";
     img.style.transition = "transform 0.3s ease-out";
 
@@ -56,10 +98,10 @@ const TiltCard = ({ product }) => {
         <div className="absolute bg-button/30 blur-3xl opacity-40 top-[-20px] left-[-20px] rounded-full pointer-events-none"></div>
         <div className="absolute bg-button/20 blur-3xl opacity-30 bottom-[-20px] right-[-20px] rounded-full pointer-events-none"></div>
 
-        {/* Product Image with pop-out + smooth movement */}
+        {/* Product Image */}
         <img
           ref={imgRef}
-          src={product.img}
+          src={`http://localhost:3001/uploads/${product.photo}`}
           alt={product.name}
           className="object-contain z-10"
           style={{ transformStyle: "preserve-3d" }}

@@ -1,10 +1,46 @@
 "use client";
 
-import { games } from "@/app/data/games";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const Topup = () => {
+  const [topupProducts, setTopupProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchTopupProducts = async () => {
+      try {
+        // 1️⃣ Fetch all categories
+        const { data: categoryData } = await axios.get(
+          "http://localhost:3001/api/v1/category"
+        );
+
+        // 2️⃣ Filter top-up category
+        const topupCategory = categoryData.categories.find(
+          (cat) => cat.name.toLowerCase() === "top-up"
+        );
+
+        if (!topupCategory) {
+          setTopupProducts([]);
+          return;
+        }
+
+        // 3️⃣ Fetch products in top-up category
+        const { data: productsRes } = await axios.get(
+          `http://localhost:3001/api/v1/product?category=${topupCategory._id}`
+        );
+
+        setTopupProducts(productsRes.products || []);
+        console.log("Top-up products:", productsRes.products);
+      } catch (error) {
+        console.error("Error fetching top-up products:", error);
+        setTopupProducts([]);
+      }
+    };
+
+    fetchTopupProducts();
+  }, []);
+
   return (
     <section className="py-14 px-6">
       <div>
@@ -24,25 +60,28 @@ const Topup = () => {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {games.map((game, index) => (
+          {topupProducts.length === 0 && (
+            <p className="text-center col-span-full text-text/60">
+              No top-up products available.
+            </p>
+          )}
+
+          {topupProducts.map((product, index) => (
             <Link
-              key={game.id}
-              href={`/products/${game.slug}`}
-              className={`
-  bg-imgcard
-  backdrop-blur-3xl transition-all duration-300 cursor-pointer
-  flex flex-col items-center justify-center px-4 py-4 rounded-xl text-sm font-medium text-text 
-  hover:shadow-2xl hover:-translate-y-2 border-button shadow-inner shadow-button/30 
-  ${index === 4 ? "col-span-2 row-span-2" : ""}
-`}
+              key={product._id}
+              href={`/products/${product.slug}`}
+              className={`bg-imgcard backdrop-blur-3xl transition-all duration-300 cursor-pointer
+              flex flex-col items-center justify-center px-4 py-4 rounded-xl text-sm font-medium text-text 
+              hover:shadow-2xl hover:-translate-y-2 border-button shadow-inner shadow-button/30
+              ${index === 4 ? "col-span-2 row-span-2" : ""}`}
             >
               <img
-                src={game.img}
-                alt={game.name}
+                src={`http://localhost:3001/uploads/${product.photo}`}
+                alt={product.name}
                 className="object-contain mb-2"
               />
               <h2 className="text-sm font-semibold text-center mb-2">
-                {game.name}
+                {product.name}
               </h2>
             </Link>
           ))}

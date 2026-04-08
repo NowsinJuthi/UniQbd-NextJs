@@ -1,66 +1,187 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import axios from "axios";
+import { useSearchParams, useRouter } from "next/navigation";
 import { AdminMenuPage } from "../Menu/page";
 
 const Products = () => {
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("editId");
 
-  // Fetch categories from backend
+  const [categories, setCategories] = useState([]);
+  const [packages, setPackages] = useState([]);
+  const [packageInput, setPackageInput] = useState({
+    name: "",
+    quantity: "",
+    price: "",
+    discountPrice: "",
+  });
+  const [formData, setFormData] = useState({
+    name: "",
+    shortDescription: "",
+    description: "",
+    category: "",
+    photo: null,
+  });
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch categories
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data } = await axios.get("http://localhost:3001/api/v1/category");
-        setCategories(data.categories || data); // depends on your response
-      } catch (err) {
-        console.error("Failed to fetch categories:", err);
-      }
-    };
-    fetchCategories();
+    axios
+      .get("http://localhost:3001/api/v1/category")
+      .then((res) => setCategories(res.data.categories))
+      .catch(console.log);
   }, []);
 
+  // If editId exists, fetch product data to pre-fill form
+  useEffect(() => {
+    if (editId) {
+      axios
+        .get(`http://localhost:3001/api/v1/product/${editId}`)
+        .then((res) => {
+          const product = res.data.product;
+          setFormData({
+            name: product.name || "",
+            shortDescription: product.shortDescription || "",
+            description: product.description || "",
+            category: product.category?._id || "",
+            photo: null, // keep null so admin can upload new image if needed
+          });
+          setPhotoPreview(`http://localhost:3001/uploads/${product.photo}`);
+          setPackages(product.packageType || []);
+        })
+        .catch((err) => console.log("Fetch product error:", err));
+    }
+  }, [editId]);
+
+  // Handle form input changes
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "photo") {
+      setFormData({ ...formData, photo: files[0] });
+      setPhotoPreview(URL.createObjectURL(files[0]));
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  // Handle package input changes
+  const handlePackageChange = (e) => {
+    const { name, value } = e.target;
+    setPackageInput({ ...packageInput, [name]: value });
+  };
+
+  // Add package to list
+  const addPackage = () => {
+    const { name, quantity, price } = packageInput;
+    if (!name || !quantity || !price) {
+      alert("Please fill package name, quantity, and price.");
+      return;
+    }
+    setPackages([...packages, packageInput]);
+    setPackageInput({ name: "", quantity: "", price: "", discountPrice: "" });
+  };
+
+  // Remove package
+  const removePackage = (index) => {
+    setPackages(packages.filter((_, i) => i !== index));
+  };
+
+  // Create or update product
+  const saveProduct = async () => {
+    const { name, category, photo } = formData;
+    if (!name || !category) {
+      alert("Please fill all required fields.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("shortDescription", formData.shortDescription);
+      data.append("description", formData.description);
+      data.append("category", formData.category);
+      if (formData.photo) data.append("photo", formData.photo);
+      data.append("packageType", JSON.stringify(packages));
+
+      if (editId) {
+        // Update product
+        await axios.put(
+          `http://localhost:3001/api/v1/product/${editId}`,
+          data,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        alert("Product updated successfully!");
+      } else {
+        // Create new product
+        await axios.post(`http://localhost:3001/api/v1/product`, data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        alert("Product created successfully!");
+      }
+
+      // Reset form after save
+      setFormData({
+        name: "",
+        shortDescription: "",
+        description: "",
+        category: "",
+        photo: null,
+      });
+      setPhotoPreview(null);
+      setPackages([]);
+
+      // Navigate back to all products page
+      router.push("/admin/all-products");
+    } catch (error) {
+      console.log("Save product error:", error);
+      alert("Failed to save product.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="grid grid-cols-12 gap-6 p-6">
+    <div className="grid grid-cols-12 gap-6 p-6 bg-background min-h-screen">
+      {/* Sidebar */}
       <div className="md:col-span-3 p-8 border-r bg-button/5">
         <AdminMenuPage />
       </div>
 
+      {/* Form */}
       <div className="col-span-12 md:col-span-9">
-        <h1 className="text-3xl font-bold mb-8">Add New Product</h1>
+        <h1 className="text-3xl font-bold mb-8">
+          {editId ? "Edit Product" : "Add New Product"}
+        </h1>
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Product Name */}
           <div>
-            <label className="text-sm mb-2 block">Product Name</label>
+            <label className="text-sm mb-2 block">Product Name *</label>
             <input
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
               type="text"
               placeholder="Enter product name"
-              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
+              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button"
             />
           </div>
 
-          {/* Quantity */}
-          <div>
-            <label className="text-sm mb-2 block">Quantity</label>
-            <input
-              type="number"
-              placeholder="Enter quantity"
-              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
-            />
-          </div>
-
-          {/* Category Dropdown */}
+          {/* Category */}
           <div className="md:col-span-2">
-            <label className="text-sm mb-2 block">Category</label>
+            <label className="text-sm mb-2 block">Category *</label>
             <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button"
             >
-              <option value="">Select a category</option>
+              <option value="">Select category</option>
               {categories.map((cat) => (
                 <option key={cat._id} value={cat._id}>
                   {cat.name}
@@ -71,11 +192,14 @@ const Products = () => {
 
           {/* Short Description */}
           <div className="md:col-span-2">
-            <label className=" text-sm mb-2 block">Short Description</label>
+            <label className="text-sm mb-2 block">Short Description</label>
             <input
+              name="shortDescription"
+              value={formData.shortDescription}
+              onChange={handleChange}
               type="text"
               placeholder="Short description"
-              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
+              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button"
             />
           </div>
 
@@ -83,37 +207,118 @@ const Products = () => {
           <div className="md:col-span-2">
             <label className="text-sm mb-2 block">Long Description</label>
             <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
               rows="4"
               placeholder="Long product description..."
-              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition resize-none"
+              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button"
             />
           </div>
 
-          {/* Regular Price */}
+          {/* Photo */}
           <div>
-            <label className="text-sm mb-2 block">Regular Price</label>
+            <label className="text-sm mb-2 block">Product Image *</label>
             <input
-              type="number"
-              placeholder="Enter regular price"
-              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
+              name="photo"
+              type="file"
+              accept="image/*"
+              onChange={handleChange}
+              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button"
             />
+            {photoPreview && (
+              <img
+                src={photoPreview}
+                alt="Preview"
+                className="mt-2 w-32 h-32 object-contain rounded-lg border"
+              />
+            )}
           </div>
 
-          {/* Discount Price */}
-          <div>
-            <label className="text-sm mb-2 block">Discount Price</label>
-            <input
-              type="number"
-              placeholder="Enter discount price"
-              className="w-full bg-button/10 shadow-inner shadow-button/20 rounded-xl px-4 py-3 text-button focus:outline-none focus:border-orange-500 transition"
-            />
+          {/* Packages */}
+          <div className="md:col-span-2 mt-4 p-4 border rounded-xl bg-button/5">
+            <h2 className="text-lg font-semibold mb-2">Add Package</h2>
+            <div className="grid md:grid-cols-4 gap-2">
+              <input
+                name="name"
+                value={packageInput.name}
+                onChange={handlePackageChange}
+                type="text"
+                placeholder="Package Name"
+                className="w-full px-3 py-2 rounded-lg border"
+              />
+              <input
+                name="quantity"
+                value={packageInput.quantity}
+                onChange={handlePackageChange}
+                type="number"
+                placeholder="Quantity"
+                className="w-full px-3 py-2 rounded-lg border"
+              />
+              <input
+                name="price"
+                value={packageInput.price}
+                onChange={handlePackageChange}
+                type="number"
+                placeholder="Regular Price"
+                className="w-full px-3 py-2 rounded-lg border"
+              />
+              <input
+                name="discountPrice"
+                value={packageInput.discountPrice}
+                onChange={handlePackageChange}
+                type="number"
+                placeholder="Discount Price"
+                className="w-full px-3 py-2 rounded-lg border"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={addPackage}
+              className="mt-2 bg-button text-white font-semibold px-4 py-2 rounded-lg"
+            >
+              Add Package
+            </button>
+
+            {/* Display packages */}
+            {packages.length > 0 && (
+              <div className="mt-4">
+                <h3 className="font-semibold">Packages:</h3>
+                <ul>
+                  {packages.map((p, index) => (
+                    <li
+                      key={index}
+                      className="flex justify-between items-center mt-1 bg-button/10 p-2 rounded-lg"
+                    >
+                      <span>
+                        {p.name} - {p.quantity} - {p.price}$
+                        {p.discountPrice && ` (${p.discountPrice}$)`}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removePackage(index)}
+                        className="text-red-500 font-bold"
+                      >
+                        X
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Submit Button */}
         <div className="mt-8">
-          <button className="w-full bg-button hover:bg-button/70 text-white font-semibold py-3 rounded-xl transition duration-300">
-            Create Product
+          <button
+            onClick={saveProduct}
+            disabled={loading}
+            className={`w-full py-3 rounded-xl text-white font-semibold ${
+              loading ? "bg-button/50 cursor-not-allowed" : "bg-button"
+            }`}
+          >
+            {loading ? (editId ? "Updating..." : "Creating...") : editId ? "Update Product" : "Create Product"}
           </button>
         </div>
       </div>
