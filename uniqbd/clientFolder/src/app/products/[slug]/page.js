@@ -87,13 +87,11 @@ const ProductDetails = () => {
       quantity,
     });
 
-    toast.success("Added to cart!");
   };
 
   return (
     <section className="min-h-screen py-16 px-6">
-      <ToastContainer position="top-right" autoClose={2500} />
-
+    
       <div className="mx-10 grid md:grid-cols-2 gap-10">
         {/* Product Image */}
         <TiltCard key={product.id} product={product} />

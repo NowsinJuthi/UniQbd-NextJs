@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
             <CartProvider>
               <Navbar />
               <main className="relative min-h-screen overflow-hidden">
-                <div className="relative z-10">
+                <div className="relative z-5">
                   <div className="color">{children}</div>
                 </div>
                 <BubbleRain

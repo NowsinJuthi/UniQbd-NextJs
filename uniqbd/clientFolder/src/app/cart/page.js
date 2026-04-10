@@ -59,6 +59,7 @@ const Cart = () => {
                   <div>
                     <h2 className="font-semibold text-text">{product.name}</h2>
                     <p className="text-sm text-gray-400">{product.package}</p>
+                     <p className="text-sm text-gray-400">Player ID: {product.playerId}</p>
                     <button
                       onClick={() => removeItem(index)}
                       className="text-red-400 text-xs mt-1 hover:underline"

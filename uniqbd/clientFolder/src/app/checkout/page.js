@@ -2,9 +2,13 @@
 
 import { CartContext } from "@/context/CartContext";
 import Link from "next/link";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Checkout = () => {
+  const [transactionId, setTransactionId] = useState("");
+
   const { cart, removeFromCart, updateQuantity, subtotal } =
     useContext(CartContext);
 
@@ -15,6 +19,37 @@ const Checkout = () => {
 
   const removeItem = (index) => {
     removeFromCart(index);
+  };
+
+  const handlePlaceOrder = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const { data } = await axios.post(
+        "http://localhost:3001/api/v1/order/create",
+        {
+          products: cart,
+          paymentId: transactionId,
+          payment_status: "pending",
+          order_status: "pending",
+          totalAmt: subtotal,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      toast.success("Order placed successfully!");
+
+      console.log(data);
+
+      router.push("/my-account/orders");
+    } catch (error) {
+      console.log(error);
+      toast.error("Order failed!");
+    }
   };
 
   return (
@@ -223,6 +258,8 @@ const Checkout = () => {
 
                 <input
                   type="text"
+                  value={transactionId}
+                  onChange={(e) => setTransactionId(e.target.value)}
                   placeholder="TRX123ABC456"
                   className="w-full px-4 py-3 rounded-xl shadow-inner shadow-button/20
         focus:outline-none focus:ring-2 focus:ring-button
@@ -234,10 +271,11 @@ const Checkout = () => {
           {/* Button */}
           <Link href="/my-account/orders">
             <button
+              onClick={handlePlaceOrder}
               className="w-full mt-6 bg-button hover:bg-button/80
-          shadow-xl hover:scale-105
-          text-white py-3 rounded-lg font-semibold
-          transition duration-300"
+  shadow-xl hover:scale-105
+  text-white py-3 rounded-lg font-semibold
+  transition duration-300"
             >
               Place Order
             </button>

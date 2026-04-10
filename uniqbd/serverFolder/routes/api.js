@@ -36,6 +36,10 @@ import {
   searchProductController,
   productStatsController,
 } from "../controllers/productController.js";
+import { createOrderController } from "../controllers/orderController.js";
+import auth from "../middlewares/auth.js";
+
+
 
 const router = express.Router();
 
@@ -94,4 +98,6 @@ router.get("/search/:keyword", searchProductController);
 
 router.get("/product-stats", productStatsController);
 
+
+router.post("/order/create", auth, createOrderController);
 export default router;
