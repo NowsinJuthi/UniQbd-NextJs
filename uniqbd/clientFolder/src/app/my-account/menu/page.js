@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // 👈 add this
+import { usePathname } from "next/navigation"; 
 import React from "react";
 import { FaUser, FaBoxOpen, FaMapMarkerAlt, FaSignOutAlt } from "react-icons/fa";
 
-export const MenuPage = () => {
-  const pathname = usePathname(); // current URL path
+const MenuPage = () => {
+  const pathname = usePathname(); 
 
   const menuItems = [
     { name: "Dashboard", href: "/my-account", icon: <FaUser /> },
@@ -53,3 +53,5 @@ export const MenuPage = () => {
     </div>
   );
 };
+
+export default MenuPage;

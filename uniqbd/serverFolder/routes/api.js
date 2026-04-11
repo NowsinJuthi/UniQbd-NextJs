@@ -3,10 +3,12 @@ import express from "express";
 import {
   changePasswordController,
   forgotPassword,
+  getUserProfile,
   loginController,
   logoutController,
   registerController,
   resendOtpController,
+  updateProfileController,
   verifyEmailController,
   verifyForgotPassword,
 } from "../controllers/userController.js";
@@ -36,8 +38,10 @@ import {
   searchProductController,
   productStatsController,
 } from "../controllers/productController.js";
-import { createOrderController } from "../controllers/orderController.js";
+import { adminDashboardController, createOrderController, getAllOrdersController, getSingleOrderController, getUserOrdersController, OrdersStatusController } from "../controllers/orderController.js";
 import auth from "../middlewares/auth.js";
+import { createNoteController, deleteNoteController, getNotesController, getOrderNotesController, sendNotesToCustomerController, updateNoteController } from "../controllers/noteController.js";
+
 
 
 
@@ -100,4 +104,29 @@ router.get("/product-stats", productStatsController);
 
 
 router.post("/order/create", auth, createOrderController);
+router.get("/orders", getAllOrdersController);
+router.get("/my-orders", auth, getUserOrdersController);
+router.put("/order/status/:id",OrdersStatusController)
+router.get("/order/:id", getSingleOrderController);
+
+router.get("/admin", adminDashboardController)
+
+
+router.post("/create-notes", auth, createNoteController);
+router.get("/all-notes", auth, getNotesController);
+router.delete("/delete-notes/:id", auth, deleteNoteController);
+router.put("/update-notes/:id", auth, updateNoteController);
+router.get("/order-notes/:orderId", auth, getOrderNotesController);
+
+router.post(
+  "/send-notes-to-customer",
+  auth,
+  sendNotesToCustomerController
+);
+
+
+router.get("/user", auth, getUserProfile);
+router.put("/update-profile", auth, updateProfileController);
+router.put("/change-password", auth, changePasswordController);
+
 export default router;

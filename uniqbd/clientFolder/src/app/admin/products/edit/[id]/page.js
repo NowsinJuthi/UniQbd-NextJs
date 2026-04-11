@@ -36,8 +36,8 @@ const EditProductPage = () => {
       );
 
       alert("Product updated successfully!");
-      localStorage.removeItem("editProduct"); // clean up
-      window.location.href = "/admin/products"; // go back to product list
+      localStorage.removeItem("editProduct"); 
+      window.location.href = "/admin/products";
     } catch (error) {
       console.log("Update error:", error);
     }

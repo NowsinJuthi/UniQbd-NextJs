@@ -95,6 +95,12 @@ export const CartProvider = ({ children }) => {
     toast.info("🗑️ Item removed from cart!");
   };
 
+  const clearCart = () => {
+  setCart([]);
+  localStorage.removeItem("cart");
+};
+
+
   // UPDATE QUANTITY
   const updateQuantity = (index, newQty) => {
     if (newQty < 1) return;
@@ -128,6 +134,7 @@ export const CartProvider = ({ children }) => {
         discount,
         total,
         totalItems,
+        clearCart,
       }}
     >
       {children}

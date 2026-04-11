@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema(
     },
     order_status: {
       type: String,
-      enum: ["On Hold", "Processing", "Cancel", "Complete"],
+      enum: ["On Hold", "Processing", "Cancel", "Complete","Delete"],
     },
     address_details: [
       {
@@ -73,7 +73,7 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
-    timeStamps: true,
+    timestamps: true,
   },
 );
 

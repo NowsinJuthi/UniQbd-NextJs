@@ -36,7 +36,7 @@ const Products = () => {
       .catch(console.log);
   }, []);
 
-  // If editId exists, fetch product data to pre-fill form
+
   useEffect(() => {
     if (editId) {
       axios
@@ -48,7 +48,7 @@ const Products = () => {
             shortDescription: product.shortDescription || "",
             description: product.description || "",
             category: product.category?._id || "",
-            photo: null, // keep null so admin can upload new image if needed
+            photo: null, 
           });
           setPhotoPreview(`http://localhost:3001/uploads/${product.photo}`);
           setPackages(product.packageType || []);
@@ -57,7 +57,7 @@ const Products = () => {
     }
   }, [editId]);
 
-  // Handle form input changes
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "photo") {
@@ -68,13 +68,13 @@ const Products = () => {
     }
   };
 
-  // Handle package input changes
+
   const handlePackageChange = (e) => {
     const { name, value } = e.target;
     setPackageInput({ ...packageInput, [name]: value });
   };
 
-  // Add package to list
+
   const addPackage = () => {
     const { name, quantity, price } = packageInput;
     if (!name || !quantity || !price) {
@@ -85,12 +85,12 @@ const Products = () => {
     setPackageInput({ name: "", quantity: "", price: "", discountPrice: "" });
   };
 
-  // Remove package
+
   const removePackage = (index) => {
     setPackages(packages.filter((_, i) => i !== index));
   };
 
-  // Create or update product
+
   const saveProduct = async () => {
     const { name, category, photo } = formData;
     if (!name || !category) {

@@ -1,8 +1,46 @@
-import React from "react";
-import { MenuPage } from "../menu/MenuPage";
+"use client";
+
+import React, { useEffect, useState } from "react";
+
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import MenuPage from "../menu/page";
 
 const Orders = () => {
+
+  const timeAgo = (date) => {
+    const now = new Date();
+    const created = new Date(date);
+    const diff = Math.floor((now - created) / 1000);
+
+    if (diff < 60) return `${diff} sec ago`;
+    const minutes = Math.floor(diff / 60);
+    if (minutes < 60) return `${minutes} min ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hours ago`;
+    const days = Math.floor(hours / 24);
+    return `${days} days ago`;
+  };
+
+
+  const router = useRouter();
+
+  const [orders, setOrders] = useState([]);
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:3001/api/v1/orders");
+
+        setOrders(data.orders);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   return (
     <div className="min-h-screen py-10 px-4">
       <div className="max-w-7xl mx-auto rounded-2xl overflow-hidden border border-white/10 shadow-xl">
@@ -33,49 +71,39 @@ const Orders = () => {
                 </thead>
 
                 <tbody>
-                  <tr className="border-b border-white/5 hover:bg-white/5 transition shadow-inner shadow-button/30">
-                    <td className="p-4 font-semibold text-text">#54564</td>
+                  {orders.map((order) => (
+                    <tr
+                      key={order._id}
+                      className="border-t hover:bg-button/10 transition"
+                    >
+                      <td className="p-4 font-semibold">
+                        #{order._id.slice(-6)}
+                      </td>
 
-                    <td className="p-4 text-text/80">Aug 31, 2026</td>
+                      <td className="p-4 text-button/80">
+                          {timeAgo(order.createdAt)}
+                      </td>
 
-                    <td className="p-4">
-                      <span className="px-3 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
-                        Completed
-                      </span>
-                    </td>
+                      <td className="p-4">
+                        <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-xs font-medium">
+                          {order.order_status}
+                        </span>
+                      </td>
 
-                    <td className="p-4 font-semibold text-button">250 TK</td>
+                      <td className="p-4 font-medium">{order.totalAmt} TK</td>
 
-                    <td className="p-4 text-center">
-                      <Link href={'/my-account/view-orders'}>
-                        <button className="px-4 py-2 rounded-lg bg-button text-white hover:opacity-90 transition">
+                      <td className="p-4 text-center text-white">
+                        <button
+                          onClick={() =>
+                            router.push(`/my-account/view-orders/${order._id}`)
+                          }
+                          className="bg-button hover:bg-orange-600 px-4 py-2 rounded-lg text-sm transition"
+                        >
                           View
                         </button>
-                      </Link>
-                    </td>
-                  </tr>
-
-                  {/* example pending */}
-
-                  <tr className="border-b border-white/5 hover:bg-white/5 transition shadow-inner shadow-button/30">
-                    <td className="p-4 font-semibold text-text">#54565</td>
-
-                    <td className="p-4 text-text/80">Sep 2, 2026</td>
-
-                    <td className="p-4">
-                      <span className="px-3 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400">
-                        Pending
-                      </span>
-                    </td>
-
-                    <td className="p-4 font-semibold text-button">700 TK</td>
-
-                    <td className="p-4 text-center">
-                      <button className="px-4 py-2 rounded-lg bg-button text-white hover:opacity-90 transition">
-                        View
-                      </button>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

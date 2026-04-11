@@ -70,7 +70,7 @@ const Navbar = () => {
   const removeItem = (index) => removeFromCart(index);
 
   return (
-    <nav className="sticky top-0 z-10 shadow-lg shadow-button/30 bg-background/80 backdrop-blur-xl">
+    <nav className="sticky top-0 z-50 shadow-lg shadow-button/30 bg-background/80 backdrop-blur-xl">
       <div className="mx-5 px-6 py-4 grid grid-cols-12 items-center">
         {/* Theme Toggle */}
         <div className="col-span-1">

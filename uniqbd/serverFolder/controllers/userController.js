@@ -352,11 +352,12 @@ export async function verifyForgotPassword(req, res) {
 /** ----------------- CHANGE PASSWORD ----------------- */
 export async function changePasswordController(req, res) {
   try {
-    const { email, newPassword, confirmPassword } = req.body;
+    const userId = req.userId;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
 
-    if (!email || !newPassword || !confirmPassword) {
+    if (!currentPassword || !newPassword || !confirmPassword) {
       return res.status(400).json({
-        message: "Provide email, new password, and confirm password",
+        message: "All fields are required",
         success: false,
         error: true,
       });
@@ -364,33 +365,49 @@ export async function changePasswordController(req, res) {
 
     if (newPassword !== confirmPassword) {
       return res.status(400).json({
-        message: "New password and confirm password do not match",
+        message: "Passwords do not match",
         success: false,
         error: true,
       });
     }
 
-    const user = await userModel.findOne({ email });
+    const user = await userModel.findById(userId);
+
     if (!user) {
-      return res.status(400).json({
+      return res.status(404).json({
         message: "User not found",
         success: false,
         error: true,
       });
     }
 
+    // check current password
+    const isMatch = await bcryptjs.compare(
+      currentPassword,
+      user.password
+    );
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Current password is wrong",
+        success: false,
+        error: true,
+      });
+    }
+
     const salt = await bcryptjs.genSalt(10);
-    user.password = await bcryptjs.hash(confirmPassword, salt);
+    user.password = await bcryptjs.hash(newPassword, salt);
+
     await user.save();
 
     return res.status(200).json({
       message: "Password changed successfully",
       success: true,
-      error: false,
     });
+
   } catch (error) {
     return res.status(500).json({
-      message: error.message || error,
+      message: error.message,
       success: false,
       error: true,
     });
@@ -454,3 +471,75 @@ export async function resendOtpController(req, res) {
     });
   }
 }
+// getUserProfile
+export const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const user = await userModel
+      .findById(userId)
+      .select("-password -otp -otpExpires -refreshToken");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+        error: true,
+      });
+    }
+
+    return res.status(200).json({
+      message: "User profile fetched successfully",
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      success: false,
+      error: true,
+    });
+  }
+};
+
+// updateProfileController
+export const updateProfileController = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { name, mobile, avatar } = req.body;
+
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+        error: true,
+      });
+    }
+
+    // update only provided fields
+    if (name !== undefined) user.name = name;
+    if (mobile !== undefined) user.mobile = mobile;
+    if (avatar !== undefined) user.avatar = avatar;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      success: true,
+      data: {
+        name: user.name,
+        mobile: user.mobile,
+        avatar: user.avatar,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      success: false,
+      error: true,
+    });
+  }
+};
