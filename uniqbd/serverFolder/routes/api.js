@@ -41,11 +41,18 @@ import {
 import { adminDashboardController, createOrderController, getAllOrdersController, getSingleOrderController, getUserOrdersController, OrdersStatusController } from "../controllers/orderController.js";
 import auth from "../middlewares/auth.js";
 import { createNoteController, deleteNoteController, getNotesController, getOrderNotesController, sendNotesToCustomerController, updateNoteController } from "../controllers/noteController.js";
+import { approveReviewController, createReviewController, getAllReviewsController, getReviewsController, updateReviewController } from "../controllers/reviewController.js";
 
 
 
 
 const router = express.Router();
+router.get("/reviews/:productId", getReviewsController);
+router.post("/reviews", createReviewController);
+router.get("/admin/all", getAllReviewsController);
+router.put("/approve/:id", approveReviewController);
+router.put("/review/update/:id", updateReviewController);
+
 
 router.post("/register", registerController);
 router.post("/verifyEmail", verifyEmailController);
@@ -89,7 +96,7 @@ router.put(
     { name: "photo", maxCount: 1 },
     { name: "bgPhoto", maxCount: 1 },
   ]),
-  updateProductController,
+  updateProductController
 );
 
 router.post("/product/filter", productFilterController);
@@ -128,5 +135,7 @@ router.post(
 router.get("/user", auth, getUserProfile);
 router.put("/update-profile", auth, updateProfileController);
 router.put("/change-password", auth, changePasswordController);
+
+
 
 export default router;

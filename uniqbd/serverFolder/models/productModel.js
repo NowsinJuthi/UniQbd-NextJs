@@ -26,7 +26,8 @@ const productSchema = new mongoose.Schema(
     },
     packageType: [
       {
-        package: { type: String },
+        name: { type: String },
+        quantity: { type: Number },
         price: { type: Number },
         discountPrice: { type: Number },
       },
@@ -40,6 +41,12 @@ const productSchema = new mongoose.Schema(
     },
     bgPhoto: {
       type: String,
+    },
+
+    shipping: {
+      instantDelivery: { type: Boolean, default: true },
+      deliveryTime: { type: String, default: "5–15 minutes" },
+      note: { type: String, default: "Safe & verified transaction process." },
     },
   },
   { timestamps: true },

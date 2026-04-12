@@ -12,11 +12,12 @@ const ViewPage = () => {
 
   const [allNotes, setAllNotes] = useState([]);
   const [selectedNote, setSelectedNote] = useState("");
-
-  // NEW INPUT FIELD
   const [customMessage, setCustomMessage] = useState("");
 
-  /* ================= ORDER FETCH ================= */
+  // ✅ ONLY ADD THIS (fix status bug)
+  const [newStatus, setNewStatus] = useState("");
+
+  // FETCH ORDER
   useEffect(() => {
     const fetchOrder = async () => {
       try {
@@ -24,6 +25,7 @@ const ViewPage = () => {
           `http://localhost:3001/api/v1/order/${id}`
         );
         setOrder(data.order);
+        setNewStatus(data.order.order_status); 
       } catch (error) {
         console.log(error);
       }
@@ -32,28 +34,28 @@ const ViewPage = () => {
     if (id) fetchOrder();
   }, [id]);
 
-  /* ================= ALL NOTES ================= */
-  const fetchAllNotes = async () => {
-    try {
-      const { data } = await axios.get(
-        `http://localhost:3001/api/v1/all-notes`,
-        { withCredentials: true }
-      );
-
-      setAllNotes(data.notes || []);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+  // FETCH NOTES
   useEffect(() => {
+    const fetchAllNotes = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:3001/api/v1/all-notes`,
+          { withCredentials: true }
+        );
+
+        setAllNotes(data.notes || []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     fetchAllNotes();
   }, []);
 
-  /* ================= STATUS UPDATE ================= */
+  // UPDATE STATUS (ONLY ON BUTTON CLICK)
   const updateStatus = async (orderId, status) => {
     try {
-      await axios.put(
+      const { data } = await axios.put(
         `http://localhost:3001/api/v1/order/status/${orderId}`,
         { status }
       );
@@ -62,12 +64,16 @@ const ViewPage = () => {
         ...prev,
         order_status: status,
       }));
+
+      setNewStatus(status);
+
+      alert("Status updated successfully!");
     } catch (error) {
       console.log(error);
     }
   };
 
-  /* ================= SEND NOTE + CUSTOM MESSAGE ================= */
+  // SEND NOTE
   const sendNoteToCustomer = async () => {
     try {
       if (!selectedNote && !customMessage.trim()) return;
@@ -77,7 +83,7 @@ const ViewPage = () => {
         {
           orderId: id,
           noteIds: selectedNote ? [selectedNote] : [],
-          customMessage: customMessage, // ✅ NEW FIELD
+          customMessage: customMessage,
         },
         { withCredentials: true }
       );
@@ -106,9 +112,15 @@ const ViewPage = () => {
 
         {/* ORDER INFO */}
         <div className="p-6 mb-6 bg-button/5 rounded-2xl">
-          <p><b>Order:</b> #{order._id.slice(-6)}</p>
-          <p><b>Status:</b> {order.order_status}</p>
-          <p><b>Total:</b> {order.totalAmt} TK</p>
+          <p>
+            <b>Order:</b> #{order._id.slice(-6)}
+          </p>
+          <p>
+            <b>Status:</b> {order.order_status}
+          </p>
+          <p>
+            <b>Total:</b> {order.totalAmt} TK
+          </p>
         </div>
 
         {/* PRODUCTS */}
@@ -134,38 +146,33 @@ const ViewPage = () => {
           </table>
         </div>
 
-        {/* STATUS */}
+        {/* STATUS UPDATE (FIXED) */}
         <div className="flex gap-4 items-center mb-8">
           <select
-            value={order.order_status}
-            onChange={(e) =>
-              setOrder((prev) => ({
-                ...prev,
-                order_status: e.target.value,
-              }))
-            }
+            value={newStatus}
+            onChange={(e) => setNewStatus(e.target.value)}
             className="p-2 border rounded"
           >
             <option value="pending">Pending</option>
             <option value="processing">Processing</option>
             <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
           </select>
 
           <button
-            onClick={() => updateStatus(order._id, order.order_status)}
+            onClick={() => updateStatus(order._id, newStatus)}
             className="px-4 py-2 bg-blue-600 text-white rounded"
           >
             Update Status
           </button>
         </div>
 
-        {/* ================= NOTES SECTION ================= */}
+        {/* NOTES */}
         <div className="p-6 bg-button/5 rounded-xl">
           <h2 className="text-xl font-bold mb-4">
             Send Note / Message to Customer
           </h2>
 
-          {/* NOTE DROPDOWN */}
           <select
             value={selectedNote}
             onChange={(e) => setSelectedNote(e.target.value)}
@@ -180,7 +187,6 @@ const ViewPage = () => {
             ))}
           </select>
 
-          {/* CUSTOM MESSAGE INPUT */}
           <textarea
             value={customMessage}
             onChange={(e) => setCustomMessage(e.target.value)}
@@ -188,7 +194,6 @@ const ViewPage = () => {
             className="w-full p-2 border rounded mb-4 h-24"
           />
 
-          {/* PREVIEW */}
           {selectedNote && (
             <div className="mb-4 p-3 border rounded ">
               <b>{allNotes.find((n) => n._id === selectedNote)?.title}</b>

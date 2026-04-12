@@ -8,7 +8,7 @@ const uploadDir = path.join(process.cwd(), "serverFolder/middleware/uploads");
 // Ensure folder exists
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
-  console.log("✅ Upload folder created at", uploadDir);
+  console.log("Upload folder created at", uploadDir);
 }
 
 const storage = multer.diskStorage({

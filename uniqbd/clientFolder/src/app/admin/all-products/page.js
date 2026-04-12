@@ -4,8 +4,12 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { AdminMenuPage } from "../Menu/page";
+import { useRouter } from "next/navigation";
 
 const AllProductpage = () => {
+
+    const router = useRouter();
+  
   const [products, setProducts] = useState([]);
 
   // Fetch all products
@@ -25,7 +29,9 @@ const AllProductpage = () => {
   // Delete a product
   const deleteProduct = async (id) => {
     try {
-      const confirmDelete = confirm("Are you sure you want to delete this product?");
+      const confirmDelete = confirm(
+        "Are you sure you want to delete this product?",
+      );
       if (!confirmDelete) return;
 
       await axios.delete(`http://localhost:3001/api/v1/product/${id}`);
@@ -78,12 +84,14 @@ const AllProductpage = () => {
 
                 {/* Edit & Delete Buttons */}
                 <div className="flex gap-2 p-2">
-                  <Link
-                    href={`/admin/products?editId=${product._id}`}
-                    className="flex-1 bg-blue-500 text-white text-xs py-1 rounded-md text-center hover:bg-blue-600 transition"
+                  <button
+                    onClick={() =>
+                      router.push(`/admin/products?editId=${product.slug}`)
+                    }
+                    className="flex-1 bg-blue-500 text-white text-xs py-1 rounded-md"
                   >
                     Edit
-                  </Link>
+                  </button>
                   <button
                     onClick={() => deleteProduct(product._id)}
                     className="flex-1 bg-red-500 text-white text-xs py-1 rounded-md hover:bg-red-600 transition"

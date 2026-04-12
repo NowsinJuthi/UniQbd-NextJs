@@ -1,19 +1,18 @@
 "use client";
 
 import TiltCard from "@/app/components/TiltCard";
-import { games } from "@/app/data/games";
-import { giftcard } from "@/app/data/giftcard";
 import { CartContext } from "@/context/CartContext";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import ProductTabs from "../page";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const ProductDetails = () => {
   const params = useParams();
   const slug = params.slug;
+  const router = useRouter();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,19 +29,17 @@ const ProductDetails = () => {
           `http://localhost:3001/api/v1/product/${slug}`,
         );
 
-        // convert packageType -> packages (no UI change)
+        console.log("PRODUCT DATA:", data.product);
+
         const productWithPackages = {
           ...data.product,
-          packages:
-            data.product.packageType?.map((pkg) => ({
-              ...pkg,
-              uc: pkg.package,
-            })) || [],
+          packages: data.product.packageType || [],
         };
+
+        console.log("PACKAGES FINAL:", productWithPackages.packages);
 
         setProduct(productWithPackages);
 
-        // auto select first package so order summary works
         if (productWithPackages.packages.length > 0) {
           setSelectedPackage(productWithPackages.packages[0]);
         }
@@ -55,6 +52,7 @@ const ProductDetails = () => {
 
     fetchProduct();
   }, [slug]);
+  
 
   if (loading) return <div className="text-center mt-20">Loading...</div>;
 
@@ -74,7 +72,6 @@ const ProductDetails = () => {
   const subtotal = price * quantity;
 
   const handleAddToCart = () => {
-    // require GameID if topup
     if (product?.category?.name?.toLowerCase() === "top-up" && !gameID) {
       toast.error("Enter Game ID");
       return;
@@ -86,12 +83,10 @@ const ProductDetails = () => {
       playerId: gameID,
       quantity,
     });
-
   };
 
   return (
     <section className="min-h-screen py-16 px-6">
-    
       <div className="mx-10 grid md:grid-cols-2 gap-10">
         {/* Product Image */}
         <TiltCard key={product.id} product={product} />
@@ -100,9 +95,7 @@ const ProductDetails = () => {
         <div>
           <h1 className="text-text text-4xl font-bold mb-6">{product.name}</h1>
 
-          <p className="text-text/70 mb-6">
-            {product.shortDescription}
-          </p>
+          <p className="text-text/70 mb-6">{product.shortDescription}</p>
 
           {/* Game Packages */}
           {product.packages && product.packages.length > 0 && (
@@ -125,16 +118,35 @@ const ProductDetails = () => {
                       bg-gradient-to-br from-package/40 via-package/10 to-transparent
                       backdrop-blur-3xl border border-white/10
                       ${
-                        selectedPackage === pack
+                        selectedPackage?._id === pack._id
                           ? "-translate-y-1 scale-[1.05] shadow"
                           : "shadow-md hover:shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
                       }`}
                   >
                     <span className="text-lg font-bold tracking-wide">
-                      {pack.discountPrice || pack.price} TK
+                      {pack.name}
                     </span>
 
-                    <span className="text-xs opacity-70 mt-1">{pack.uc}</span>
+                    <span className="flex items-center gap-2 mt-1">
+                      {pack.discountPrice ? (
+                        <>
+                          <span
+                            className="text-gray-400 text-sm"
+                            style={{ textDecoration: "line-through" }}
+                          >
+                            {pack.price.toFixed()} TK
+                          </span>
+
+                          <span className="text-green-400 font-bold text-lg">
+                            {pack.discountPrice.toFixed()} TK
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-green-400 font-bold text-lg">
+                          {pack.price.toFixed(2)}TK
+                        </span>
+                      )}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -155,7 +167,7 @@ const ProductDetails = () => {
                 -
               </button>
 
-              <span className="relative w-20 text-center text-text font-semibold px-4 py-2 rounded-xl bg-button/10 backdrop-blur-xl shadow-lg shadow-button/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-button/30">
+              <span className="relative w-20 text-center text-text font-semibold px-4 py-2 rounded-xl bg-button/10 backdrop-blur-xl shadow-lg shadow-button/20">
                 {quantity}
               </span>
 
@@ -168,7 +180,7 @@ const ProductDetails = () => {
             </div>
           </div>
 
-          {/* Game ID for Top-Up */}
+          {/* Game ID */}
           {product?.category?.name?.toLowerCase() === "top-up" && (
             <div className="mb-8">
               <label className="block font-semibold mb-2 text-text">
@@ -188,20 +200,18 @@ const ProductDetails = () => {
 
           {/* Order Summary */}
           <div
-            className="bg-imgcard backdrop-blur-3xl transition-all duration-300 px-4 py-4 my-10
+            className="bg-imgcard backdrop-blur-3xl px-4 py-4 my-10
            rounded-2xl border-button shadow-inner shadow-button/10"
           >
-            <h3 className="font-bold text-text text-lg mb-4 ">Order Summary</h3>
+            <h3 className="font-bold text-text text-lg mb-4">Order Summary</h3>
 
             <div className="flex justify-between mb-2">
               <span className="text-gray-600">Subtotal</span>
-
               <span className="font-semibold">{subtotal} TK</span>
             </div>
 
             <div className="flex justify-between border-t pt-3">
               <span className="font-semibold text-text text-lg">Total</span>
-
               <span className="font-bold text-lg text-button">
                 {subtotal} TK
               </span>
@@ -210,14 +220,29 @@ const ProductDetails = () => {
 
           {/* Buttons */}
           <div className="flex gap-4">
-            <Link href={"/checkout"}>
-              <button
-                onClick={handleAddToCart}
-                className="px-8 py-3 bg-button text-white rounded-lg shadow-lg transform transition active:translate-y-1 active:shadow-sm hover:scale-105"
-              >
-                Buy Now
-              </button>
-            </Link>
+            <button
+              onClick={() => {
+                if (
+                  product?.category?.name?.toLowerCase() === "top-up" &&
+                  !gameID
+                ) {
+                  toast.error("Enter Game ID");
+                  return;
+                }
+
+                addToCart({
+                  product,
+                  selectedPkg: selectedPackage,
+                  playerId: gameID,
+                  quantity,
+                });
+
+                router.push("/checkout");
+              }}
+              className="px-8 py-3 bg-button text-white rounded-lg shadow-lg transform transition active:translate-y-1 active:shadow-sm hover:scale-105"
+            >
+              Buy Now
+            </button>
 
             <button
               onClick={handleAddToCart}
@@ -229,7 +254,7 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      <ProductTabs />
+      <ProductTabs product={product} />
     </section>
   );
 };

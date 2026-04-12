@@ -18,6 +18,7 @@ const Products = () => {
     price: "",
     discountPrice: "",
   });
+
   const [formData, setFormData] = useState({
     name: "",
     shortDescription: "",
@@ -25,10 +26,11 @@ const Products = () => {
     category: "",
     photo: null,
   });
+
   const [photoPreview, setPhotoPreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch categories
+  //Fetch categories
   useEffect(() => {
     axios
       .get("http://localhost:3001/api/v1/category")
@@ -36,80 +38,101 @@ const Products = () => {
       .catch(console.log);
   }, []);
 
-
+  //Fetch product
   useEffect(() => {
     if (editId) {
       axios
         .get(`http://localhost:3001/api/v1/product/${editId}`)
         .then((res) => {
           const product = res.data.product;
+
           setFormData({
             name: product.name || "",
             shortDescription: product.shortDescription || "",
             description: product.description || "",
-            category: product.category?._id || "",
-            photo: null, 
+            category: product.category?._id || product.category || "",
+            photo: null,
           });
-          setPhotoPreview(`http://localhost:3001/uploads/${product.photo}`);
+
+          //Image preview
+          if (product.photo) {
+            setPhotoPreview(
+              `http://localhost:3001/uploads/${product.photo}`
+            );
+          }
+
+          // Packages
           setPackages(product.packageType || []);
         })
         .catch((err) => console.log("Fetch product error:", err));
     }
   }, [editId]);
 
-
+  // Input change
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     if (name === "photo") {
-      setFormData({ ...formData, photo: files[0] });
-      setPhotoPreview(URL.createObjectURL(files[0]));
+      const file = files[0];
+      setFormData({ ...formData, photo: file });
+      setPhotoPreview(URL.createObjectURL(file));
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
-
+  // Package input change
   const handlePackageChange = (e) => {
     const { name, value } = e.target;
     setPackageInput({ ...packageInput, [name]: value });
   };
 
-
+  //  Add package
   const addPackage = () => {
-    const { name, quantity, price } = packageInput;
-    if (!name || !quantity || !price) {
+    if (!packageInput.name || !packageInput.quantity || !packageInput.price) {
       alert("Please fill package name, quantity, and price.");
       return;
     }
+
     setPackages([...packages, packageInput]);
-    setPackageInput({ name: "", quantity: "", price: "", discountPrice: "" });
+
+    setPackageInput({
+      name: "",
+      quantity: "",
+      price: "",
+      discountPrice: "",
+    });
   };
 
-
+  // Remove package
   const removePackage = (index) => {
     setPackages(packages.filter((_, i) => i !== index));
   };
 
-
+  // Save product
   const saveProduct = async () => {
-    const { name, category, photo } = formData;
-    if (!name || !category) {
-      alert("Please fill all required fields.");
+    if (!formData.name || !formData.category) {
+      alert("Please fill required fields.");
       return;
     }
 
     try {
       setLoading(true);
+
       const data = new FormData();
       data.append("name", formData.name);
       data.append("shortDescription", formData.shortDescription);
       data.append("description", formData.description);
       data.append("category", formData.category);
-      if (formData.photo) data.append("photo", formData.photo);
+
+      if (formData.photo) {
+        data.append("photo", formData.photo);
+      }
+
       data.append("packageType", JSON.stringify(packages));
 
       if (editId) {
-        // Update product
+        //  UPDATE
         await axios.put(
           `http://localhost:3001/api/v1/product/${editId}`,
           data,
@@ -117,14 +140,16 @@ const Products = () => {
         );
         alert("Product updated successfully!");
       } else {
-        // Create new product
-        await axios.post(`http://localhost:3001/api/v1/product`, data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        //CREATE
+        await axios.post(
+          `http://localhost:3001/api/v1/product`,
+          data,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
         alert("Product created successfully!");
       }
 
-      // Reset form after save
+      // Reset form
       setFormData({
         name: "",
         shortDescription: "",
@@ -132,10 +157,10 @@ const Products = () => {
         category: "",
         photo: null,
       });
+
       setPhotoPreview(null);
       setPackages([]);
 
-      // Navigate back to all products page
       router.push("/admin/all-products");
     } catch (error) {
       console.log("Save product error:", error);
@@ -238,67 +263,29 @@ const Products = () => {
           {/* Packages */}
           <div className="md:col-span-2 mt-4 p-4 border rounded-xl bg-button/5">
             <h2 className="text-lg font-semibold mb-2">Add Package</h2>
+
             <div className="grid md:grid-cols-4 gap-2">
-              <input
-                name="name"
-                value={packageInput.name}
-                onChange={handlePackageChange}
-                type="text"
-                placeholder="Package Name"
-                className="w-full px-3 py-2 rounded-lg border"
-              />
-              <input
-                name="quantity"
-                value={packageInput.quantity}
-                onChange={handlePackageChange}
-                type="number"
-                placeholder="Quantity"
-                className="w-full px-3 py-2 rounded-lg border"
-              />
-              <input
-                name="price"
-                value={packageInput.price}
-                onChange={handlePackageChange}
-                type="number"
-                placeholder="Regular Price"
-                className="w-full px-3 py-2 rounded-lg border"
-              />
-              <input
-                name="discountPrice"
-                value={packageInput.discountPrice}
-                onChange={handlePackageChange}
-                type="number"
-                placeholder="Discount Price"
-                className="w-full px-3 py-2 rounded-lg border"
-              />
+              <input name="name" value={packageInput.name} onChange={handlePackageChange} type="text" placeholder="Package Name" className="w-full px-3 py-2 rounded-lg border" />
+              <input name="quantity" value={packageInput.quantity} onChange={handlePackageChange} type="number" placeholder="Quantity" className="w-full px-3 py-2 rounded-lg border" />
+              <input name="price" value={packageInput.price} onChange={handlePackageChange} type="number" placeholder="Regular Price" className="w-full px-3 py-2 rounded-lg border" />
+              <input name="discountPrice" value={packageInput.discountPrice} onChange={handlePackageChange} type="number" placeholder="Discount Price" className="w-full px-3 py-2 rounded-lg border" />
             </div>
-            <button
-              type="button"
-              onClick={addPackage}
-              className="mt-2 bg-button text-white font-semibold px-4 py-2 rounded-lg"
-            >
+
+            <button type="button" onClick={addPackage} className="mt-2 bg-button text-white font-semibold px-4 py-2 rounded-lg">
               Add Package
             </button>
 
-            {/* Display packages */}
             {packages.length > 0 && (
               <div className="mt-4">
                 <h3 className="font-semibold">Packages:</h3>
                 <ul>
                   {packages.map((p, index) => (
-                    <li
-                      key={index}
-                      className="flex justify-between items-center mt-1 bg-button/10 p-2 rounded-lg"
-                    >
+                    <li key={index} className="flex justify-between items-center mt-1 bg-button/10 p-2 rounded-lg">
                       <span>
-                        {p.name} - {p.quantity} - {p.price}$
-                        {p.discountPrice && ` (${p.discountPrice}$)`}
+                        {p.name} - {p.quantity} - {p.price} TK
+                        {p.discountPrice && ` (${p.discountPrice} TK)`}
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => removePackage(index)}
-                        className="text-red-500 font-bold"
-                      >
+                      <button type="button" onClick={() => removePackage(index)} className="text-red-500 font-bold">
                         X
                       </button>
                     </li>
@@ -309,7 +296,6 @@ const Products = () => {
           </div>
         </div>
 
-        {/* Submit Button */}
         <div className="mt-8">
           <button
             onClick={saveProduct}
@@ -318,7 +304,13 @@ const Products = () => {
               loading ? "bg-button/50 cursor-not-allowed" : "bg-button"
             }`}
           >
-            {loading ? (editId ? "Updating..." : "Creating...") : editId ? "Update Product" : "Create Product"}
+            {loading
+              ? editId
+                ? "Updating..."
+                : "Creating..."
+              : editId
+              ? "Update Product"
+              : "Create Product"}
           </button>
         </div>
       </div>

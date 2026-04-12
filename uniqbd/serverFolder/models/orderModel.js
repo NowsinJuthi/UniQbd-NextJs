@@ -1,11 +1,18 @@
 import mongoose from "mongoose";
 
-const orderShema = new mongoose.Schema(
+const orderSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
     },
+
+    // ✅ FIXED: ensure fields always exist
+    customerEmail: { type: String, default: "" },
+    customerName: { type: String, default: "" },
+    customerLocation: { type: String, default: "" },
+    customerMobile: { type: String, default: "" },
+    orderNote: { type: String, default: "" },
 
     products: [
       {
@@ -18,10 +25,7 @@ const orderShema = new mongoose.Schema(
       },
     ],
 
-    paymentId: {
-      type: String,
-      default: "",
-    },
+    paymentId: String,
 
     paymentMethod: {
       type: String,
@@ -29,19 +33,16 @@ const orderShema = new mongoose.Schema(
       default: "",
     },
 
-    paymentNumber: {
-      type: String,
-      default: "",
-    },
+    paymentNumber: String,
 
     payment_status: {
       type: String,
-      default: "",
+      default: "pending",
     },
 
     order_status: {
       type: String,
-      default: "",
+      default: "pending",
     },
 
     totalAmt: {
@@ -52,5 +53,5 @@ const orderShema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const orderModel = mongoose.model("order", orderShema);
+const orderModel = mongoose.model("order", orderSchema);
 export default orderModel;

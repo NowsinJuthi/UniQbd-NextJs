@@ -17,6 +17,16 @@ export const createProductController = async (req, res) => {
       packageType,
     } = req.body;
 
+    let parsedPackageType = [];
+
+    if (packageType) {
+      try {
+        parsedPackageType = JSON.parse(packageType);
+      } catch (err) {
+        parsedPackageType = [];
+      }
+    }
+
     const product = await ProductModel.create({
       name,
       slug: slugify(name),
@@ -26,7 +36,7 @@ export const createProductController = async (req, res) => {
       discountPrice,
       quantity,
       category,
-      packageType: packageType ? JSON.parse(packageType) : [], // parse JSON
+      packageType: parsedPackageType,
       photo: req.files?.photo?.[0]?.filename,
       bgPhoto: req.files?.bgPhoto?.[0]?.filename,
     });
@@ -37,10 +47,10 @@ export const createProductController = async (req, res) => {
       product,
     });
   } catch (error) {
+    console.log("CREATE ERROR:", error);
     res.status(500).send({
       success: false,
-      message: "Create product failed",
-      error,
+      message: error.message,
     });
   }
 };
@@ -137,7 +147,9 @@ export const productBgPhotoController = async (req, res) => {
 // DELETE PRODUCT
 export const deleteProductController = async (req, res) => {
   try {
-    await ProductModel.findByIdAndDelete(req.params.id);
+    await ProductModel.findOneAndDelete({
+      slug: req.params.id,  
+    });
 
     res.send({
       success: true,
@@ -151,25 +163,64 @@ export const deleteProductController = async (req, res) => {
 // UPDATE PRODUCT
 export const updateProductController = async (req, res) => {
   try {
-    const updated = await ProductModel.findByIdAndUpdate(
-      req.params.id,
-      {
-        ...req.body,
-        slug: slugify(req.body.name),
-      },
-      { new: true },
+    const { name, packageType } = req.body;
+
+    let parsedPackageType = [];
+
+    if (packageType) {
+      try {
+        parsedPackageType = JSON.parse(packageType);
+      } catch (e) {
+        parsedPackageType = [];
+      }
+    }
+
+    const updateData = {
+      ...req.body,
+      packageType: parsedPackageType,
+    };
+
+    // ✅ update slug safely
+    if (name) {
+      updateData.slug = slugify(name);
+    }
+
+    // ✅ photo update
+    if (req.files?.photo?.[0]?.filename) {
+      updateData.photo = req.files.photo[0].filename;
+    }
+
+    if (req.files?.bgPhoto?.[0]?.filename) {
+      updateData.bgPhoto = req.files.bgPhoto[0].filename;
+    }
+
+    // 🔥🔥🔥 MAIN FIX HERE
+    const updated = await ProductModel.findOneAndUpdate(
+      { slug: req.params.id },   // ✅ FIXED (was causing 500 error)
+      updateData,
+      { new: true }
     );
 
-    res.send({
+    if (!updated) {
+      return res.status(404).send({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    res.status(200).send({
       success: true,
       message: "Product updated",
       updated,
     });
   } catch (error) {
-    res.status(500).send({ success: false, error });
+    console.error("UPDATE ERROR:", error);
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
   }
 };
-
 
 // COUNT PRODUCTS
 export const productCountController = async (req, res) => {

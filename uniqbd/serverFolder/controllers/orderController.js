@@ -1,6 +1,6 @@
+import sendEmailFun from "../config/sendEamil.js";
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/usersModel.js";
-
 
 export const createOrderController = async (req, res) => {
   try {
@@ -14,8 +14,13 @@ export const createOrderController = async (req, res) => {
       totalAmt,
       paymentMethod,
       paymentNumber,
+      customerEmail,
+      customerName,
+      customerLocation,
+      customerMobile,
+      orderNote,
     } = req.body;
-
+    console.log(" FULL REQ BODY:", req.body);
     if (!products || products.length === 0) {
       return res.status(400).json({
         message: "No products in order",
@@ -25,6 +30,12 @@ export const createOrderController = async (req, res) => {
 
     const newOrder = new orderModel({
       userId,
+
+      customerEmail: customerEmail || "",
+      customerName: customerName || "",
+      customerLocation: customerLocation || "",
+      customerMobile: customerMobile || "",
+      orderNote: orderNote || "",
 
       products: products.map((item) => ({
         productId: item.id,
@@ -38,7 +49,6 @@ export const createOrderController = async (req, res) => {
       paymentId: paymentId || "",
       paymentMethod: paymentMethod || "",
       paymentNumber: paymentNumber || "",
-
       payment_status: payment_status || "pending",
       order_status: order_status || "pending",
       totalAmt: totalAmt || 0,
@@ -46,16 +56,32 @@ export const createOrderController = async (req, res) => {
 
     const savedOrder = await newOrder.save();
 
+    //  EMAIL ON ORDER CREATE
+    if (customerEmail?.trim()) {
+      await sendEmailFun({
+        sendTo: customerEmail,
+        subject: "Order Confirmed - UniQbd",
+        text: "Order placed",
+        html: `
+          <div>
+            <h2>🎉 Order Confirmed</h2>
+            <p>Hi ${customerName}</p>
+            <p>Your order is received.</p>
+            <p>Total: ${totalAmt} TK</p>
+          </div>
+        `,
+      });
+    }
+
     return res.status(201).json({
-      message: "Order placed successfully",
       success: true,
       order: savedOrder,
     });
   } catch (error) {
-    console.log(error);
+    console.log("ORDER CREATE ERROR:", error);
     return res.status(500).json({
-      message: "Server error",
       success: false,
+      message: error.message,
     });
   }
 };
@@ -80,9 +106,7 @@ export const getUserOrdersController = async (req, res) => {
   try {
     const userId = req.userId;
 
-    const orders = await orderModel
-      .find({ userId })
-      .sort({ createdAt: -1 });
+    const orders = await orderModel.find({ userId }).sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -100,15 +124,68 @@ export const OrdersStatusController = async (req, res) => {
   try {
     const { status } = req.body;
 
-    const order = await orderModel.findByIdAndUpdate(
-      req.params.id,
-      { order_status: status },
-      { new: true }
-    );
+    console.log("🔥 Incoming status:", status);
 
-    return res.json({ success: true, order });
+    const order = await orderModel.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    console.log("📧 Customer email:", order.customerEmail);
+
+    order.order_status = status;
+    await order.save();
+
+    const newStatus = status.toLowerCase();
+
+    const email = order.customerEmail?.trim();
+
+    // CANCEL EMAIL
+    if (newStatus === "cancelled" && email) {
+      await sendEmailFun({
+        sendTo: email,
+        subject: "❌ Order Cancelled",
+        text: "Cancelled",
+        html: `
+          <div>
+            <h2>Order Cancelled</h2>
+            <p>Hi ${order.customerName}</p>
+            <p>Your order was cancelled.</p>
+          </div>
+        `,
+      });
+    }
+
+    // COMPLETED EMAIL
+    if (newStatus === "completed" && email) {
+      await sendEmailFun({
+        sendTo: email,
+        subject: "🎉 Order Completed",
+        text: "Completed",
+        html: `
+          <div>
+            <h2>🎉 Order Completed</h2>
+            <p>Hi ${order.customerName}</p>
+            <p>Your order is completed successfully.</p>
+            <p>Total: ${order.totalAmt} TK</p>
+          </div>
+        `,
+      });
+    }
+
+    return res.json({
+      success: true,
+      order,
+    });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    console.log("STATUS ERROR:", error);
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
@@ -141,9 +218,9 @@ export const adminDashboardController = async (req, res) => {
       {
         $group: {
           _id: null,
-          total: { $sum: "$totalAmt" }
-        }
-      }
+          total: { $sum: "$totalAmt" },
+        },
+      },
     ]);
 
     return res.json({
@@ -151,7 +228,6 @@ export const adminDashboardController = async (req, res) => {
       totalCustomers,
       revenue: revenueResult[0]?.total || 0,
     });
-
   } catch (error) {
     console.error("ADMIN DASHBOARD ERROR:", error);
     return res.status(500).json({

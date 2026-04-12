@@ -1,11 +1,91 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
 
-const ProductTabs = () => {
+const ProductTabs = ({ product }) => {
+  const [reviews, setReviews] = useState([]);
+  const [reviewText, setReviewText] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const [activeTab, setActiveTab] = useState("description");
   const [rating, setRating] = useState(0);
+  const [selectedPackage, setSelectedPackage] = useState(null);
+
+  const packages = product?.packageType || product?.packages || [];
+
+  const [user, setUser] = useState(null);
+
+  // ================= FETCH USER =================
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/api/v1/user", {
+          withCredentials: true,
+        });
+
+        setUser(res.data.data); // ✅ FIXED
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getUser();
+  }, []);
+
+  // ================= FETCH REVIEWS =================
+  const fetchReviews = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3001/api/v1/reviews/${product._id}`,
+      );
+
+      setReviews(res.data.reviews || []);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (!product?._id) return;
+    fetchReviews();
+  }, [product?._id]);
+
+  // ================= SUBMIT REVIEW =================
+  const handleSubmitReview = async () => {
+    if (!rating || !reviewText) {
+      alert("Please give rating and comment");
+      return;
+    }
+
+    if (!user) {
+      alert("User not loaded yet");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await axios.post("http://localhost:3001/api/v1/reviews", {
+        productId: product._id,
+        name: user.name, // ✅ REAL USER NAME
+        rating,
+        comment: reviewText,
+      });
+
+      alert("Review submitted! Waiting for admin approval.");
+
+      setRating(0);
+      setReviewText("");
+
+      await fetchReviews(); // ✅ refresh after submit
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const menuItems = [
     { name: "Description", key: "description" },
@@ -15,7 +95,6 @@ const ProductTabs = () => {
 
   return (
     <div className="mt-16">
-
       {/* Tabs */}
       <div className="flex flex-wrap gap-3 border-b border-white/10 pb-3 ">
         {menuItems.map((item) => {
@@ -25,7 +104,7 @@ const ProductTabs = () => {
             <button
               key={item.key}
               onClick={() => setActiveTab(item.key)}
-              className="relative px-6 py-3 text-sm font-medium transition  shadow-inner shadow-button/20 rounded-2xl"
+              className="relative px-6 py-3 text-sm font-medium transition shadow-inner shadow-button/20 rounded-2xl"
             >
               <span
                 className={`relative z-10 ${
@@ -49,8 +128,7 @@ const ProductTabs = () => {
 
       {/* Content */}
       <div className="mt-6 p-7 rounded-2xl border border-white/10 bg-gradient-to-br from-background via-imgcard to-background shadow-inner shadow-button/10 backdrop-blur-md">
-
-        {/* Description */}
+        {/* DESCRIPTION */}
         {activeTab === "description" && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -60,40 +138,21 @@ const ProductTabs = () => {
               Product Description
             </h2>
 
-            <p className="text-text/70 leading-relaxed max-w-3xl">
-              Enjoy fast and secure digital delivery. This product is ideal for
-              gamers who want instant top-up services with reliable payment
-              methods. We ensure safe transactions, quick processing, and
-              24/7 customer support experience.
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-4 mt-6">
-
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                Instant Delivery
+            {packages.map((pack, index) => (
+              <div key={index}>
+                <p className="text-text/70 leading-relaxed">
+                  {product?.description}
+                </p>
               </div>
-
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                Secure Payment
-              </div>
-
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                Trusted Gaming Service
-              </div>
-
-            </div>
+            ))}
           </motion.div>
         )}
 
-        {/* Reviews */}
+        {/* REVIEWS */}
         {activeTab === "reviews" && (
           <div className="grid md:grid-cols-2 gap-8 ">
-
             {/* Reviews list */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <h2 className="text-2xl font-semibold text-text mb-1">
                 Customer Reviews
               </h2>
@@ -103,34 +162,32 @@ const ProductTabs = () => {
               </p>
 
               <div className="space-y-4">
+                {reviews.length === 0 ? (
+                  <p className="text-text/60">No reviews yet</p>
+                ) : (
+                  reviews.map((review) => (
+                    <div
+                      key={review._id}
+                      className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition shadow-inner shadow-button/20"
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-semibold text-text">
+                          {review.name}
+                        </span>
 
-                {[1, 2].map((review) => (
-                  <div
-                    key={review}
-                    className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition shadow-inner shadow-button/20"
-                  >
+                        <span className="text-yellow-400">
+                          {"★".repeat(review.rating)}
+                        </span>
+                      </div>
 
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-semibold text-text">
-                        Nowsin Juthi
-                      </span>
+                      <p className="text-sm text-text/70">{review.comment}</p>
 
-                      <span className="text-yellow-400">
-                        ★★★★★
-                      </span>
+                      <p className="text-xs text-text/40 mt-2">
+                        {new Date(review.createdAt).toDateString()}
+                      </p>
                     </div>
-
-                    <p className="text-sm text-text/70">
-                      Very fast delivery and trusted seller. Highly recommended!
-                    </p>
-
-                    <p className="text-xs text-text/40 mt-2">
-                      March 28, 2026
-                    </p>
-
-                  </div>
-                ))}
-
+                  ))
+                )}
               </div>
             </motion.div>
 
@@ -140,22 +197,18 @@ const ProductTabs = () => {
               animate={{ opacity: 1 }}
               className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur"
             >
-
               <h3 className="text-xl font-semibold text-text mb-5">
                 Write a Review
               </h3>
 
               {/* rating */}
               <div className="mb-5">
-
                 <label className="block text-sm text-text/70 mb-2">
                   Rating
                 </label>
 
                 <div className="flex gap-2 text-2xl">
-
                   {[1, 2, 3, 4, 5].map((star) => (
-
                     <span
                       key={star}
                       onClick={() => setRating(star)}
@@ -167,70 +220,58 @@ const ProductTabs = () => {
                     >
                       ★
                     </span>
-
                   ))}
-
                 </div>
-
               </div>
 
               {/* textarea */}
               <div className="mb-5">
-
                 <label className="block text-sm text-text/70 mb-2">
                   Review
                 </label>
 
                 <textarea
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
                   rows={4}
-                  placeholder="Share your experience..."
                   className="w-full shadow-inner shadow-button/20 p-3 rounded-lg bg-white/5 border border-white/10 text-text outline-none focus:ring-2 focus:ring-button resize-none"
                 />
-
               </div>
 
-              <button className="w-full py-3 rounded-xl bg-button text-white font-medium shadow-lg shadow-button/20 hover:scale-[1.02] transition">
+              <button
+                onClick={handleSubmitReview}
+                className="w-full py-3 rounded-xl bg-button text-white font-medium shadow-lg shadow-button/20 hover:scale-[1.02] transition"
+              >
                 Submit Review
               </button>
-
             </motion.div>
-
           </div>
         )}
 
-        {/* Shipping */}
+        {/* SHIPPING */}
         {activeTab === "shipping" && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
           >
-
             <h2 className="text-2xl font-semibold text-text mb-3">
               Shipping & Delivery
             </h2>
 
             <div className="space-y-3 text-text/70">
-
               <p>
-                Instant delivery for digital products after payment
-                confirmation.
+                {product?.shipping?.instantDelivery
+                  ? "Instant delivery for digital products after payment confirmation."
+                  : "Manual processing required after payment."}
               </p>
 
-              <p>
-                Average delivery time: 5–15 minutes.
-              </p>
+              <p>Average delivery time: {product?.shipping?.deliveryTime}</p>
 
-              <p>
-                Safe & verified transaction process.
-              </p>
-
+              <p>{product?.shipping?.note}</p>
             </div>
-
           </motion.div>
         )}
-
       </div>
-
     </div>
   );
 };
