@@ -11,6 +11,8 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
+
 
 import { FaNotesMedical } from "react-icons/fa";
 import { AiFillPicture, AiFillProduct } from "react-icons/ai";
@@ -37,6 +39,7 @@ export const AdminMenuPage = () => {
     { href: "/admin/notes", name: "Add Note", icon: <FaNotesMedical /> },
     { href: "/admin/homeSlider", name: "Home Sliders", icon: <AiFillPicture /> },
     { href: "/admin/reviews", name: "Reviews", icon: <MdRateReview /> },
+    { href: "/admin/all-users", name: "All-Users", icon: <FaUsers /> },
   ];
 
   const toggleMenu = (name) => {

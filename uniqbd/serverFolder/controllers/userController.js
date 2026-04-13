@@ -139,46 +139,16 @@ export async function loginController(req, res) {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({
-        message: "Provide email and password",
-        success: false,
-        error: true,
-      });
-    }
-
     const user = await userModel.findOne({ email });
+
     if (!user) {
-      return res.status(400).json({
-        message: "User not registered",
-        success: false,
-        error: true,
-      });
-    }
-
-    if (user.status !== "Active") {
-      return res.status(400).json({
-        message: "Contact admin for account activation",
-        success: false,
-        error: true,
-      });
-    }
-
-    if (!user.verify_email) {
-      return res.status(400).json({
-        message: "Email not verified",
-        success: false,
-        error: true,
-      });
+      return res.status(400).json({ message: "User not found" });
     }
 
     const isPasswordCorrect = await bcryptjs.compare(password, user.password);
+
     if (!isPasswordCorrect) {
-      return res.status(400).json({
-        message: "Incorrect password",
-        success: false,
-        error: true,
-      });
+      return res.status(400).json({ message: "Wrong password" });
     }
 
     const accessToken = await generateAccessToken(user._id);
@@ -187,10 +157,11 @@ export async function loginController(req, res) {
     user.last_login_date = new Date();
     await user.save();
 
+    // ✅ FIXED COOKIE OPTIONS
     const cookieOptions = {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: false,        // 🔥 IMPORTANT (localhost fix)
+      sameSite: "lax",      // 🔥 IMPORTANT
     };
 
     res.cookie("accessToken", accessToken, cookieOptions);
@@ -199,20 +170,15 @@ export async function loginController(req, res) {
     return res.status(200).json({
       message: "Login successful",
       success: true,
-      error: false,
       data: {
-        accessToken,
-        refreshToken,
-        userEmail: user?.email,
-        userName: user?.name
+        userEmail: user.email,
+        userName: user.name,
+        role: user.role,
+        accessToken, // optional
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      message: error.message || error,
-      success: false,
-      error: true,
-    });
+    return res.status(500).json({ message: error.message });
   }
 }
 
@@ -413,7 +379,6 @@ export async function changePasswordController(req, res) {
     });
   }
 }
-
 // RESEND OPT
 export async function resendOtpController(req, res) {
   try {
@@ -535,6 +500,110 @@ export const updateProfileController = async (req, res) => {
         email: user.email,
       },
     });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      success: false,
+      error: true,
+    });
+  }
+};
+
+
+export const updateUserRoleController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { role } = req.body;
+
+    const allowedRoles = ["ADMIN", "USER", "AUTHOR", "EDITOR"];
+
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({
+        message: "Invalid role",
+        success: false,
+        error: true,
+      });
+    }
+
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+        error: true,
+      });
+    }
+
+    user.role = role;
+    await user.save();
+
+    return res.status(200).json({
+      message: "User role updated successfully",
+      success: true,
+      data: {
+        userId: user._id,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      success: false,
+      error: true,
+    });
+  }
+};
+
+export const getAllUsersController = async (req, res) => {
+  try {
+    const users = await userModel
+      .find()
+      .select("-password -otp -otpExpires -refreshToken");
+
+    return res.status(200).json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+export const deleteUserController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+        error: true,
+      });
+    }
+
+
+    if (user.role === "ADMIN") {
+      return res.status(400).json({
+        message: "You cannot delete an admin user",
+        success: false,
+        error: true,
+      });
+    }
+
+    await userModel.findByIdAndDelete(userId);
+
+    return res.status(200).json({
+      message: "User deleted successfully",
+      success: true,
+    });
+
   } catch (error) {
     return res.status(500).json({
       message: error.message,

@@ -21,10 +21,9 @@ const Note = () => {
 
   const typingTimeout = useRef(null);
 
-  // ======================
+
   // FETCH NOTES
-  // ======================
-  const fetchNotes = async () => {
+ const fetchNotes = async () => {
     try {
       setLoading(true);
 
@@ -44,10 +43,8 @@ const Note = () => {
     fetchNotes();
   }, []);
 
-  // ======================
   // ADD NOTE
-  // ======================
-  const addNote = async () => {
+ const addNote = async () => {
     try {
       if (!title.trim() || !text.trim()) return;
 
@@ -75,10 +72,9 @@ const Note = () => {
     }
   };
 
-  // ======================
+
   // DELETE NOTE
-  // ======================
-  const deleteNote = async (id) => {
+const deleteNote = async (id) => {
     try {
       await axios.delete(
         `${API}/delete-notes/${id}`,
@@ -92,19 +88,16 @@ const Note = () => {
     }
   };
 
-  // ======================
   // START EDIT
-  // ======================
-  const startEdit = (note) => {
+ const startEdit = (note) => {
     setEditId(note._id);
 
     setEditTitle(note.title);
     setEditText(note.text);
   };
 
-  // ======================
+
   // UPDATE NOTE
-  // ======================
   const updateNote = async (id) => {
     try {
       if (!editTitle.trim() || !editText.trim()) return;
@@ -126,9 +119,7 @@ const Note = () => {
     }
   };
 
-  // ======================
   // AUTO SAVE
-  // ======================
   useEffect(() => {
     if (!editId) return;
 

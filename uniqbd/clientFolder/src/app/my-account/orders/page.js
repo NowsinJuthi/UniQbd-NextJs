@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import MenuPage from "../menu/page";
 
 const Orders = () => {
-
   const timeAgo = (date) => {
     const now = new Date();
     const created = new Date(date);
@@ -23,15 +22,18 @@ const Orders = () => {
     return `${days} days ago`;
   };
 
-
   const router = useRouter();
 
   const [orders, setOrders] = useState([]);
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const { data } = await axios.get("http://localhost:3001/api/v1/orders");
-
+        const { data } = await axios.get(
+          "http://localhost:3001/api/v1/my-orders",
+          {
+            withCredentials: true,
+          },
+        );
         setOrders(data.orders);
       } catch (error) {
         console.log(error);
@@ -81,7 +83,7 @@ const Orders = () => {
                       </td>
 
                       <td className="p-4 text-button/80">
-                          {timeAgo(order.createdAt)}
+                        {timeAgo(order.createdAt)}
                       </td>
 
                       <td className="p-4">

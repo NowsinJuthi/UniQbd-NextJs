@@ -43,11 +43,11 @@ const LoginPage = () => {
       });
 
       if (res?.error) {
-        toast.error(res?.message || "Login failed ❌");
+        toast.error(res?.message || "Login failed ");
         return;
       }
 
-      toast.success("Login successful ✅");
+      toast.success("Login successful");
 
       // cookies set
       Cookies.set("userEmail", res?.data?.email);
@@ -62,7 +62,7 @@ const LoginPage = () => {
 
       setIsLogin(true);
 
-      router.push("/");
+      router.push("/my-account");
     } catch (err) {
       toast.error("Server error ⚠️");
     } finally {
