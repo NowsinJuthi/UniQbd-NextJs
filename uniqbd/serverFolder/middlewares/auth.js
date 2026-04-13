@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 const auth = (req, res, next) => {
   try {
-    console.log("🔥 AUTH HIT");
+    console.log("AUTH HIT");
 
     const token =
       req.cookies?.accessToken ||

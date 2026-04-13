@@ -11,8 +11,12 @@ const Review = () => {
   // ================= GET ALL REVIEWS =================
   const getAllReviews = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/api/v1/admin/all");
-      setReviews(res.data.reviews);
+      const res = await axios.get(
+        "http://localhost:3001/api/v1/admin/all",
+        { withCredentials: true }
+      );
+
+      setReviews(res.data.reviews || []);
     } catch (error) {
       console.log(error);
     }
@@ -25,10 +29,14 @@ const Review = () => {
   // ================= APPROVE =================
   const approveReview = async (id) => {
     try {
-      await axios.put(`http://localhost:3001/api/v1/approve/${id}`);
+      await axios.put(
+        `http://localhost:3001/api/v1/approve/${id}`,
+        {},
+        { withCredentials: true }
+      );
 
       toast.success("Approved!");
-      getAllReviews(); // reload
+      getAllReviews();
     } catch (error) {
       console.log(error);
     }
@@ -45,6 +53,7 @@ const Review = () => {
         {
           comment: newComment,
         },
+        { withCredentials: true } // ✅ FIXED
       );
 
       toast.success("Review Updated!");
@@ -73,7 +82,10 @@ const Review = () => {
                 <h3 className="text-lg font-semibold">
                   Product: {review.productId?.name || "Unknown Product"}
                 </h3>
-                <h3 className="text-lg font-semibold">Name: {review.name}</h3>
+
+                <h3 className="text-lg font-semibold">
+                  Name: {review.name}
+                </h3>
 
                 <p className="mt-2">Review: {review.comment}</p>
 
@@ -86,7 +98,9 @@ const Review = () => {
                 </p>
 
                 {!review.approved && (
-                  <p className="text-red-400 text-sm mt-1">Pending Approval</p>
+                  <p className="text-red-400 text-sm mt-1">
+                    Pending Approval
+                  </p>
                 )}
               </div>
 

@@ -5,32 +5,34 @@ import axios from "axios";
 import MenuPage from "../../menu/page";
 import { useParams } from "next/navigation";
 
-
 const ViewPage = () => {
-
   const params = useParams();
   const id = params.id;
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [notes, setNotes] = useState([]);
+
+  const fetchOrder = async () => {
+    try {
+      setLoading(true);
+
+      const res = await axios.get(`http://localhost:3001/api/v1/order/${id}`, {
+        withCredentials: true,
+      });
+
+      console.log(res)
+      setOrder(res.data.order);
+     setNotes(res.data.order.notes || []);
+    } catch (err) {
+      console.log(err);
+      setError("Failed to load order");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        setLoading(true);
-
-        const res = await axios.get(`http://localhost:3001/api/v1/order/${id}`);
-
-  console.log(res);
-        setOrder(res.data.order);
-      } catch (err) {
-        console.log(err);
-        setError("Failed to load order");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (id) fetchOrder();
   }, [id]);
 
@@ -110,6 +112,20 @@ const ViewPage = () => {
               </div>
             </div>
 
+            {/* CUSTOMER NOTES */}
+            {notes.length > 0 && (
+              <div className="mt-6 p-4 border rounded-xl">
+                <h2 className="text-lg font-bold mb-3">Messages from Admin</h2>
+
+                {notes.map((note) => (
+                  <div key={note._id} className="mb-3 p-3 rounded">
+                    <p className="font-semibold">{note.title}</p>
+                    <p className="text-sm">{note.text}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* PRODUCTS */}
             <div className="rounded-xl border overflow-hidden">
               <table className="w-full text-sm">
@@ -125,7 +141,6 @@ const ViewPage = () => {
                 <tbody>
                   {order.products.map((item, idx) => (
                     <tr key={idx} className="border-t">
-                      {/* ✅ FIX: productTitle instead of name */}
                       <td className="p-4 font-semibold">{item.productTitle}</td>
 
                       <td className="p-4">{item.price} TK</td>

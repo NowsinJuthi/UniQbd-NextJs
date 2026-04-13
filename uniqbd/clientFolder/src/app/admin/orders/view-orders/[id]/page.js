@@ -9,23 +9,21 @@ const ViewPage = () => {
   const { id } = useParams();
 
   const [order, setOrder] = useState(null);
-
   const [allNotes, setAllNotes] = useState([]);
   const [selectedNote, setSelectedNote] = useState("");
   const [customMessage, setCustomMessage] = useState("");
-
-  // ✅ ONLY ADD THIS (fix status bug)
   const [newStatus, setNewStatus] = useState("");
 
-  // FETCH ORDER
   useEffect(() => {
     const fetchOrder = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:3001/api/v1/order/${id}`
+          `http://localhost:3001/api/v1/order/${id}`,
+          { withCredentials: true }
         );
+
         setOrder(data.order);
-        setNewStatus(data.order.order_status); 
+        setNewStatus(data.order.order_status);
       } catch (error) {
         console.log(error);
       }
@@ -34,7 +32,6 @@ const ViewPage = () => {
     if (id) fetchOrder();
   }, [id]);
 
-  // FETCH NOTES
   useEffect(() => {
     const fetchAllNotes = async () => {
       try {
@@ -52,19 +49,15 @@ const ViewPage = () => {
     fetchAllNotes();
   }, []);
 
-  // UPDATE STATUS (ONLY ON BUTTON CLICK)
   const updateStatus = async (orderId, status) => {
     try {
-      const { data } = await axios.put(
+      await axios.put(
         `http://localhost:3001/api/v1/order/status/${orderId}`,
-        { status }
+        { order_status: status },
+        { withCredentials: true }
       );
 
-      setOrder((prev) => ({
-        ...prev,
-        order_status: status,
-      }));
-
+      setOrder((prev) => ({ ...prev, order_status: status }));
       setNewStatus(status);
 
       alert("Status updated successfully!");
@@ -73,7 +66,6 @@ const ViewPage = () => {
     }
   };
 
-  // SEND NOTE
   const sendNoteToCustomer = async () => {
     try {
       if (!selectedNote && !customMessage.trim()) return;
@@ -83,7 +75,7 @@ const ViewPage = () => {
         {
           orderId: id,
           noteIds: selectedNote ? [selectedNote] : [],
-          customMessage: customMessage,
+          customMessage,
         },
         { withCredentials: true }
       );
@@ -100,34 +92,36 @@ const ViewPage = () => {
   if (!order) return <p className="p-6">Loading...</p>;
 
   return (
-    <div className="grid grid-cols-12 gap-6 p-6">
+    <div className="grid grid-cols-12 gap-6 p-6 min-h-screen">
+
       {/* SIDEBAR */}
-      <div className="md:col-span-3 p-8 border-r bg-button/5">
+      <div className="md:col-span-3 p-6 border-r bg-button/5 rounded-xl">
         <AdminMenuPage />
       </div>
 
-      {/* CONTENT */}
-      <div className="col-span-12 md:col-span-9">
-        <h1 className="text-3xl font-bold mb-8">Order Details</h1>
+      {/* MAIN */}
+      <div className="col-span-12 md:col-span-9 space-y-6">
 
-        {/* ORDER INFO */}
-        <div className="p-6 mb-6 bg-button/5 rounded-2xl">
-          <p>
-            <b>Order:</b> #{order._id.slice(-6)}
-          </p>
-          <p>
-            <b>Status:</b> {order.order_status}
-          </p>
-          <p>
-            <b>Total:</b> {order.totalAmt} TK
+        {/* HEADER */}
+        <div className="bg-button/5 p-6 rounded-2xl">
+          <h1 className="text-2xl font-bold">Order Details</h1>
+          <p className="text-gray-400 mt-1">
+            Manage order status & customer communication
           </p>
         </div>
 
-        {/* PRODUCTS */}
-        <div className="rounded-2xl border mb-6">
+        {/* ORDER INFO CARD */}
+        <div className="bg-button/5 p-6 rounded-2xl space-y-2">
+          <p><b>Order:</b> #{order._id.slice(-6)}</p>
+          <p><b>Status:</b> {order.order_status}</p>
+          <p><b>Total:</b> {order.totalAmt} TK</p>
+        </div>
+
+        {/* PRODUCTS TABLE CARD */}
+        <div className="bg-button/5 p-6 rounded-2xl overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-button text-white">
+              <tr className="border-b border-white/10">
                 <th className="p-3">Product</th>
                 <th className="p-3">Price</th>
                 <th className="p-3">Qty</th>
@@ -136,7 +130,7 @@ const ViewPage = () => {
 
             <tbody>
               {order.products.map((p, i) => (
-                <tr key={i} className="border-t">
+                <tr key={i} className="border-b border-white/10">
                   <td className="p-3">{p.productTitle}</td>
                   <td className="p-3">{p.price}</td>
                   <td className="p-3">{p.quantity}</td>
@@ -146,12 +140,12 @@ const ViewPage = () => {
           </table>
         </div>
 
-        {/* STATUS UPDATE (FIXED) */}
-        <div className="flex gap-4 items-center mb-8">
+        {/* STATUS UPDATE CARD */}
+        <div className="bg-button/5 p-6 rounded-2xl flex flex-col md:flex-row gap-4 md:items-center">
           <select
             value={newStatus}
             onChange={(e) => setNewStatus(e.target.value)}
-            className="p-2 border rounded"
+            className="p-3 rounded-xl bg-white/5 outline-none"
           >
             <option value="pending">Pending</option>
             <option value="processing">Processing</option>
@@ -161,22 +155,23 @@ const ViewPage = () => {
 
           <button
             onClick={() => updateStatus(order._id, newStatus)}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+            className="bg-button text-white px-6 py-2 rounded-xl"
           >
             Update Status
           </button>
         </div>
 
-        {/* NOTES */}
-        <div className="p-6 bg-button/5 rounded-xl">
-          <h2 className="text-xl font-bold mb-4">
+        {/* NOTE SECTION CARD */}
+        <div className="bg-button/5 p-6 rounded-2xl space-y-4">
+
+          <h2 className="text-lg font-bold">
             Send Note / Message to Customer
           </h2>
 
           <select
             value={selectedNote}
             onChange={(e) => setSelectedNote(e.target.value)}
-            className="w-full p-2 border rounded mb-4"
+            className="w-full p-3 rounded-xl bg-white/5 outline-none"
           >
             <option value="">Select Note (Optional)</option>
 
@@ -190,14 +185,14 @@ const ViewPage = () => {
           <textarea
             value={customMessage}
             onChange={(e) => setCustomMessage(e.target.value)}
-            placeholder="Write custom message for customer..."
-            className="w-full p-2 border rounded mb-4 h-24"
+            placeholder="Write custom message..."
+            className="w-full p-3 rounded-xl bg-white/5 outline-none h-28"
           />
 
           {selectedNote && (
-            <div className="mb-4 p-3 border rounded ">
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
               <b>{allNotes.find((n) => n._id === selectedNote)?.title}</b>
-              <p className="text-sm">
+              <p className="text-sm text-gray-400">
                 {allNotes.find((n) => n._id === selectedNote)?.text}
               </p>
             </div>
@@ -205,11 +200,13 @@ const ViewPage = () => {
 
           <button
             onClick={sendNoteToCustomer}
-            className="bg-green-700 text-white px-4 py-2 rounded"
+            className="bg-green-600 text-white px-6 py-2 rounded-xl"
           >
             Send to Customer
           </button>
+
         </div>
+
       </div>
     </div>
   );

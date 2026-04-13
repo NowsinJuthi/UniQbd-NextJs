@@ -13,7 +13,7 @@ import { MyContext } from "@/context/ThemeContext";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-    const { setUser, setIsLogin } = useContext(MyContext);
+  const { setUser, setIsLogin } = useContext(MyContext);
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -54,15 +54,20 @@ const LoginPage = () => {
       Cookies.set("userName", res?.data?.userName);
       Cookies.set("actionType", "verifyEmail");
 
-      // context update
       setUser({
         email: res?.data?.email,
         name: res?.data?.userName,
+        role: res?.data?.role,
       });
 
       setIsLogin(true);
 
-      router.push("/my-account");
+      if (res?.data?.role === "ADMIN") {
+        router.push("/admin");
+      } else {
+        router.push("/my-account");
+      }
+
     } catch (err) {
       toast.error("Server error ⚠️");
     } finally {

@@ -7,7 +7,7 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
     },
 
-    // ✅ FIXED: ensure fields always exist
+
     customerEmail: { type: String, default: "" },
     customerName: { type: String, default: "" },
     customerLocation: { type: String, default: "" },
@@ -49,6 +49,12 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+      notes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Note",
+      },
+    ],
   },
   { timestamps: true }
 );

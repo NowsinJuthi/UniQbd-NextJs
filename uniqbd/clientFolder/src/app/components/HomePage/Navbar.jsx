@@ -18,7 +18,7 @@ import AccountMenu from "../AccountMenu/AccountMenu";
 
 
 const Navbar = () => {
-
+  const { user, isLogin } = useContext(MyContext);
 
   const context = useContext(MyContext)
   const {
@@ -119,20 +119,21 @@ const Navbar = () => {
           </div>
 
           {/* Account */}
-          <Link href="/dashboard/login">
-            {
-              context?.isLogin ? (
-                <Link href={'/my-account'}>
-                 <AccountMenu />
-                 </Link>
-               
-              ) : (
-                <Link href="/dashboard/login">
-                  <FiUser className="text-xl cursor-pointer hover:text-text transition" />
-                </Link>
-              )
-            }
-          </Link>
+          {isLogin ? (
+            <Link
+              href={
+                user?.role === "ADMIN"
+                  ? "/admin"
+                  : "/my-account"
+              }
+            >
+              <AccountMenu />
+            </Link>
+          ) : (
+            <Link href="/dashboard/login">
+              <FiUser className="text-xl cursor-pointer hover:text-text transition" />
+            </Link>
+          )}
 
           {/* Cart Button */}
           <button

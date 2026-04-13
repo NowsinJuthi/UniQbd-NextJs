@@ -1,4 +1,5 @@
 import noteModel from "../models/noteModel.js";
+import orderModel from "../models/orderModel.js";
 
 
 export const createNoteController = async (req, res) => {
@@ -53,7 +54,6 @@ export const getNotesController = async (req, res) => {
   }
 };
 
-
 export const getOrderNotesController = async (req, res) => {
   try {
     const orderId = req.params.orderId; // safer
@@ -92,7 +92,6 @@ export const deleteNoteController = async (req, res) => {
   }
 };
 
-
 export const updateNoteController = async (req, res) => {
   try {
     const { id } = req.params;
@@ -126,22 +125,45 @@ export const updateNoteController = async (req, res) => {
 
 export const sendNotesToCustomerController = async (req, res) => {
   try {
-    const { orderId, noteIds } = req.body;
+    const { orderId, noteIds, customMessage } = req.body;
 
-    if (!orderId || !noteIds?.length) {
+
+    if (!orderId || (!noteIds?.length && !customMessage?.trim())) {
       return res.status(400).json({
         success: false,
-        message: "orderId and noteIds required",
+        message: "Provide noteIds or customMessage",
       });
     }
 
-    const notes = await noteModel.find({ _id: { $in: noteIds } });
 
-    // mark as sent
-    await noteModel.updateMany(
-      { _id: { $in: noteIds } },
-      { isSentToCustomer: true }
-    );
+    let notes = [];
+    if (noteIds?.length) {
+      notes = await noteModel.find({ _id: { $in: noteIds } });
+
+      // mark as sent
+      await noteModel.updateMany(
+        { _id: { $in: noteIds } },
+        { isSentToCustomer: true }
+      );
+    }
+
+
+    if (customMessage?.trim()) {
+      const newNote = await noteModel.create({
+        title: "Custom Message",
+        text: customMessage,
+        orderId,
+      });
+
+      notes.push(newNote);
+    }
+
+
+    await orderModel.findByIdAndUpdate(orderId, {
+      $push: {
+        notes: notes.map((n) => n._id),
+      },
+    });
 
     return res.status(200).json({
       success: true,
@@ -149,7 +171,27 @@ export const sendNotesToCustomerController = async (req, res) => {
       notes,
     });
   } catch (error) {
+    console.log("SEND NOTES ERROR:", error);
     return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getOrderById = async (req, res) => {
+  try {
+    const order = await orderModel
+      .findById(req.params.id)
+      .populate("notes");
+
+    res.status(200).json({
+      success: true,
+      order,
+      notes: order.notes, 
+    });
+  } catch (error) {
+    res.status(500).json({
       success: false,
       message: error.message,
     });

@@ -4,6 +4,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { AdminMenuPage } from "../Menu/page";
+import OrderNotifications from "../OrderNotifications/page";
+import { playNotificationSound } from "@/utils/sound";
+import socket from "@/utils/socket";
+
 
 const Orders = () => {
   const router = useRouter();
@@ -12,6 +16,18 @@ const Orders = () => {
 
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("pending");
+
+
+  useEffect(() => {
+  socket.on("new-order", (data) => {
+    playNotificationSound();
+
+    console.log("NEW ORDER:", data);
+  });
+
+  return () => socket.off("new-order");
+}, []);
+
 
   const timeAgo = (date) => {
     const now = new Date();
@@ -29,7 +45,9 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3001/api/v1/orders");
+      const { data } = await axios.get("http://localhost:3001/api/v1/orders", {
+        withCredentials: true,
+      });
       setOrders(data.orders || []);
     } catch (error) {
       console.log(error);
@@ -57,11 +75,14 @@ const Orders = () => {
     try {
       await Promise.all(
         selectedOrders.map((id) =>
-          axios.put(`http://localhost:3001/api/v1/order/status/${id}`, {
-            order_status: selectedStatus,
-          }),
+          axios.put(
+            `http://localhost:3001/api/v1/order/status/${id}`,
+            { order_status: selectedStatus },
+            { withCredentials: true },
+          ),
         ),
       );
+
       setSelectedOrders([]);
       fetchOrders();
     } catch (error) {
@@ -69,20 +90,17 @@ const Orders = () => {
     }
   };
 
-  // STATUS FILTER
   const filteredOrders =
-    filter === "all"
-      ? orders
-      : orders.filter((o) => o.order_status === filter);
+    filter === "all" ? orders : orders.filter((o) => o.order_status === filter);
 
-  // COUNTS
   const total = orders.length;
   const pending = orders.filter((o) => o.order_status === "pending").length;
-  const processing = orders.filter((o) => o.order_status === "processing").length;
+  const processing = orders.filter(
+    (o) => o.order_status === "processing",
+  ).length;
   const completed = orders.filter((o) => o.order_status === "completed").length;
   const deleted = orders.filter((o) => o.order_status === "deleted").length;
 
-  // STATUS COLORS (AMAZON STYLE)
   const getStatusColor = (status) => {
     switch (status) {
       case "processing":
@@ -98,23 +116,16 @@ const Orders = () => {
 
   return (
     <div className="grid grid-cols-12 gap-6 p-6 bg-[#0b0f19] text-white min-h-screen">
-
-      {/* SIDEBAR */}
+      
+      <OrderNotifications fetchOrders={fetchOrders} />
       <div className="md:col-span-3 p-6 border-r border-white/10">
         <AdminMenuPage />
       </div>
 
-      {/* CONTENT */}
       <div className="col-span-12 md:col-span-9">
+        <h1 className="text-3xl font-bold mb-6">Orders Dashboard</h1>
 
-        {/* HEADER */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold">Orders Dashboard</h1>
-        </div>
-
-        {/* KPI CARDS */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-
           <div className="p-4 rounded-xl bg-white/5 border border-white/10">
             <p className="text-white/50 text-sm">Total Orders</p>
             <h2 className="text-2xl font-bold">{total}</h2>
@@ -136,32 +147,43 @@ const Orders = () => {
           </div>
         </div>
 
-        {/* FILTER BAR */}
         <div className="flex flex-wrap gap-3 mb-6">
-
-          <button onClick={() => setFilter("all")} className="px-4 py-2 rounded bg-white/10">
+          <button
+            onClick={() => setFilter("all")}
+            className="px-4 py-2 rounded bg-white/10"
+          >
             All ({total})
           </button>
 
-          <button onClick={() => setFilter("pending")} className="px-4 py-2 rounded bg-yellow-500/20 text-yellow-400">
+          <button
+            onClick={() => setFilter("pending")}
+            className="px-4 py-2 rounded bg-yellow-500/20 text-yellow-400"
+          >
             Pending
           </button>
 
-          <button onClick={() => setFilter("processing")} className="px-4 py-2 rounded bg-blue-500/20 text-blue-400">
+          <button
+            onClick={() => setFilter("processing")}
+            className="px-4 py-2 rounded bg-blue-500/20 text-blue-400"
+          >
             Processing
           </button>
 
-          <button onClick={() => setFilter("completed")} className="px-4 py-2 rounded bg-green-500/20 text-green-400">
+          <button
+            onClick={() => setFilter("completed")}
+            className="px-4 py-2 rounded bg-green-500/20 text-green-400"
+          >
             Completed
           </button>
 
-          <button onClick={() => setFilter("deleted")} className="px-4 py-2 rounded bg-red-500/20 text-red-400">
+          <button
+            onClick={() => setFilter("deleted")}
+            className="px-4 py-2 rounded bg-red-500/20 text-red-400"
+          >
             Deleted
           </button>
-
         </div>
 
-        {/* BULK ACTION */}
         {selectedOrders.length > 0 && (
           <div className="mb-4 flex gap-3 items-center bg-white/5 p-3 rounded-xl">
             <select
@@ -184,9 +206,7 @@ const Orders = () => {
           </div>
         )}
 
-        {/* TABLE */}
         <div className="overflow-x-auto rounded-xl border border-white/10">
-
           <table className="w-full text-left">
             <thead className="bg-white/5">
               <tr>
@@ -200,10 +220,11 @@ const Orders = () => {
             </thead>
 
             <tbody>
-
               {filteredOrders.map((order) => (
-                <tr key={order._id} className="border-t border-white/10 hover:bg-white/5">
-
+                <tr
+                  key={order._id}
+                  className="border-t border-white/10 hover:bg-white/5"
+                >
                   <td className="p-4">
                     <input
                       type="checkbox"
@@ -212,23 +233,21 @@ const Orders = () => {
                     />
                   </td>
 
-                  <td className="p-4 font-semibold">
-                    #{order._id.slice(-6)}
-                  </td>
+                  <td className="p-4 font-semibold">#{order._id.slice(-6)}</td>
 
                   <td className="p-4 text-white/60">
                     {timeAgo(order.createdAt)}
                   </td>
 
                   <td className="p-4">
-                    <span className={`px-3 py-1 rounded-full text-xs ${getStatusColor(order.order_status)}`}>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs ${getStatusColor(order.order_status)}`}
+                    >
                       {order.order_status}
                     </span>
                   </td>
 
-                  <td className="p-4 font-semibold">
-                    {order.totalAmt} TK
-                  </td>
+                  <td className="p-4 font-semibold">{order.totalAmt} TK</td>
 
                   <td className="p-4 text-center">
                     <button
@@ -240,16 +259,11 @@ const Orders = () => {
                       View
                     </button>
                   </td>
-
                 </tr>
               ))}
-
             </tbody>
-
           </table>
-
         </div>
-
       </div>
     </div>
   );

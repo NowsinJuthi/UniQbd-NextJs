@@ -7,15 +7,14 @@ import { AdminMenuPage } from "../Menu/page";
 import { useRouter } from "next/navigation";
 
 const AllProductpage = () => {
-
-    const router = useRouter();
-  
+  const router = useRouter();
   const [products, setProducts] = useState([]);
 
-  // Fetch all products
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3001/api/v1/product");
+      const { data } = await axios.get(
+        "http://localhost:3001/api/v1/product"
+      );
       setProducts(data.products);
     } catch (error) {
       console.log("Product load error:", error);
@@ -26,83 +25,124 @@ const AllProductpage = () => {
     fetchProducts();
   }, []);
 
-  // Delete a product
   const deleteProduct = async (id) => {
     try {
       const confirmDelete = confirm(
-        "Are you sure you want to delete this product?",
+        "Are you sure you want to delete this product?"
       );
       if (!confirmDelete) return;
 
-      await axios.delete(`http://localhost:3001/api/v1/product/${id}`);
-      fetchProducts(); // Refresh list
+      await axios.delete(
+        `http://localhost:3001/api/v1/product/${id}`
+      );
+
+      fetchProducts();
     } catch (error) {
       console.log("Delete error:", error);
     }
   };
 
   return (
-    <div className="min-h-screen flex bg-background">
-      {/* Sidebar */}
-      <div className="hidden md:block w-1/5 p-6 border-r border-gray-200">
+    <div className="grid grid-cols-12 gap-6 p-6 min-h-screen">
+
+      {/* SIDEBAR */}
+      <div className="md:col-span-3 p-6 border-r bg-button/5 rounded-xl">
         <AdminMenuPage />
       </div>
 
-      {/* Product Grid */}
-      <div className="flex-1 p-6">
-        <h1 className="text-2xl font-bold mb-6 text-button">All Products</h1>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 text-black">
-          {products?.map((product) => {
-            let displayPrice = product.price;
-            if (product.packageType && product.packageType.length > 0) {
-              displayPrice = "Packages Available";
-            }
+      {/* MAIN CONTENT */}
+      <div className="col-span-12 md:col-span-9 space-y-6">
 
-            return (
-              <div
-                key={product._id}
-                className="bg-background rounded-xl shadow hover:shadow-lg transition transform hover:-translate-y-1 flex flex-col"
-              >
-                <Link
-                  href={`/products/${product.slug}`}
-                  className="flex-1 flex flex-col items-center p-3"
-                >
-                  <div className="w-full h-32 flex items-center justify-center mb-2">
-                    <img
-                      src={`http://localhost:3001/uploads/${product.photo}`}
-                      alt={product.name}
-                      className="max-h-full object-contain"
-                    />
-                  </div>
-                  <h2 className="text-sm font-semibold text-center text-button truncate w-full">
-                    {product.name}
-                  </h2>
-                  <p className="text-sm font-medium text-text/80 mt-1 text-center">
-                    {displayPrice}
-                  </p>
-                </Link>
+        {/* HEADER */}
+        <div className="bg-button/5 p-6 rounded-2xl flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">All Products</h1>
+            <p className="text-gray-400 mt-1">
+              Manage your products, edit or remove items
+            </p>
+          </div>
 
-                {/* Edit & Delete Buttons */}
-                <div className="flex gap-2 p-2">
-                  <button
-                    onClick={() =>
-                      router.push(`/admin/products?editId=${product.slug}`)
-                    }
-                    className="flex-1 bg-blue-500 text-white text-xs py-1 rounded-md"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteProduct(product._id)}
-                    className="flex-1 bg-red-500 text-white text-xs py-1 rounded-md hover:bg-red-600 transition"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+          <div className="px-4 py-2 bg-button/10 rounded-lg text-sm">
+            Total: {products?.length || 0}
+          </div>
         </div>
+
+        {/* PRODUCT GRID */}
+        <div className="bg-button/5 p-6 rounded-2xl">
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+
+            {products?.map((product) => {
+              let displayPrice = product.price;
+
+              if (
+                product.packageType &&
+                product.packageType.length > 0
+              ) {
+                displayPrice = "Packages Available";
+              }
+
+              return (
+                <div
+                  key={product._id}
+                  className="bg-white/5 rounded-2xl p-3 flex flex-col hover:scale-[1.02] transition"
+                >
+
+                  {/* IMAGE */}
+                  <Link
+                    href={`/products/${product.slug}`}
+                    className="flex flex-col items-center flex-1"
+                  >
+                    <div className="w-full h-32 flex items-center justify-center mb-2">
+                      <img
+                        src={`http://localhost:3001/uploads/${product.photo}`}
+                        alt={product.name}
+                        className="max-h-full object-contain"
+                      />
+                    </div>
+
+                    {/* NAME */}
+                    <h2 className="text-sm font-semibold text-center text-button truncate w-full">
+                      {product.name}
+                    </h2>
+
+                    {/* PRICE */}
+                    <p className="text-xs text-text/70 mt-1 text-center">
+                      {displayPrice}
+                    </p>
+                  </Link>
+
+                  {/* ACTIONS (ADMIN STYLE BUTTONS) */}
+                  <div className="flex gap-2 mt-3">
+
+                    <button
+                      onClick={() =>
+                        router.push(
+                          `/admin/products?editId=${product.slug}`
+                        )
+                      }
+                      className="flex-1 bg-button/10 text-text text-xs py-2 rounded-xl hover:bg-button/20 transition"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => deleteProduct(product._id)}
+                      className="flex-1 bg-red-500/10 text-red-400 text-xs py-2 rounded-xl hover:bg-red-500/20 transition"
+                    >
+                      Delete
+                    </button>
+
+                  </div>
+
+                </div>
+              );
+            })}
+
+          </div>
+
+        </div>
+
       </div>
     </div>
   );

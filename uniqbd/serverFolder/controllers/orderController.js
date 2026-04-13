@@ -2,6 +2,11 @@ import sendEmailFun from "../config/sendEamil.js";
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/usersModel.js";
 
+// 🔥 SOCKET IMPORT (REAL-TIME)
+import { io } from "../index.js";
+
+
+//  CREATE ORDER CONTROLLER (REAL-TIME ADDED)
 export const createOrderController = async (req, res) => {
   try {
     const userId = req.userId;
@@ -20,7 +25,9 @@ export const createOrderController = async (req, res) => {
       customerMobile,
       orderNote,
     } = req.body;
+
     console.log(" FULL REQ BODY:", req.body);
+
     if (!products || products.length === 0) {
       return res.status(400).json({
         message: "No products in order",
@@ -56,6 +63,13 @@ export const createOrderController = async (req, res) => {
 
     const savedOrder = await newOrder.save();
 
+      
+    io.emit("new-order", {
+      type: "NEW_ORDER",
+      message: "🛒 New Order Received",
+      order: savedOrder,
+    });
+
     //  EMAIL ON ORDER CREATE
     if (customerEmail?.trim()) {
       await sendEmailFun({
@@ -86,6 +100,9 @@ export const createOrderController = async (req, res) => {
   }
 };
 
+/* =========================================================
+   GET ALL ORDERS
+========================================================= */
 export const getAllOrdersController = async (req, res) => {
   try {
     const orders = await orderModel.find().sort({ createdAt: -1 });
@@ -102,6 +119,9 @@ export const getAllOrdersController = async (req, res) => {
   }
 };
 
+/* =========================================================
+   GET USER ORDERS
+========================================================= */
 export const getUserOrdersController = async (req, res) => {
   try {
     const userId = req.userId;
@@ -120,11 +140,21 @@ export const getUserOrdersController = async (req, res) => {
   }
 };
 
+/* =========================================================
+   ORDER STATUS UPDATE (REAL-TIME ADDED)
+========================================================= */
 export const OrdersStatusController = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { order_status } = req.body;
 
-    console.log("🔥 Incoming status:", status);
+    console.log("Incoming status:", order_status);
+
+    if (!order_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Order status is required",
+      });
+    }
 
     const order = await orderModel.findById(req.params.id);
 
@@ -135,12 +165,20 @@ export const OrdersStatusController = async (req, res) => {
       });
     }
 
-    console.log("📧 Customer email:", order.customerEmail);
+    const newStatus = String(order_status).toLowerCase();
 
-    order.order_status = status;
+    order.order_status = newStatus;
     await order.save();
 
-    const newStatus = status.toLowerCase();
+    /* =====================================================
+       🔥 REAL-TIME STATUS UPDATE
+    ===================================================== */
+    io.emit("order-status-updated", {
+      type: "STATUS_UPDATE",
+      message: "Order status updated",
+      orderId: order._id,
+      status: newStatus,
+    });
 
     const email = order.customerEmail?.trim();
 
@@ -179,19 +217,25 @@ export const OrdersStatusController = async (req, res) => {
 
     return res.json({
       success: true,
+      message: "Order status updated",
       order,
     });
   } catch (error) {
     console.log("STATUS ERROR:", error);
+
     return res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
 };
 
+/* =========================================================
+   SINGLE ORDER
+========================================================= */
 export const getSingleOrderController = async (req, res) => {
   try {
-    const order = await orderModel.findById(req.params.id);
+    const order = await orderModel.findById(req.params.id).populate("notes"); ;
 
     if (!order) {
       return res.status(404).json({
@@ -209,6 +253,9 @@ export const getSingleOrderController = async (req, res) => {
   }
 };
 
+/* =========================================================
+   ADMIN DASHBOARD
+========================================================= */
 export const adminDashboardController = async (req, res) => {
   try {
     const totalOrders = await orderModel.countDocuments();
@@ -235,4 +282,14 @@ export const adminDashboardController = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+/* =========================================================
+   AUTH CHECK
+========================================================= */
+export const requireLogin = (req, res, next) => {
+  if (!req.userId) {
+    return res.status(401).json({ message: "Login required" });
+  }
+  next();
 };

@@ -56,7 +56,7 @@ export async function registerController(req, res) {
     const token = jwt.sign(
       { email: user.email, id: user._id },
       process.env.JSON_WEB_TOKEN_SECRET_KEY,
-      { expiresIn: "1h" },
+      { expiresIn: "24h" },
     );
 
     return res.status(200).json({
@@ -157,11 +157,11 @@ export async function loginController(req, res) {
     user.last_login_date = new Date();
     await user.save();
 
-    // ✅ FIXED COOKIE OPTIONS
+
     const cookieOptions = {
       httpOnly: true,
-      secure: false,        // 🔥 IMPORTANT (localhost fix)
-      sameSite: "lax",      // 🔥 IMPORTANT
+      secure: false,       
+      sameSite: "lax",   
     };
 
     res.cookie("accessToken", accessToken, cookieOptions);

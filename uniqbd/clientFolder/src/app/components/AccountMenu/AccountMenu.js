@@ -24,25 +24,29 @@ const AccountMenu = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
+    return () =>
       document.removeEventListener("mousedown", handleClickOutside);
-    };
   }, []);
 
   const handleLogout = () => {
     Cookies.remove("userName");
     Cookies.remove("userEmail");
+    Cookies.remove("userRole");
 
     setUser({
       name: "",
       email: "",
+      role: "",
     });
 
     setIsLogin(false);
-
     setOpen(false);
+
+    router.push("/dashboard/login");
   };
+
+  const dashboardRoute =
+    user?.role === "ADMIN" ? "/admin" : "/my-account";
 
   return (
     <div className="relative" ref={menuRef}>
@@ -51,7 +55,7 @@ const AccountMenu = () => {
           onClick={() => setOpen(!open)}
           className="font-medium hover:text-button transition"
         >
-          {user?.name}
+          {user?.name || "Account"}
         </button>
       ) : (
         <Link href="/dashboard/login">
@@ -64,23 +68,23 @@ const AccountMenu = () => {
           className="absolute right-0 mt-2 w-44 rounded-xl shadow-lg 
           bg-background border border-white/10 backdrop-blur-xl p-2 space-y-1"
         >
-          <Link href={"/my-account"}>
+          {/* Dashboard route based on role */}
+          <Link href={dashboardRoute}>
             <button
               onClick={() => setOpen(false)}
               className="w-full text-left px-3 py-2 rounded-lg hover:bg-imgcard transition"
             >
-              My Account
+              Dashboard
             </button>
           </Link>
 
-          <Link href={"/"}>
-            <button
-              onClick={handleLogout}
-              className="w-full text-left px-3 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition"
-            >
-              Logout
-            </button>
-          </Link>
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            className="w-full text-left px-3 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition"
+          >
+            Logout
+          </button>
         </div>
       )}
     </div>
