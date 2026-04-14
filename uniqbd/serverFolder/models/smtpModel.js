@@ -10,6 +10,7 @@ const smtpSchema = new mongoose.Schema(
     accessTokenSecret: String,
     refreshTokenSecret: String,
   },
+  
   { timestamps: true }
 );
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import axios from "axios";
@@ -13,16 +13,19 @@ import { AdminMenuPage } from "../Menu/page";
 const Mailpage = () => {
   const pathname = usePathname();
 
-
   const [form, setForm] = useState({
+    // SMTP
     host: "",
     email: "",
     password: "",
     port: "",
 
-    jwtSecret: "",
-    accessTokenSecret: "",
-    refreshTokenSecret: "",
+    // ENV CONFIG
+    PORT: "",
+    MONGODB_URI: "",
+    ACCESS_TOKEN_SECRET: "",
+    REFRESH_TOKEN_SECRET: "",
+    JWT_SECRET: "",
   });
 
   const menu = [
@@ -66,20 +69,40 @@ const Mailpage = () => {
     }
   };
 
-  // ✅ TEST CONNECTION
+  //TEST CONNECTION
   const testConnection = async () => {
     try {
-      const res = await axios.post(
-        "http://localhost:3001/api/v1/smtp/test",
-        form,
-      );
+      const res = await axios.post("http://localhost:3001/api/v1/smtp/test", {
+        ...form,
+        port: Number(form.port),
+      });
 
+      console.log(res);
       alert(res.data.message);
     } catch (err) {
-      console.log(err);
-      alert("SMTP connection failed");
+      console.log(err.response?.data || err);
+      alert(err.response?.data?.error || "SMTP connection failed");
     }
   };
+
+  useEffect(() => {
+    const getConfig = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/api/v1/get");
+
+        if (res.data.data) {
+          setForm((prev) => ({
+            ...prev,
+            ...res.data.data,
+          }));
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getConfig();
+  }, []);
 
   return (
     <div className="grid grid-cols-12 gap-6 p-6 min-h-screen">
@@ -145,6 +168,7 @@ const Mailpage = () => {
             <h2 className="text-xl font-bold mb-6">SMTP Configuration</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <h1>SMTP Host</h1>
               <input
                 name="host"
                 value={form.host}
@@ -153,7 +177,7 @@ const Mailpage = () => {
                 placeholder="SMTP Host"
                 className="p-3 rounded-xl bg-white/5 text-text outline-none"
               />
-
+              <h1>SMTP Email</h1>
               <input
                 name="email"
                 value={form.email}
@@ -162,7 +186,7 @@ const Mailpage = () => {
                 placeholder="SMTP Email"
                 className="p-3 rounded-xl bg-white/5 text-text outline-none"
               />
-
+              <h1>SMTP Password</h1>
               <input
                 name="password"
                 value={form.password}
@@ -171,7 +195,7 @@ const Mailpage = () => {
                 placeholder="SMTP Password"
                 className="p-3 rounded-xl bg-white/5 text-text outline-none"
               />
-
+              <h1>Port</h1>
               <input
                 name="port"
                 value={form.port}

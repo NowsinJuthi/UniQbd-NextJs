@@ -43,7 +43,7 @@ const Checkout = () => {
 
   const handlePlaceOrder = async () => {
     try {
-      console.log("CHECKOUT EMAIL:", email)
+      console.log("CHECKOUT EMAIL:", email);
       // validation
       if (!name) return toast.error("Enter your name");
 
@@ -65,27 +65,30 @@ const Checkout = () => {
 
       setLoading(true);
 
+      const token = localStorage.getItem("accessToken");
+
       await axios.post(
         "http://localhost:3001/api/v1/order/create",
         {
           products: cart,
-
           customerName: name,
           customerEmail: email,
           customerLocation: location,
           customerMobile: mobile,
           orderNote: note,
-
           paymentMethod,
           paymentNumber,
           paymentId: transactionId,
-
           totalAmt: subtotal,
         },
         {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           withCredentials: true,
         },
       );
+
       toast.success("Order placed successfully!");
 
       clearCart();

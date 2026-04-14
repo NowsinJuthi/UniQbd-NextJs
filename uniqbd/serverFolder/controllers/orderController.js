@@ -2,9 +2,7 @@ import sendEmailFun from "../config/sendEamil.js";
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/usersModel.js";
 
-// 🔥 SOCKET IMPORT (REAL-TIME)
 import { io } from "../index.js";
-
 
 //  CREATE ORDER CONTROLLER (REAL-TIME ADDED)
 export const createOrderController = async (req, res) => {
@@ -26,19 +24,30 @@ export const createOrderController = async (req, res) => {
       orderNote,
     } = req.body;
 
-    console.log(" FULL REQ BODY:", req.body);
+    // 🔥 DEBUG (safe logging)
+    console.log("BODY EMAIL:", customerEmail);
+    console.log("USERID:", userId);
 
-    if (!products || products.length === 0) {
+    // ❌ REMOVE COOKIE DEBUG IN PRODUCTION (keep only for testing)
+    // console.log("COOKIES:", req.cookies);
+
+    console.log("FULL REQ BODY:", req.body);
+
+    // 🚨 VALIDATION FIX
+    if (!products || !Array.isArray(products) || products.length === 0) {
       return res.status(400).json({
         message: "No products in order",
         success: false,
       });
     }
 
+    // 🚨 SAFE EMAIL FALLBACK
+    const email = customerEmail?.trim() || "";
+
     const newOrder = new orderModel({
       userId,
 
-      customerEmail: customerEmail || "",
+      customerEmail: email,
       customerName: customerName || "",
       customerLocation: customerLocation || "",
       customerMobile: customerMobile || "",
@@ -63,43 +72,46 @@ export const createOrderController = async (req, res) => {
 
     const savedOrder = await newOrder.save();
 
-      
+    // 🔥 REAL-TIME EVENT
     io.emit("new-order", {
       type: "NEW_ORDER",
       message: "🛒 New Order Received",
       order: savedOrder,
     });
 
-    //  EMAIL ON ORDER CREATE
-    if (customerEmail?.trim()) {
+    // 📧 EMAIL SEND FIX (ONLY IF VALID EMAIL)
+    if (email) {
       await sendEmailFun({
-        sendTo: customerEmail,
+        sendTo: email,
         subject: "Order Confirmed - UniQbd",
         text: "Order placed",
         html: `
           <div>
             <h2>🎉 Order Confirmed</h2>
-            <p>Hi ${customerName}</p>
+            <p>Hi ${customerName || "Customer"}</p>
             <p>Your order is received.</p>
-            <p>Total: ${totalAmt} TK</p>
+            <p>Total: ${totalAmt || 0} TK</p>
           </div>
         `,
       });
+    } else {
+      console.log("⚠️ No email provided, skipping email send");
     }
 
     return res.status(201).json({
       success: true,
       order: savedOrder,
     });
+
   } catch (error) {
     console.log("ORDER CREATE ERROR:", error);
+
     return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
-
 /* =========================================================
    GET ALL ORDERS
 ========================================================= */
@@ -143,6 +155,7 @@ export const getUserOrdersController = async (req, res) => {
 /* =========================================================
    ORDER STATUS UPDATE (REAL-TIME ADDED)
 ========================================================= */
+
 export const OrdersStatusController = async (req, res) => {
   try {
     const { order_status } = req.body;
@@ -156,6 +169,7 @@ export const OrdersStatusController = async (req, res) => {
       });
     }
 
+    // FIND ORDER
     const order = await orderModel.findById(req.params.id);
 
     if (!order) {
@@ -165,13 +179,15 @@ export const OrdersStatusController = async (req, res) => {
       });
     }
 
+    // UPDATE STATUS
     const newStatus = String(order_status).toLowerCase();
-
     order.order_status = newStatus;
     await order.save();
 
+    console.log("Updated status:", newStatus);
+
     /* =====================================================
-       🔥 REAL-TIME STATUS UPDATE
+       🔥 REAL-TIME SOCKET UPDATE
     ===================================================== */
     io.emit("order-status-updated", {
       type: "STATUS_UPDATE",
@@ -180,9 +196,18 @@ export const OrdersStatusController = async (req, res) => {
       status: newStatus,
     });
 
-    const email = order.customerEmail?.trim();
+    /* =====================================================
+       📧 EMAIL LOGIC (FIXED)
+       - email comes from DB (NOT frontend)
+    ===================================================== */
 
-    // CANCEL EMAIL
+    const email = order.customerEmail; // ✅ FIXED
+    const customerName = order.customerName;
+    const totalAmt = order.totalAmt;
+
+    console.log("EMAIL FROM DB:", email);
+
+    // ❌ CANCEL EMAIL
     if (newStatus === "cancelled" && email) {
       await sendEmailFun({
         sendTo: email,
@@ -190,15 +215,15 @@ export const OrdersStatusController = async (req, res) => {
         text: "Cancelled",
         html: `
           <div>
-            <h2>Order Cancelled</h2>
-            <p>Hi ${order.customerName}</p>
-            <p>Your order was cancelled.</p>
+            <h2>❌ Order Cancelled</h2>
+            <p>Hi ${customerName}</p>
+            <p>Your order has been cancelled.</p>
           </div>
         `,
       });
     }
 
-    // COMPLETED EMAIL
+    // 🎉 COMPLETED EMAIL
     if (newStatus === "completed" && email) {
       await sendEmailFun({
         sendTo: email,
@@ -207,9 +232,9 @@ export const OrdersStatusController = async (req, res) => {
         html: `
           <div>
             <h2>🎉 Order Completed</h2>
-            <p>Hi ${order.customerName}</p>
+            <p>Hi ${customerName}</p>
             <p>Your order is completed successfully.</p>
-            <p>Total: ${order.totalAmt} TK</p>
+            <p><b>Total:</b> ${totalAmt} TK</p>
           </div>
         `,
       });
@@ -217,7 +242,7 @@ export const OrdersStatusController = async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Order status updated",
+      message: "Order status updated successfully",
       order,
     });
   } catch (error) {
@@ -235,7 +260,7 @@ export const OrdersStatusController = async (req, res) => {
 ========================================================= */
 export const getSingleOrderController = async (req, res) => {
   try {
-    const order = await orderModel.findById(req.params.id).populate("notes"); ;
+    const order = await orderModel.findById(req.params.id).populate("notes");
 
     if (!order) {
       return res.status(404).json({

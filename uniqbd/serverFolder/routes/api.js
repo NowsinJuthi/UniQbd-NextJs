@@ -67,6 +67,7 @@ import {
 } from "../controllers/reviewController.js";
 import isAdmin from "../middlewares/isAdmin.js";
 import { getEnvSettings, saveSMTPSettings, testSMTPConnection } from "../controllers/mailController.js";
+import { getConfig, saveConfig } from "../controllers/tokenController.js";
 
 const router = express.Router();
 
@@ -104,7 +105,7 @@ router.put("/update-profile", auth, updateProfileController);
 router.put("/change-password", auth, changePasswordController);
 
 // ORDERS (CUSTOMER)
-router.post("/order/create", auth, createOrderController);
+router.post("/order/create", createOrderController);
 router.get("/my-orders", auth, getUserOrdersController);
 
 // REVIEWS (CUSTOMER)
@@ -190,4 +191,8 @@ router.post(
 router.post("/smtp/save", saveSMTPSettings);
 router.post("/smtp/test", testSMTPConnection);
 router.get("/smtp/get-env", getEnvSettings);
+
+//TOKEN-CONFIG
+router.post("/save", saveConfig);
+router.get("/get", getConfig);
 export default router;
