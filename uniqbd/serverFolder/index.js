@@ -5,19 +5,19 @@ import cookieParser from "cookie-parser";
 import { ConnectDb } from "./config/connectDb.js";
 import router from "./routes/api.js";
 import path from "path";
+
 import http from "http";
 import { Server } from "socket.io";
-
-import { loadEnvFromDB } from "./config/loadEnvFromDB.js";
 
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 3001;
 
-/* ---------------- HTTP SERVER ---------------- */
+/* ---------------- HTTP SERVER (IMPORTANT) ---------------- */
 const server = http.createServer(app);
 
-/* ---------------- SOCKET ---------------- */
+/* ---------------- SOCKET SETUP ---------------- */
 export const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -38,7 +38,7 @@ app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -48,8 +48,8 @@ app.use(cookieParser());
 app.use(
   "/uploads",
   express.static(
-    path.join(process.cwd(), "serverFolder/middleware/uploads")
-  )
+    path.join(process.cwd(), "serverFolder/middleware/uploads"),
+  ),
 );
 
 /* ---------------- ROUTES ---------------- */
@@ -62,16 +62,8 @@ app.get("/", (req, res) => {
 /* ---------------- START SERVER ---------------- */
 const startServer = async () => {
   try {
-    // 1. Connect DB
     await ConnectDb();
     console.log("MongoDB Connected");
-
-    // 2. Load ENV from MongoDB
-    await loadEnvFromDB();
-    console.log("✅ Config loaded from DB");
-
-    // 3. Start server using DB PORT
-    const PORT = process.env.PORT || 3001;
 
     server.listen(PORT, "0.0.0.0", () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);

@@ -14,13 +14,10 @@ const Mailpage = () => {
   const pathname = usePathname();
 
   const [form, setForm] = useState({
-    // SMTP
     host: "",
     email: "",
     password: "",
     port: "",
-
-    // ENV CONFIG
     PORT: "",
     MONGODB_URI: "",
     ACCESS_TOKEN_SECRET: "",
@@ -59,28 +56,25 @@ const Mailpage = () => {
     try {
       const res = await axios.post(
         "http://localhost:3001/api/v1/smtp/save",
-        form,
+        form
       );
-      console.log(res);
       alert(res.data.message);
     } catch (err) {
-      console.log(err);
       alert("Failed to save settings");
     }
   };
 
-  //TEST CONNECTION
   const testConnection = async () => {
     try {
-      const res = await axios.post("http://localhost:3001/api/v1/smtp/test", {
-        ...form,
-        port: Number(form.port),
-      });
-
-      console.log(res);
+      const res = await axios.post(
+        "http://localhost:3001/api/v1/smtp/test",
+        {
+          ...form,
+          port: Number(form.port),
+        }
+      );
       alert(res.data.message);
     } catch (err) {
-      console.log(err.response?.data || err);
       alert(err.response?.data?.error || "SMTP connection failed");
     }
   };
@@ -89,7 +83,6 @@ const Mailpage = () => {
     const getConfig = async () => {
       try {
         const res = await axios.get("http://localhost:3001/api/v1/get");
-
         if (res.data.data) {
           setForm((prev) => ({
             ...prev,
@@ -100,129 +93,155 @@ const Mailpage = () => {
         console.log(err);
       }
     };
-
     getConfig();
   }, []);
 
   return (
     <div className="grid grid-cols-12 gap-6 p-6 min-h-screen">
+      
       {/* SIDEBAR */}
-      <div className="md:col-span-3 p-6 border-r bg-button/5 rounded-xl">
-        <AdminMenuPage />
+      <div className="col-span-12 md:col-span-3">
+        <div className="p-5 bg-button/5 rounded-2xl h-full border">
+          <AdminMenuPage />
+        </div>
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN */}
       <div className="col-span-12 md:col-span-9 space-y-6">
+
         {/* HEADER */}
-        <div className="bg-button/5 p-6 rounded-2xl flex items-center justify-between">
+        <div className="bg-button/5 p-6 rounded-2xl flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-button flex items-center justify-center text-white text-xl">
+            <div className="w-14 h-14 rounded-2xl bg-button flex items-center justify-center text-white text-2xl shadow-md">
               <IoMdMail />
             </div>
 
             <div>
               <h1 className="text-2xl font-bold">Mail System</h1>
-              <p className="text-gray-400 mt-1">
-                SMTP Setup • Inbox • Send Emails
+              <p className="text-gray-400 text-sm">
+                Manage SMTP • Inbox • Send Emails
               </p>
             </div>
           </div>
 
           <div className="hidden md:flex gap-3">
-            <div className="px-4 py-2 bg-button/10 rounded-lg text-sm">
+            <span className="px-4 py-1.5 bg-button/10 rounded-full text-sm">
               SMTP Active
-            </div>
-            <div className="px-4 py-2 bg-button/10 rounded-lg text-sm">
+            </span>
+            <span className="px-4 py-1.5 bg-button/10 rounded-full text-sm">
               Secure Mail
-            </div>
+            </span>
           </div>
         </div>
 
-        {/* GRID */}
+        {/* CONTENT GRID */}
         <div className="grid grid-cols-12 gap-6">
-          {/* MENU */}
-          <div className="col-span-12 md:col-span-4 bg-button/5 p-6 rounded-2xl">
-            <h2 className="text-lg font-bold mb-6">Mail Navigation</h2>
 
-            <div className="space-y-3">
-              {menu.map((item) => (
-                <Link key={item.href} href={item.href}>
-                  <div
-                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition
-                    ${
-                      isActive(item.href)
-                        ? "bg-button text-white shadow-md shadow-button/30"
-                        : "hover:bg-white/5 text-text/80"
-                    }`}
-                  >
-                    <span className="text-lg">{item.icon}</span>
-                    <span>{item.name}</span>
-                  </div>
-                </Link>
-              ))}
+          {/* NAVIGATION */}
+          <div className="col-span-12 md:col-span-4">
+            <div className="bg-button/5 p-5 rounded-2xl border h-full">
+              <h2 className="text-lg font-semibold mb-5">
+                Mail Navigation
+              </h2>
+
+              <div className="space-y-2">
+                {menu.map((item) => (
+                  <Link key={item.href} href={item.href}>
+                    <div
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                      ${
+                        isActive(item.href)
+                          ? "bg-button text-white shadow-md shadow-button/30"
+                          : "hover:bg-white/5 text-text/80"
+                      }`}
+                    >
+                      <span className="text-lg">{item.icon}</span>
+                      <span className="font-medium">{item.name}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* FORM */}
-          <div className="col-span-12 md:col-span-8 bg-button/5 p-6 rounded-2xl">
-            <h2 className="text-xl font-bold mb-6">SMTP Configuration</h2>
+          <div className="col-span-12 md:col-span-8">
+            <div className="bg-button/5 p-6 rounded-2xl border shadow-sm">
+              <h2 className="text-xl font-semibold mb-6">
+                SMTP Configuration
+              </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <h1>SMTP Host</h1>
-              <input
-                name="host"
-                value={form.host}
-                onChange={handleChange}
-                type="text"
-                placeholder="SMTP Host"
-                className="p-3 rounded-xl bg-white/5 text-text outline-none"
-              />
-              <h1>SMTP Email</h1>
-              <input
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                type="text"
-                placeholder="SMTP Email"
-                className="p-3 rounded-xl bg-white/5 text-text outline-none"
-              />
-              <h1>SMTP Password</h1>
-              <input
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                type="password"
-                placeholder="SMTP Password"
-                className="p-3 rounded-xl bg-white/5 text-text outline-none"
-              />
-              <h1>Port</h1>
-              <input
-                name="port"
-                value={form.port}
-                onChange={handleChange}
-                type="text"
-                placeholder="Port"
-                className="p-3 rounded-xl bg-white/5 text-text outline-none"
-              />
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-            {/* BUTTONS */}
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={saveSettings}
-                className="bg-button text-white px-6 py-2 rounded-xl hover:opacity-90 transition"
-              >
-                Save Settings
-              </button>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm text-gray-400">SMTP Host</label>
+                  <input
+                    name="host"
+                    value={form.host}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="smtp.gmail.com"
+                    className="p-3 rounded-xl bg-white/5 outline-none focus:ring-2 focus:ring-button"
+                  />
+                </div>
 
-              <button
-                onClick={testConnection}
-                className="px-6 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition"
-              >
-                Test Connection
-              </button>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm text-gray-400">SMTP Email</label>
+                  <input
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="example@gmail.com"
+                    className="p-3 rounded-xl bg-white/5 outline-none focus:ring-2 focus:ring-button"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm text-gray-400">SMTP Password</label>
+                  <input
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    type="password"
+                    placeholder="********"
+                    className="p-3 rounded-xl bg-white/5 outline-none focus:ring-2 focus:ring-button"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm text-gray-400">Port</label>
+                  <input
+                    name="port"
+                    value={form.port}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="587"
+                    className="p-3 rounded-xl bg-white/5 outline-none focus:ring-2 focus:ring-button"
+                  />
+                </div>
+
+              </div>
+
+              {/* BUTTONS */}
+              <div className="flex gap-4 mt-8">
+                <button
+                  onClick={saveSettings}
+                  className="bg-button text-white px-6 py-2.5 rounded-xl shadow-md hover:opacity-90 transition"
+                >
+                  Save Settings
+                </button>
+
+                <button
+                  onClick={testConnection}
+                  className="px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition"
+                >
+                  Test Connection
+                </button>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>

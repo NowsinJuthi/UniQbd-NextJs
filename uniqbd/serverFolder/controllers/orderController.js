@@ -1,7 +1,8 @@
 import sendEmailFun from "../config/sendEamil.js";
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/usersModel.js";
-
+import categoryModel from "../models/categoryModel.js";
+import productModel from "../models/productModel.js";
 import { io } from "../index.js";
 
 //  CREATE ORDER CONTROLLER (REAL-TIME ADDED)
@@ -102,7 +103,6 @@ export const createOrderController = async (req, res) => {
       success: true,
       order: savedOrder,
     });
-
   } catch (error) {
     console.log("ORDER CREATE ERROR:", error);
 
@@ -117,7 +117,10 @@ export const createOrderController = async (req, res) => {
 ========================================================= */
 export const getAllOrdersController = async (req, res) => {
   try {
-    const orders = await orderModel.find().sort({ createdAt: -1 });
+    const orders = await orderModel
+      .find()
+      .populate("notes")
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -137,6 +140,13 @@ export const getAllOrdersController = async (req, res) => {
 export const getUserOrdersController = async (req, res) => {
   try {
     const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authorized",
+      });
+    }
 
     const orders = await orderModel.find({ userId }).sort({ createdAt: -1 });
 
@@ -317,4 +327,79 @@ export const requireLogin = (req, res, next) => {
     return res.status(401).json({ message: "Login required" });
   }
   next();
+};
+
+// GET PRODUCTS (with optional category query)
+export const getProductController = async (req, res) => {
+  try {
+    const { category } = req.query;
+
+    let filter = {};
+
+    if (category) {
+      console.log("CATEGORY QUERY:", category);
+
+      const cat = await categoryModel.findOne({
+        name: { $regex: new RegExp(`^${category}$`, "i") }
+      });
+
+      console.log("FOUND CATEGORY:", cat);
+
+      if (!cat) {
+        return res.status(200).json({
+          success: true,
+          data: []
+        });
+      }
+
+      filter.category = cat._id;
+    }
+
+    const products = await productModel
+      .find(filter)
+      .populate("category")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      data: products,
+    });
+
+  } catch (error) {
+    console.log("PRODUCT ERROR FULL:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+export const getProductByCategoryController = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    const cat = await categoryModel.findOne({
+      name: { $regex: new RegExp(`^${slug}$`, "i") },
+    });
+
+    if (!cat) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+      });
+    }
+
+    const products = await productModel
+      .find({ category: cat._id })
+      .populate("category");
+
+    return res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

@@ -1,7 +1,6 @@
 import noteModel from "../models/noteModel.js";
 import orderModel from "../models/orderModel.js";
 
-
 export const createNoteController = async (req, res) => {
   try {
     const { title, text, orderId } = req.body;
@@ -38,9 +37,7 @@ export const getNotesController = async (req, res) => {
   try {
     const userId = req.userId;
 
-    const notes = await noteModel
-      .find({ userId })
-      .sort({ createdAt: -1 });
+    const notes = await noteModel.find({ userId }).sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -58,9 +55,7 @@ export const getOrderNotesController = async (req, res) => {
   try {
     const orderId = req.params.orderId; // safer
 
-    const notes = await noteModel
-      .find({ orderId })
-      .sort({ createdAt: -1 });
+    const notes = await noteModel.find({ orderId }).sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -107,7 +102,7 @@ export const updateNoteController = async (req, res) => {
     const note = await noteModel.findByIdAndUpdate(
       id,
       { title, text },
-      { new: true }
+      { new: true },
     );
 
     return res.status(200).json({
@@ -127,7 +122,6 @@ export const sendNotesToCustomerController = async (req, res) => {
   try {
     const { orderId, noteIds, customMessage } = req.body;
 
-
     if (!orderId || (!noteIds?.length && !customMessage?.trim())) {
       return res.status(400).json({
         success: false,
@@ -135,18 +129,15 @@ export const sendNotesToCustomerController = async (req, res) => {
       });
     }
 
-
     let notes = [];
     if (noteIds?.length) {
       notes = await noteModel.find({ _id: { $in: noteIds } });
 
-      // mark as sent
       await noteModel.updateMany(
         { _id: { $in: noteIds } },
-        { isSentToCustomer: true }
+        { isSentToCustomer: true },
       );
     }
-
 
     if (customMessage?.trim()) {
       const newNote = await noteModel.create({
@@ -157,11 +148,9 @@ export const sendNotesToCustomerController = async (req, res) => {
 
       notes.push(newNote);
     }
-
-
     await orderModel.findByIdAndUpdate(orderId, {
-      $push: {
-        notes: notes.map((n) => n._id),
+      $addToSet: {
+        notes: { $each: notes.map((n) => n._id) },
       },
     });
 
@@ -181,14 +170,21 @@ export const sendNotesToCustomerController = async (req, res) => {
 
 export const getOrderById = async (req, res) => {
   try {
-    const order = await orderModel
-      .findById(req.params.id)
-      .populate("notes");
+    const order = await orderModel.findById(req.params.id).populate({
+      path: "notes",
+      options: { sort: { createdAt: -1 } },
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
 
     res.status(200).json({
       success: true,
       order,
-      notes: order.notes, 
     });
   } catch (error) {
     res.status(500).json({

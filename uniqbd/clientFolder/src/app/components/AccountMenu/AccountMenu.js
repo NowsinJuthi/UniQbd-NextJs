@@ -24,8 +24,7 @@ const AccountMenu = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = () => {
@@ -42,11 +41,9 @@ const AccountMenu = () => {
     setIsLogin(false);
     setOpen(false);
 
-    router.push("/dashboard/login");
+    window.location.href = "/dashboard/login";
   };
-
-  const dashboardRoute =
-    user?.role === "ADMIN" ? "/admin" : "/my-account";
+  const dashboardRoute = user?.role === "ADMIN" ? "/admin" : "/my-account";
 
   return (
     <div className="relative" ref={menuRef}>

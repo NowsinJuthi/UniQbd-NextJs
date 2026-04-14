@@ -45,6 +45,7 @@ import {
   adminDashboardController,
   createOrderController,
   getAllOrdersController,
+  getProductByCategoryController,
   getSingleOrderController,
   getUserOrdersController,
   OrdersStatusController,
@@ -86,6 +87,7 @@ router.get("/category", GetcategoryController);
 // PUBLIC PRODUCTS (CUSTOMER)
 router.get("/product", getProductController);
 router.get("/product/:slug", getSingleProductController);
+router.get("/product/category/:slug", getProductByCategoryController);
 router.get("/product/photo/:id", productPhotoController);
 router.get("/product/bg-photo/:id", productBgPhotoController);
 
@@ -105,7 +107,7 @@ router.put("/update-profile", auth, updateProfileController);
 router.put("/change-password", auth, changePasswordController);
 
 // ORDERS (CUSTOMER)
-router.post("/order/create", createOrderController);
+router.post("/order/create",auth,createOrderController);
 router.get("/my-orders", auth, getUserOrdersController);
 
 // REVIEWS (CUSTOMER)
@@ -160,7 +162,7 @@ router.post(
   isAdmin,
   homeSliderController,
 );
-router.get("/home-slider/images", auth, isAdmin, getHomeSliderImages);
+router.get("/home-slider/images", getHomeSliderImages);
 router.delete(
   "/home-slider/:filename",
   auth,

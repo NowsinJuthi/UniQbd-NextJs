@@ -34,7 +34,7 @@ const Account = () => {
     fetchProfile();
   }, []);
 
-  // 🔥 Logout Function
+  //Logout Function
   const handleLogout = async () => {
     try {
       await axios.get(

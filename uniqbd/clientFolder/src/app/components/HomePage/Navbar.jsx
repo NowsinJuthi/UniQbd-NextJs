@@ -15,10 +15,35 @@ import { CartContext } from "@/context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { MyContext } from "@/context/ThemeContext";
 import AccountMenu from "../AccountMenu/AccountMenu";
+import { useRouter } from "next/navigation";
 
 
 const Navbar = () => {
   const { user, isLogin } = useContext(MyContext);
+  const router = useRouter();
+
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        const { data } = await axios.get(
+          "http://localhost:3001/api/v1/product"
+        );
+
+        setProducts(data.products || []);
+      } catch (error) {
+        console.error(error);
+        setProducts([]);
+      }
+    };
+
+    fetchAllProducts();
+  }, []);
+
+
+
 
   const context = useContext(MyContext)
   const {
@@ -111,13 +136,18 @@ const Navbar = () => {
           {/* Search */}
           <div className="hidden lg:flex items-center bg-imgcard px-3 py-1 rounded-md">
             <FiSearch className="text-text/70 mr-2" />
+
             <input
               type="text"
-              placeholder="Search..."
-              className="bg-transparent outline-none text-sm text-text"
+              placeholder="Search all products..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                router.push(`/search?q=${e.target.value}`);
+              }}
+              className="bg-transparent outline-none text-sm text-text w-40 focus:w-60 transition-all duration-300"
             />
           </div>
-
           {/* Account */}
           {isLogin ? (
             <Link

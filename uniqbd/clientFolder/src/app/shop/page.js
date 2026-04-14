@@ -10,7 +10,7 @@ const Page = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       const { data } = await axios.get("http://localhost:3001/api/v1/product");
-
+      console.log("API RESPONSE:", data.products);
       setProducts(data.products);
     };
 
@@ -42,11 +42,14 @@ const Page = () => {
             <h2 className="text-sm font-semibold text-center text-button">
               {product.name}
             </h2>
-
             <div className="mt-2 text-center">
-              <p className="text-sm font-medium text-text/80">
-                {product.price} TK
-              </p>
+              {product.packageType?.length > 0 && (
+                <p className="text-sm font-medium text-text/80">
+                  {product.packageType.length === 1
+                    ? `${product.packageType[0]?.price} TK`
+                    : `${product.packageType[0]?.price} TK - ${product.packageType[product.packageType.length - 1]?.price} TK`}
+                </p>
+              )}
             </div>
           </Link>
         ))}

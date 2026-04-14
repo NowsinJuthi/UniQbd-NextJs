@@ -19,7 +19,7 @@ const ViewPage = () => {
       try {
         const { data } = await axios.get(
           `http://localhost:3001/api/v1/order/${id}`,
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         setOrder(data.order);
@@ -37,7 +37,7 @@ const ViewPage = () => {
       try {
         const { data } = await axios.get(
           `http://localhost:3001/api/v1/all-notes`,
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         setAllNotes(data.notes || []);
@@ -54,7 +54,7 @@ const ViewPage = () => {
       await axios.put(
         `http://localhost:3001/api/v1/order/status/${orderId}`,
         { order_status: status },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       setOrder((prev) => ({ ...prev, order_status: status }));
@@ -77,7 +77,7 @@ const ViewPage = () => {
           noteIds: selectedNote ? [selectedNote] : [],
           customMessage,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       alert("Message sent to customer!");
@@ -93,7 +93,6 @@ const ViewPage = () => {
 
   return (
     <div className="grid grid-cols-12 gap-6 p-6 min-h-screen">
-
       {/* SIDEBAR */}
       <div className="md:col-span-3 p-6 border-r bg-button/5 rounded-xl">
         <AdminMenuPage />
@@ -101,7 +100,6 @@ const ViewPage = () => {
 
       {/* MAIN */}
       <div className="col-span-12 md:col-span-9 space-y-6">
-
         {/* HEADER */}
         <div className="bg-button/5 p-6 rounded-2xl">
           <h1 className="text-2xl font-bold">Order Details</h1>
@@ -112,9 +110,15 @@ const ViewPage = () => {
 
         {/* ORDER INFO CARD */}
         <div className="bg-button/5 p-6 rounded-2xl space-y-2">
-          <p><b>Order:</b> #{order._id.slice(-6)}</p>
-          <p><b>Status:</b> {order.order_status}</p>
-          <p><b>Total:</b> {order.totalAmt} TK</p>
+          <p>
+            <b>Order:</b> #{order._id.slice(-6)}
+          </p>
+          <p>
+            <b>Status:</b> {order.order_status}
+          </p>
+          <p>
+            <b>Total:</b> {order.totalAmt} TK
+          </p>
         </div>
 
         {/* PRODUCTS TABLE CARD */}
@@ -163,10 +167,7 @@ const ViewPage = () => {
 
         {/* NOTE SECTION CARD */}
         <div className="bg-button/5 p-6 rounded-2xl space-y-4">
-
-          <h2 className="text-lg font-bold">
-            Send Note / Message to Customer
-          </h2>
+          <h2 className="text-lg font-bold">Send Note / Message to Customer</h2>
 
           <select
             value={selectedNote}
@@ -204,9 +205,25 @@ const ViewPage = () => {
           >
             Send to Customer
           </button>
-
         </div>
+        {/* SENT NOTES HISTORY */}
+        <div className="bg-button/5 p-6 rounded-2xl space-y-4">
+          <h2 className="text-lg font-bold">Sent Notes</h2>
 
+          {order.notes && order.notes.length > 0 ? (
+            order.notes.map((note) => (
+              <div
+                key={note._id}
+                className="p-4 rounded-xl bg-white/5 border border-white/10"
+              >
+                <b>{note.title}</b>
+                <p className="text-sm text-gray-400 mt-1">{note.text}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-400">No notes sent yet</p>
+          )}
+        </div>
       </div>
     </div>
   );
