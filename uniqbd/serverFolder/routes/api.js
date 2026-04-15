@@ -40,6 +40,9 @@ import {
   productListController,
   searchProductController,
   productStatsController,
+  togglePublishProduct,
+  toggleFeaturedProduct,
+  getFeaturedProductsController,
 } from "../controllers/productController.js";
 import {
   adminDashboardController,
@@ -197,4 +200,9 @@ router.get("/smtp/get-env", getEnvSettings);
 //TOKEN-CONFIG
 router.post("/save", saveConfig);
 router.get("/get", getConfig);
+
+
+router.patch("/product/publish/:id", togglePublishProduct);
+router.patch("/product/featured/:id", toggleFeaturedProduct);
+router.get("/product/featured/list", getFeaturedProductsController);
 export default router;

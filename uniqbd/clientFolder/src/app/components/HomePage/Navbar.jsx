@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MyContext } from "@/context/ThemeContext";
 import AccountMenu from "../AccountMenu/AccountMenu";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 
 const Navbar = () => {

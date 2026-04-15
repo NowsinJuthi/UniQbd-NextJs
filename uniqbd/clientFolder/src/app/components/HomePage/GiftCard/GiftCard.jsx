@@ -4,13 +4,14 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const GiftCard  = () => {
+const GiftCard = () => {
   const [topupProducts, setTopupProducts] = useState([]);
 
+  
   useEffect(() => {
     const fetchTopupProducts = async () => {
       try {
-       
+
         const { data: categoryData } = await axios.get(
           "http://localhost:3001/api/v1/category"
         );
@@ -24,7 +25,6 @@ const GiftCard  = () => {
           return;
         }
 
-  
         const { data: productsRes } = await axios.get(
           `http://localhost:3001/api/v1/product?category=${topupCategory._id}`
         );
@@ -49,7 +49,7 @@ const GiftCard  = () => {
             className="relative px-5 py-2 rounded-xl font-medium text-text 
             transition-all duration-300 hover:scale-105 overflow-hidden"
           >
-           Gift Card
+            Gift Card
             <span className="absolute inset-0 rounded-xl bg-button/15 blur-md transition duration-300"></span>
             <span className="absolute w-2 h-2 bg-button rounded-full animate-bounce top-2 left-3"></span>
             <span className="absolute w-1.5 h-1.5 bg-button rounded-full animate-bounce top-3 right-4 delay-100"></span>
@@ -69,7 +69,7 @@ const GiftCard  = () => {
             <Link
               key={product._id}
               href={`/products/${product.slug}`}
-               className={`relative group
+              className={`relative group
               bg-imgcard backdrop-blur-lg transition-all duration-300 cursor-pointer
               flex flex-col items-center justify-center px-4 py-2 rounded-xl
               text-sm font-medium text-text hover:shadow-2xl hover:-translate-y-2

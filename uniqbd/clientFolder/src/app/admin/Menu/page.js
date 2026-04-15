@@ -19,33 +19,104 @@ import { IoSettingsSharp } from "react-icons/io5";
 import { AiFillPicture, AiFillProduct } from "react-icons/ai";
 import { MdRateReview } from "react-icons/md";
 
+import { RiCoupon3Fill } from "react-icons/ri";
+import { BsFillCreditCardFill } from "react-icons/bs";
+import { TbReportAnalytics } from "react-icons/tb";
+import { HiOutlineClipboardList } from "react-icons/hi";
+import { BiCategory } from "react-icons/bi";
+
 export const AdminMenuPage = () => {
   const pathname = usePathname();
   const [openMenu, setOpenMenu] = useState(null);
 
   const menuItems = [
     { href: "/admin", name: "Dashboard", icon: <FaChartLine /> },
-    { href: "/admin/orders", name: "Orders", icon: <FaBoxOpen /> },
 
     {
-      name: "Add Products",
+      name: "Orders",
+      icon: <FaBoxOpen />,
+      children: [
+        { href: "/admin/orders", name: "All Orders" },
+        { href: "/admin/orders/pending", name: "Pending Orders" },
+        { href: "/admin/orders/processing", name: "Processing" },
+        { href: "/admin/orders/completed", name: "Completed" },
+        { href: "/admin/orders/cancelled", name: "Cancelled" },
+      ],
+    },
+
+    {
+      name: "Products",
       icon: <AiFillProduct />,
       children: [
         { href: "/admin/all-products", name: "All Products" },
         { href: "/admin/products", name: "Add Product" },
         { href: "/admin/categories", name: "Categories" },
+        { href: "/admin/brands", name: "Brands" },
+        { href: "/admin/stock", name: "Stock Management" },
+        { href: "/admin/bulk-upload", name: "Bulk Upload" },
+      ],
+    },
+
+    {
+      name: "Customers",
+      icon: <FaUsers />,
+      children: [
+        { href: "/admin/all-users", name: "All Users" },
+        { href: "/admin/customers", name: "Customer Details" },
+        { href: "/admin/user-activity", name: "User Activity" },
+      ],
+    },
+
+    {
+      name: "Payments",
+      icon: <BsFillCreditCardFill />,
+      children: [
+        { href: "/admin/payments", name: "Payment History" },
+        { href: "/admin/refunds", name: "Refund Requests" },
+        { href: "/admin/earnings", name: "Earnings" },
+      ],
+    },
+
+    {
+      name: "Marketing",
+      icon: <RiCoupon3Fill />,
+      children: [
+        { href: "/admin/coupons", name: "Coupons" },
+        { href: "/admin/flash-sale", name: "Flash Sale" },
+        { href: "/admin/featured", name: "Featured Products" },
+        { href: "/admin/homeSlider", name: "Home Sliders" },
+        { href: "/admin/email-campaign", name: "Email Campaigns" },
+      ],
+    },
+
+    {
+      name: "Reports",
+      icon: <TbReportAnalytics />,
+      children: [
+        { href: "/admin/sales-report", name: "Sales Report" },
+        { href: "/admin/top-products", name: "Top Products" },
+        { href: "/admin/low-stock", name: "Low Stock Alerts" },
       ],
     },
 
     { href: "/admin/notes", name: "Add Note", icon: <FaNotesMedical /> },
-    { href: "/admin/homeSlider", name: "Home Sliders", icon: <AiFillPicture /> },
+
     { href: "/admin/reviews", name: "Reviews", icon: <MdRateReview /> },
-    { href: "/admin/all-users", name: "All-Users", icon: <FaUsers /> },
 
     {
       name: "Setting",
       icon: <IoSettingsSharp />,
-      children: [{ href: "/admin/mail-set-up", name: "Mail Set up" }],
+      children: [
+        { href: "/admin/mail-set-up", name: "Mail Set up" },
+        { href: "/admin/general-settings", name: "General Settings" },
+        { href: "/admin/payment-settings", name: "Payment Settings" },
+        { href: "/admin/seo-settings", name: "SEO Settings" },
+        {
+          href: "/admin/homeSlider",
+          name: "Home Sliders",
+          icon: <AiFillPicture />,
+        },
+      ],
     },
   ];
 
@@ -53,12 +124,11 @@ export const AdminMenuPage = () => {
     setOpenMenu((prev) => (prev === name ? null : name));
   };
 
-  // auto-open parent if child route is active
   useEffect(() => {
     menuItems.forEach((item) => {
       if (item.children) {
         const isChildActive = item.children.some(
-          (child) => child.href === pathname
+          (child) => child.href === pathname,
         );
         if (isChildActive) {
           setOpenMenu(item.name);
@@ -72,7 +142,6 @@ export const AdminMenuPage = () => {
   return (
     <aside className="md:col-span-3 h-full sticky top-0">
       <div className="h-full bg-gradient-to-b from-imgcard to-background border-r border-white/10 p-6 rounded-lg flex flex-col justify-between">
-
         {/* Profile Section */}
         <div>
           <div className="flex flex-col items-center text-center mb-8">
@@ -154,7 +223,6 @@ export const AdminMenuPage = () => {
             Logout
           </button>
         </div>
-
       </div>
     </aside>
   );

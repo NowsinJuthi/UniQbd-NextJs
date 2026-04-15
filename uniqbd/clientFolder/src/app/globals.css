@@ -3,63 +3,201 @@
 @import "shadcn/tailwind.css";
 
 .bubble-rain {
-  position: absolute;
+  position: fixed;   /* FULL SCREEN FIX */
   inset: 0;
   overflow: hidden;
-  z-index: 20;
   pointer-events: none;
+  z-index: 0;
 }
 
 .bubble-rain span {
   position: absolute;
-  bottom: 100%;
-  animation: fall linear infinite;
-  /* infinite loop */
-  animation-fill-mode: forwards;
-  width: 20px;
-  /* initial size, will override inline style */
-  height: 30px;
-  /* taller than width for water-drop effect */
+  top: -120px;  /* start above screen */
+
   border-radius: 50% 50% 60% 60% / 60% 60% 50% 50%;
-  background: radial-gradient(circle at 30% 30%,
-      rgba(255, 255, 255, 0.5) 0%,
-      oklch(39.716% 0.06984 227.223 / 0.925) 60%,
-      transparent 100%);
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.5) 0%,
+    oklch(39.716% 0.06984 227.223 / 0.925) 60%,
+    transparent 100%
+  );
 
   box-shadow: 0 4px 12px rgba(0, 51, 102, 0.6);
+
   animation: fall linear infinite;
 }
 
+/* ANIMATION */
 @keyframes fall {
   0% {
-    transform: translateY(-150px) rotate(0deg) scale(0.5);
+    transform: translateY(-120px) rotate(0deg) scale(0.6);
     opacity: 0;
   }
 
   10% {
-    transform: translateY(-150px) rotate(0deg) scale(0.10);
-    opacity: 0;
-  }
-
-  20% {
     opacity: 0.6;
   }
 
   50% {
-    transform: translateY(50vh) rotate(15deg);
+    transform: translateY(50vh) rotate(10deg) scale(1);
   }
 
   100% {
-    transform: translateY(100vh) rotate(-15deg) scale(1);
+    transform: translateY(110vh) rotate(-20deg) scale(1);
     opacity: 0;
   }
 }
-
 
 .dark .bg-dark-image {
   background-image: url("/images/bg.jpg");
   background-size: cover;
   background-position: center;
+}
+
+   @keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+ .card {
+          background: var(--box);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 16px;
+          padding: 24px;
+          text-align: center;
+          transition: 0.4s;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card:hover {
+          transform: translateY(-10px) scale(1.03);
+          box-shadow: 0 0 25px oklch(39.716% 0.06984 227.223 / 0.6);
+        }
+
+        .card h3 {
+          margin-top: 12px;
+          font-size: 18px;
+          font-weight: 600;
+        }
+
+        .card p {
+          font-size: 14px;
+          margin-top: 4px;
+          opacity: 0.8;
+        }
+
+        /* 3D Cube */
+        .cube-container {
+          width: 40px;
+          height: 40px;
+          margin: 0 auto;
+          perspective: 800px;
+        }
+
+        .cube {
+          width: 100%;
+          height: 100%;
+          position: relative;
+          transform-style: preserve-3d;
+          animation: rotateCube 6s infinite linear;
+        }
+
+        .cube-container:hover .cube {
+          animation: rotateCubeFast 1.5s infinite linear;
+        }
+
+      .face {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.05);
+  
+  /* stronger visible border */
+  border: 1.5px solid rgba(255,255,255,0.25);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+
+ 
+  box-shadow:
+    0 0 6px rgba(255,255,255,0.15),
+    0 0 12px oklch(39.716% 0.06984 227.223 / 0.4),
+    inset 0 0 6px rgba(255,255,255,0.1);
+}
+
+       .front  { transform: rotateY(0deg) translateZ(20px); }
+.back   { transform: rotateY(180deg) translateZ(20px); }
+.right  { transform: rotateY(90deg) translateZ(20px); }
+.left   { transform: rotateY(-90deg) translateZ(20px); }
+.top    { transform: rotateX(90deg) translateZ(20px); }
+.bottom { transform: rotateX(-90deg) translateZ(20px); }
+
+        @keyframes rotateCube {
+          0%   { transform: rotateX(0) rotateY(0); }
+          100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        @keyframes rotateCubeFast {
+          0%   { transform: rotateX(0) rotateY(0); }
+          100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+@keyframes shine {
+          0% {
+            left: -120%;
+          }
+          100% {
+            left: 120%;
+          }
+        }
+
+        .float-card {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+          0% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-8px);
+          }
+          100% {
+            transform: translateY(0px);
+          }
+        }
+.animate-spin-slow {
+  animation: spin 18s linear infinite;
+}
+
+
+
+
+@keyframes spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+.perspective {
+  perspective: 1200px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
 }
 
 @theme inline {
@@ -161,7 +299,6 @@
 :root .package::before{
   content: "";
   position: absolute;
-
   top: 0;
   left: 0;
   width: 100%;
@@ -177,16 +314,48 @@
 }
 :root .shadow {
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45),
-              0 15px 40px rgba(0, 0, 0, 0.25);
+              0 15px 40px rgba(0, 0, 0, 0.137);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 .dark .shadow {
-  box-shadow: 0 0px 30px oklch(65.121% 0.12567 228.841 / 0.1),
-              0 0px 20px oklch(64.262% 0.12597 229.676 / 0.418);
+  box-shadow: 0 0px 30px oklch(76.338% 0.07908 221.588 / 0.1),
+              0 0px 20px oklch(64.262% 0.12597 229.676 / 0.178);
+      
               transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
+
+:root .package::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+
+  border-radius: 2rem;
+  filter: blur(14px);
+
+  box-shadow:
+    0 1px 30px rgba(0,0,0,0.55),
+    0 5px 15px rgba(0,0,0,0.4),
+    inset 0 1px 2px rgba(12, 125, 170, 0.788);
+}
+@keyframes waterSplash {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(18);
+    opacity: 0;
+  }
+}
+
+.animate-waterSplash {
+  animation: waterSplash 0.8s ease-out forwards;
+}
 .dark {
-  --package: oklch(64.262% 0.12597 229.676/ 0.521);
+  --package: oklch(64.262% 0.12597 229.676 / 0.39);
   --text: oklch(100% 0.00011 271.152 / 0.877);
   --imgcard: oklch(22.474% 0.03702 226.944 / 0.925);
   --box: oklch(0.21 0 0 / 0.5);

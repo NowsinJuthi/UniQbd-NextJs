@@ -1,7 +1,6 @@
-import slugify from "slugify"; 
+import slugify from "slugify";
 import ProductModel from "../models/productModel.js";
-
-
+import productModel from "../models/productModel.js";
 
 // CREATE PRODUCT
 export const createProductController = async (req, res) => {
@@ -63,7 +62,8 @@ export const productFilterController = async (req, res) => {
     let query = {};
 
     if (category?.length) query.category = category;
-    if (priceRange?.length) query.price = { $gte: priceRange[0], $lte: priceRange[1] };
+    if (priceRange?.length)
+      query.price = { $gte: priceRange[0], $lte: priceRange[1] };
     if (packageType?.length) query.packageType = packageType;
 
     const products = await ProductModel.find(query);
@@ -80,14 +80,20 @@ export const productFilterController = async (req, res) => {
 // GET ALL PRODUCTS
 export const getProductController = async (req, res) => {
   try {
-    const { category } = req.query; // query param dhoro
+    const { category } = req.query;
+
     let query = {};
 
+    // optional category filter
     if (category) query.category = category;
+
+    // ✅ IMPORTANT: default = only published products
+    if (req.query.includeUnpublished !== "true") {
+      query.isPublished = true;
+    }
 
     const products = await ProductModel.find(query)
       .populate("category")
-      .limit(20)
       .sort({ createdAt: -1 });
 
     res.send({
@@ -96,7 +102,10 @@ export const getProductController = async (req, res) => {
       products,
     });
   } catch (error) {
-    res.status(500).send({ success: false, error });
+    res.status(500).send({
+      success: false,
+      error: error.message,
+    });
   }
 };
 
@@ -148,7 +157,7 @@ export const productBgPhotoController = async (req, res) => {
 export const deleteProductController = async (req, res) => {
   try {
     await ProductModel.findOneAndDelete({
-      slug: req.params.id,  
+      slug: req.params.id,
     });
 
     res.send({
@@ -196,9 +205,9 @@ export const updateProductController = async (req, res) => {
 
     // 🔥🔥🔥 MAIN FIX HERE
     const updated = await ProductModel.findOneAndUpdate(
-      { slug: req.params.id },   // ✅ FIXED (was causing 500 error)
+      { slug: req.params.id }, // ✅ FIXED (was causing 500 error)
       updateData,
-      { new: true }
+      { new: true },
     );
 
     if (!updated) {
@@ -295,7 +304,7 @@ export const productStatsController = async (req, res) => {
         $group: {
           _id: "$package",
           totalQty: { $sum: "$quantity" },
-          count: { $sum: 1 }
+          count: { $sum: 1 },
         },
       },
     ]);
@@ -311,3 +320,81 @@ export const productStatsController = async (req, res) => {
   }
 };
 
+// UPDATE PUBLISH STATUS
+export const togglePublishProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await ProductModel.findById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    product.isPublished = !product.isPublished;
+
+    await product.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Publish status updated",
+      product,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const toggleFeaturedProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await ProductModel.findById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    product.featured = !product.featured;
+
+    await product.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Featured status updated",
+      product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getFeaturedProductsController = async (req, res) => {
+  try {
+    const products = await ProductModel.find({
+      isPublished: true,
+      featured: true,
+    })
+      .populate("category")
+      .sort({ createdAt: -1 });
+
+    res.send({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    res.status(500).send({ success: false, error });
+  }
+};

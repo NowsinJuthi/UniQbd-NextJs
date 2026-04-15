@@ -87,9 +87,11 @@ const ProductDetails = () => {
 
   return (
     <section className="min-h-screen py-16 px-6">
-      <div className="mx-10 grid md:grid-cols-2 gap-10">
+      <div className="grid md:grid-cols-2">
         {/* Product Image */}
-        <TiltCard key={product.id} product={product} />
+          <div className="flex justify-cente">
+          <TiltCard key={product.id} product={product} />
+        </div>
 
         {/* Product Info */}
         <div>
@@ -114,12 +116,12 @@ const ProductDetails = () => {
                       hover:-translate-y-1 hover:scale-[1.03]
                       active:scale-[0.97] 
                       flex flex-col items-center justify-center
-                      py-3 rounded-md text-sm font-semibold text-text
+                      py-1 rounded-md text-sm font-semibold text-text
                       bg-gradient-to-br from-package/40 via-package/10 to-transparent
                       backdrop-blur-3xl border border-white/10
                       ${
                         selectedPackage?._id === pack._id
-                          ? "-translate-y-1 scale-[1.05] shadow"
+                          ? "-translate-y-1 scale-[1.05] shadow "
                           : "shadow-md hover:shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
                       }`}
                   >

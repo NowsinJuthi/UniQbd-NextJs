@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import BubbleRain from "./components/BubbleRain";
 import { CartProvider } from "@/context/CartContext";
 import { ThemeContextProvider } from "@/context/ThemeContext";
+import Socialicones from "./Socialicones/page";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({
@@ -32,13 +33,9 @@ export default function RootLayout({ children }) {
                 <div className="relative z-5">
                   <div className="color">{children}</div>
                 </div>
-                <BubbleRain
-                  count={50}
-                  sizeRange={[10, 25]}
-                  durationRange={[15, 35]}
-                  delayRange={[0, 3]}
-                />
+                <BubbleRain/>
               </main>
+              <Socialicones/>
               <Footer />
             </CartProvider>
           </ThemeContextProvider>

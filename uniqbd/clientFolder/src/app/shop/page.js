@@ -6,15 +6,32 @@ import axios from "axios";
 
 const Page = () => {
   const [products, setProducts] = useState([]);
+  const [featured, setFeatured] = useState([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       const { data } = await axios.get("http://localhost:3001/api/v1/product");
-      console.log("API RESPONSE:", data.products);
+
       setProducts(data.products);
     };
 
     fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const { data } = await axios.get(
+          "http://localhost:3001/api/v1/product/featured/list"
+        );
+
+        setFeatured(data.products);
+      } catch (error) {
+        console.log("Featured load error:", error);
+      }
+    };
+
+    fetchFeatured();
   }, []);
 
   return (
@@ -24,7 +41,7 @@ const Page = () => {
       </h1>
 
       <div className="mx-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-        {products.map((product) => (
+        {featured.map((product) => (
           <Link
             key={product._id}
             href={`/products/${product.slug || slugify(product.name)}`}

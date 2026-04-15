@@ -1,19 +1,20 @@
-"use client"
+"use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Topup from "./components/HomePage/GameTopUp/Topup";
 import GiftCard from "./components/HomePage/GiftCard/GiftCard";
 import Choose from "./components/HomePage/Choose/choose";
 import BubbleRain from "./components/BubbleRain";
 import HomeSliderDisplay from "./components/HomePage/Slider";
 
+
 function Page() {
+ 
+
   return (
     <div className="relative overflow-hidden min-h-screen">
       {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50"
-      ></div>
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50"></div>
 
       {/* Optional Dark Overlay */}
       <div className="absolute inset-0"></div>
@@ -22,6 +23,7 @@ function Page() {
       <div className="relative z-10">
         <BubbleRain />
         <HomeSliderDisplay />
+
         <Topup />
         <GiftCard />
         <Choose />
@@ -31,5 +33,3 @@ function Page() {
 }
 
 export default Page;
-
-

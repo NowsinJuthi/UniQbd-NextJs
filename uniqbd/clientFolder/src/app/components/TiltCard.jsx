@@ -83,7 +83,7 @@ const TiltCard = () => {
 
   return (
     <div
-      className="group perspective-[1000px] w-[500px] h-[500px] m-20"
+      className="group perspective-[1000px] w-[500px] h-[500px] mt-20 ml-80"
       style={{ perspective: "1000px" }}
     >
       <div

@@ -48,6 +48,14 @@ const productSchema = new mongoose.Schema(
       deliveryTime: { type: String, default: "5–15 minutes" },
       note: { type: String, default: "Safe & verified transaction process." },
     },
+    isPublished: {
+      type: Boolean,
+      default: true,
+    },
+    featured: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );
