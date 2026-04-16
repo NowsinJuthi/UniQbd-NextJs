@@ -68,7 +68,7 @@ const Checkout = () => {
       const token = localStorage.getItem("accessToken");
 
       await axios.post(
-        "http://localhost:3001/api/v1/order/create",
+        "https://uniqbd-nextjs-3.onrender.com/api/v1/order/create",
         {
           products: cart,
           customerName: name,

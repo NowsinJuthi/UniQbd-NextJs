@@ -27,7 +27,7 @@ const HomeSliderDisplay = () => {
   const [sliderImages, setSliderImages] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/v1/home-slider/images")
+    fetch("https://uniqbd-nextjs-3.onrender.com/api/v1/home-slider/images")
       .then(res => res.json())
       .then(data => {
         if (data.success) setSliderImages(data.data);

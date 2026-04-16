@@ -10,7 +10,7 @@ const Page = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const { data } = await axios.get("http://localhost:3001/api/v1/product");
+      const { data } = await axios.get("https://uniqbd-nextjs-3.onrender.com/api/v1/product");
 
       setProducts(data.products);
     };
@@ -22,7 +22,7 @@ const Page = () => {
     const fetchFeatured = async () => {
       try {
         const { data } = await axios.get(
-          "http://localhost:3001/api/v1/product/featured/list"
+          "https://uniqbd-nextjs-3.onrender.com/api/v1/product/featured/list"
         );
 
         setFeatured(data.products);
@@ -50,7 +50,7 @@ const Page = () => {
           >
             <div className="mb-3 flex items-center justify-center w-full">
               <img
-                src={`http://localhost:3001/uploads/${product.photo}`}
+                src={`https://uniqbd-nextjs-3.onrender.com/uploads/${product.photo}`}
                 alt={product.name}
                 className="object-contain"
               />

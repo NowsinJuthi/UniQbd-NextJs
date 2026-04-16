@@ -14,26 +14,25 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-/* ---------------- HTTP SERVER (IMPORTANT) ---------------- */
+
 const server = http.createServer(app);
 
-/* ---------------- SOCKET SETUP ---------------- */
 export const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://uniqbd-nextjs-3.onrender.com/"],
     credentials: true,
   },
 });
 
 io.on("connection", (socket) => {
-  console.log("🟢 Admin connected:", socket.id);
+  console.log("Admin connected:", socket.id);
 
   socket.on("disconnect", () => {
-    console.log("🔴 Admin disconnected:", socket.id);
+    console.log("Admin disconnected:", socket.id);
   });
 });
 
-/* ---------------- MIDDLEWARE ---------------- */
+
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -52,14 +51,12 @@ app.use(
   ),
 );
 
-/* ---------------- ROUTES ---------------- */
 app.use("/api/v1", router);
 
 app.get("/", (req, res) => {
   res.json({ status: "API working" });
 });
 
-/* ---------------- START SERVER ---------------- */
 const startServer = async () => {
   try {
     await ConnectDb();

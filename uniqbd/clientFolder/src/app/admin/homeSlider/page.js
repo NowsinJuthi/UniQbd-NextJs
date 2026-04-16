@@ -14,7 +14,7 @@ const HomeSlider = () => {
     const fetchImages = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:3001/api/v1/home-slider/images",
+          "https://uniqbd-nextjs-3.onrender.com/api/v1/home-slider/images",
           { withCredentials: true }
         );
 
@@ -43,7 +43,7 @@ const HomeSlider = () => {
     setPreviewImages((prev) => [
       ...prev,
       ...uploadedImages
-        .map((img) => `http://localhost:3001${img}`)
+        .map((img) => `https://uniqbd-nextjs-3.onrender.com${img}`)
         .filter((p) => !prev.includes(p)),
     ]);
   };
@@ -54,7 +54,7 @@ const HomeSlider = () => {
 
     try {
       await axios.delete(
-        `http://localhost:3001/api/v1/home-slider/${filename}`,
+        `https://uniqbd-nextjs-3.onrender.com/api/v1/home-slider/${filename}`,
         { withCredentials: true }
       );
 
@@ -110,7 +110,7 @@ const HomeSlider = () => {
 
               <div className="border-2 border-dashed border-white/20 rounded-xl p-4 hover:border-button transition">
                 <UploadBox
-                  url="http://localhost:3001/api/v1/home-slider"
+                  url="https://uniqbd-nextjs-3.onrender.com/api/v1/home-slider"
                   name="images"
                   multiple
                   onChange={handleFilesChange}

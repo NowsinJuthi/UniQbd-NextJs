@@ -13,7 +13,7 @@ const GiftCard = () => {
       try {
 
         const { data: categoryData } = await axios.get(
-          "http://localhost:3001/api/v1/category"
+          "https://uniqbd-nextjs-3.onrender.com/api/v1/category"
         );
 
         const topupCategory = categoryData.categories.find(
@@ -26,7 +26,7 @@ const GiftCard = () => {
         }
 
         const { data: productsRes } = await axios.get(
-          `http://localhost:3001/api/v1/product?category=${topupCategory._id}`
+          `https://uniqbd-nextjs-3.onrender.com/api/v1/product?category=${topupCategory._id}`
         );
 
         setTopupProducts(productsRes.products || []);
@@ -77,7 +77,7 @@ const GiftCard = () => {
               ${index === 0 ? "col-span-2 row-span-2" : ""}`}
             >
               <img
-                src={`http://localhost:3001/uploads/${product.photo}`}
+                src={`https://uniqbd-nextjs-3.onrender.com/uploads/${product.photo}`}
                 alt={product.name}
                 className="object-contain mb-2"
               />

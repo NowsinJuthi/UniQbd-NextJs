@@ -29,7 +29,7 @@ const AllProductpage = () => {
 const fetchProducts = async () => {
   try {
     const { data } = await axios.get(
-      "http://localhost:3001/api/v1/product?includeUnpublished=true"
+      "https://uniqbd-nextjs-3.onrender.com/api/v1/product?includeUnpublished=true"
     );
 
     setProducts(data.products);
@@ -46,7 +46,7 @@ const fetchProducts = async () => {
       );
       if (!confirmDelete) return;
 
-      await axios.delete(`http://localhost:3001/api/v1/product/${id}`);
+      await axios.delete(`https://uniqbd-nextjs-3.onrender.com/api/v1/product/${id}`);
       fetchProducts();
     } catch (error) {
       console.log("Delete error:", error);
@@ -56,7 +56,7 @@ const fetchProducts = async () => {
   const togglePublish = async (id) => {
     try {
       const { data } = await axios.patch(
-        `http://localhost:3001/api/v1/product/publish/${id}`,
+        `https://uniqbd-nextjs-3.onrender.com/api/v1/product/publish/${id}`,
       );
 
       // Update UI instantly with DB response

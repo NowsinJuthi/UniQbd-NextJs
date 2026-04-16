@@ -34,7 +34,7 @@ const Products = () => {
   //Fetch categories
   useEffect(() => {
     axios
-      .get("http://localhost:3001/api/v1/category")
+      .get("https://uniqbd-nextjs-3.onrender.com/api/v1/category")
       .then((res) => setCategories(res.data.categories))
       .catch(console.log);
   }, []);
@@ -43,7 +43,7 @@ const Products = () => {
   useEffect(() => {
     if (editId) {
       axios
-        .get(`http://localhost:3001/api/v1/product/${editId}`)
+        .get(`https://uniqbd-nextjs-3.onrender.com/api/v1/product/${editId}`)
         .then((res) => {
           const product = res.data.product;
 
@@ -58,7 +58,7 @@ const Products = () => {
           //Image preview
           if (product.photo) {
             setPhotoPreview(
-              `http://localhost:3001/uploads/${product.photo}`
+              `https://uniqbd-nextjs-3.onrender.com/uploads/${product.photo}`
             );
           }
 
@@ -135,7 +135,7 @@ const Products = () => {
       if (editId) {
         //  UPDATE
         await axios.put(
-          `http://localhost:3001/api/v1/product/${editId}`,
+          `https://uniqbd-nextjs-3.onrender.com/api/v1/product/${editId}`,
           data,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -143,7 +143,7 @@ const Products = () => {
       } else {
         //CREATE
         await axios.post(
-          `http://localhost:3001/api/v1/product`,
+          `https://uniqbd-nextjs-3.onrender.com/api/v1/product`,
           data,
           { headers: { "Content-Type": "multipart/form-data" } }
         );

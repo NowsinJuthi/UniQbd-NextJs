@@ -13,7 +13,7 @@ const Topup = () => {
       try {
 
         const { data: categoryData } = await axios.get(
-          "http://localhost:3001/api/v1/category"
+          "https://uniqbd-nextjs-3.onrender.com/api/v1/category"
         );
 
 
@@ -28,7 +28,7 @@ const Topup = () => {
 
 
         const { data: productsRes } = await axios.get(
-          `http://localhost:3001/api/v1/product?category=${topupCategory._id}`
+          `https://uniqbd-nextjs-3.onrender.com/api/v1/product?category=${topupCategory._id}`
         );
 
         setTopupProducts(productsRes.products || []);
@@ -97,7 +97,7 @@ const Topup = () => {
     bg-gradient-to-b from-white/10 to-transparent">
               </div>
               <img
-                src={`http://localhost:3001/uploads/${product.photo}`}
+                src={`https://uniqbd-nextjs-3.onrender.com/uploads/${product.photo}`}
                 alt={product.name}
                 className="object-contain mb-4 drop-shadow-lg group-hover:scale-110 transition-transform"
               />

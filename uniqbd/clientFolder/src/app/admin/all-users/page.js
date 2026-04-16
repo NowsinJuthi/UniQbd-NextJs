@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import AdminMenuPage from "../Menu/page";
 
-const API = "http://localhost:3001/api/v1";
+const API = "https://uniqbd-nextjs-3.onrender.com/api/v1";
 
 const Alluserspage = () => {
   const [users, setUsers] = useState([]);
@@ -61,7 +61,7 @@ const Alluserspage = () => {
         { withCredentials: true }
       );
 
-      alert("Role updated ✅");
+      alert("Role updated");
       fetchUsers();
     } catch (error) {
       console.log(error);
@@ -78,7 +78,7 @@ const Alluserspage = () => {
         withCredentials: true,
       });
 
-      alert("User deleted ❌");
+      alert("User deleted ");
       fetchUsers();
     } catch (error) {
       console.log(error);

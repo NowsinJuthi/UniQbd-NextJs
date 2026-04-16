@@ -26,7 +26,7 @@ const ProductDetails = () => {
     const fetchProduct = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:3001/api/v1/product/${slug}`,
+          `https://uniqbd-nextjs-3.onrender.com/api/v1/product/${slug}`,
         );
 
         console.log("PRODUCT DATA:", data.product);
