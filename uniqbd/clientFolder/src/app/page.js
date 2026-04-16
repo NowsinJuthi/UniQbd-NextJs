@@ -23,7 +23,6 @@ function Page() {
       <div className="relative z-10">
         <BubbleRain />
         <HomeSliderDisplay />
-
         <Topup />
         <GiftCard />
         <Choose />

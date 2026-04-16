@@ -3,6 +3,7 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import BubbleBackground from "../../BubbleBackground";
 
 const Topup = () => {
   const [topupProducts, setTopupProducts] = useState([]);
@@ -10,12 +11,12 @@ const Topup = () => {
   useEffect(() => {
     const fetchTopupProducts = async () => {
       try {
-        // 1️⃣ Fetch all categories
+
         const { data: categoryData } = await axios.get(
           "http://localhost:3001/api/v1/category"
         );
 
-        // 2️⃣ Filter top-up category
+
         const topupCategory = categoryData.categories.find(
           (cat) => cat.name.toLowerCase() === "top-up"
         );
@@ -25,7 +26,7 @@ const Topup = () => {
           return;
         }
 
-        // 3️⃣ Fetch products in top-up category
+
         const { data: productsRes } = await axios.get(
           `http://localhost:3001/api/v1/product?category=${topupCategory._id}`
         );
@@ -43,6 +44,9 @@ const Topup = () => {
 
   return (
     <section className="py-14 px-6">
+  {/* KEEP YOUR ORIGINAL GLOW */}
+  
+
       <div>
         {/* Section Title */}
         <h1 className="text-4xl font-bold text-button text-center mb-10">
@@ -70,17 +74,35 @@ const Topup = () => {
             <Link
               key={product._id}
               href={`/products/${product.slug}`}
-              className={`bg-imgcard backdrop-blur-3xl transition-all duration-300 cursor-pointer
-              flex flex-col items-center justify-center px-4 py-4 rounded-xl text-sm font-medium text-text 
-              hover:shadow-2xl hover:-translate-y-2 border-button shadow-inner shadow-button/30
-              ${index === 4 ? "col-span-2 row-span-2" : ""}`}
+             
+              className={`group relative overflow-hidden transition-all duration-300 cursor-pointer
+      flex flex-col items-center justify-center px-4 py-6 text-sm font-medium text-text
+      bg-white/10 backdrop-blur-2xl
+      rounded-[1rem] 
+      border border-white/5
+      shadow-[inset_0_4px_8px_rgba(255,255,255,0.6)]
+      hover:shadow-2xl hover:-translate-y-2 
+      ${index === 4 ? "col-span-2 row-span-2" : ""}`}
             >
+              {/* This creates the SECOND inner glow/curve visible in your image */}
+              <div className="absolute bg-radial-[at_3%_1%] from-[#9bddf5] to-[#c9effa] to-30% -top-1 left-0 w-full 
+               inset-[3.03px] rounded-t-[1rem] border-t-[3px] overflow-hidden border-white/10 pointer-events-none"></div>
+              <div className="absolute  
+    rounded-[2.7rem] 
+    border-t-[3px] border-white/20 opacity-80">
+              </div>
+
+         
+              <div className="absolute top-0 left-0 w-full h-20 
+    bg-gradient-to-b from-white/10 to-transparent">
+              </div>
               <img
                 src={`http://localhost:3001/uploads/${product.photo}`}
                 alt={product.name}
-                className="object-contain mb-2"
+                className="object-contain mb-4 drop-shadow-lg group-hover:scale-110 transition-transform"
               />
-              <h2 className="text-sm font-semibold text-center mb-2">
+
+              <h2 className="text-base font-bold text-center tracking-tight">
                 {product.name}
               </h2>
             </Link>

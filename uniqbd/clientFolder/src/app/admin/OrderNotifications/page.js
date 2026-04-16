@@ -1,3 +1,5 @@
+"use client";
+
 import socket from "@/utils/socket";
 import { useEffect, useState, useRef } from "react";
 
