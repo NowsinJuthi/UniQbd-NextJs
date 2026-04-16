@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import AdminMenuPage from "../Menu/page";
 import axios from "axios";
 import { FiRefreshCw } from "react-icons/fi";
 
@@ -16,6 +15,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import AdminMenuPage from "./Menu/page";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -52,7 +52,7 @@ const AdminDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // 📊 Monthly Analytics
+
   const monthlyData = useMemo(() => {
     const map = {};
 
@@ -71,7 +71,7 @@ const AdminDashboard = () => {
     return Object.values(map);
   }, [orders]);
 
-  // 📦 PRODUCT ANALYTICS (NEW FEATURE)
+
   const productData = useMemo(() => {
     const map = {};
 
