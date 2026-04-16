@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import AdminMenuPage from "../Menu/page";
 
 
-const ProductsClient = () => {
+const Products = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("editId");
@@ -319,4 +319,4 @@ const ProductsClient = () => {
   );
 };
 
-export default ProductsClient;
+export default Products;
