@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 
 const OrderNotifications = ({ fetchOrders }) => {
   const [notifications, setNotifications] = useState([]);
-  const lastOrderIdRef = useRef(null); // 🔥 track last order
+  const lastOrderIdRef = useRef(null); 
 
   const playSound = () => {
     const audio = new Audio("/ding.mp3");

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { AdminMenuPage } from "../Menu/page";
+import AdminMenuPage from "../Menu/page";
 import OrderNotifications from "../OrderNotifications/page";
 import { playNotificationSound } from "@/utils/sound";
 import socket from "@/utils/socket";
@@ -16,7 +16,7 @@ const Orders = () => {
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("pending");
 
-  // ✅ NEW SEARCH STATE
+
   const [search, setSearch] = useState("");
 
   useEffect(() => {

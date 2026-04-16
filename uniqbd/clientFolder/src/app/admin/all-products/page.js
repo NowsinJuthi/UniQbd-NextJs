@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
-import { AdminMenuPage } from "../Menu/page";
 import { useRouter } from "next/navigation";
+import AdminMenuPage from "../Menu/page";
 
 const AllProductpage = () => {
   const router = useRouter();

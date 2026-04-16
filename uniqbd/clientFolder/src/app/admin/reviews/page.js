@@ -3,12 +3,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { AdminMenuPage } from "../Menu/page";
+import AdminMenuPage from "../Menu/page";
 
 const Review = () => {
   const [reviews, setReviews] = useState([]);
 
-  // ================= GET ALL REVIEWS =================
   const getAllReviews = async () => {
     try {
       const res = await axios.get(
@@ -26,7 +25,6 @@ const Review = () => {
     getAllReviews();
   }, []);
 
-  // ================= APPROVE =================
   const approveReview = async (id) => {
     try {
       await axios.put(
@@ -53,7 +51,7 @@ const Review = () => {
         {
           comment: newComment,
         },
-        { withCredentials: true } // ✅ FIXED
+        { withCredentials: true }
       );
 
       toast.success("Review Updated!");

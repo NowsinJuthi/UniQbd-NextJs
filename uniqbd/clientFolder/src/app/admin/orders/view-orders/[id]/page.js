@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "next/navigation";
-import { AdminMenuPage } from "@/app/admin/Menu/page";
+import AdminMenuPage from "@/app/admin/Menu/page";
+
 
 const ViewPage = () => {
   const { id } = useParams();

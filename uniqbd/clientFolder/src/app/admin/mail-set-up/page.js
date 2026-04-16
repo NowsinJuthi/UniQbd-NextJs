@@ -4,11 +4,10 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import axios from "axios";
-
 import { IoMdMail } from "react-icons/io";
 import { FaEnvelopeOpenText, FaPaperPlane } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
-import { AdminMenuPage } from "../Menu/page";
+import AdminMenuPage from "../Menu/page";
 
 const Mailpage = () => {
   const pathname = usePathname();

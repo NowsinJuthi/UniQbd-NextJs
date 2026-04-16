@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import UploadBox from "../uploadBox/page";
 import { RxCrossCircled } from "react-icons/rx";
-import { AdminMenuPage } from "../Menu/page";
+import AdminMenuPage from "../Menu/page";
 
 const HomeSlider = () => {
   const [images, setImages] = useState([]);

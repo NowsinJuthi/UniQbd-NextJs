@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { AdminMenuPage } from "../Menu/page";
+import AdminMenuPage from "../Menu/page";
 
 const API = "http://localhost:3001/api/v1";
 

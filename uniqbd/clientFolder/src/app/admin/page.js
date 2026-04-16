@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import { AdminMenuPage } from "./Menu/page";
+import AdminMenuPage from "../Menu/page";
 import axios from "axios";
 import { FiRefreshCw } from "react-icons/fi";
 

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaTrash, FaEdit, FaSave, FaTimes } from "react-icons/fa";
-import { AdminMenuPage } from "../Menu/page";
+import AdminMenuPage from "../Menu/page";
 
 const CategoryPage = () => {
   const [name, setName] = useState("");
