@@ -114,9 +114,6 @@ const GiftCard = () => {
         )}
 
 
-  
-
-
         {/* Products */}
         {!loading &&
           products.map((product, index) => (
