@@ -25,7 +25,7 @@ import { TbReportAnalytics } from "react-icons/tb";
 import { HiOutlineClipboardList } from "react-icons/hi";
 import { BiCategory } from "react-icons/bi";
 
-export const AdminMenuPage = () => {
+ const AdminMenuPage = () => {
   const pathname = usePathname();
   const [openMenu, setOpenMenu] = useState(null);
 
@@ -227,3 +227,4 @@ export const AdminMenuPage = () => {
     </aside>
   );
 };
+export default AdminMenuPage;
