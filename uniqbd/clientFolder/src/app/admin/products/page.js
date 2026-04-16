@@ -5,7 +5,8 @@ import axios from "axios";
 import { useSearchParams, useRouter } from "next/navigation";
 import AdminMenuPage from "../Menu/page";
 
-const Products = () => {
+
+const ProductsClient = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("editId");
@@ -318,4 +319,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default ProductsClient;
