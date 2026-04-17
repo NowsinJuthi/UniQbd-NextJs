@@ -17,12 +17,23 @@ const PORT = process.env.PORT || 3001;
 
 const server = http.createServer(app);
 
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://uniqbd-nextjs-5.onrender.com",
+    ],
+    credentials: true,
+  }),
+);
+
 export const io = new Server(server, {
   cors: {
-    origin: ["https://uniqbd-nextjs-3.onrender.com/"],
+    origin: ["https://uniqbd-nextjs-5.onrender.com"],
     credentials: true,
   },
 });
+
 
 io.on("connection", (socket) => {
   console.log("Admin connected:", socket.id);
@@ -33,12 +44,6 @@ io.on("connection", (socket) => {
 });
 
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
-  }),
-);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
