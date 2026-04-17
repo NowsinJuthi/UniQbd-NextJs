@@ -152,7 +152,7 @@ const AdminDashboard = () => {
             {topProduct && (
               <div className="mb-8 p-6 bg-button/5 rounded-2xl shadow-lg">
                 <h2 className="text-lg font-bold mb-2">
-                  🏆 Top Selling Product
+                   Top Selling Product
                 </h2>
                 <p className="text-2xl font-bold">
                   {topProduct.name}
@@ -182,7 +182,6 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            {/* 📊 PRODUCT SALES CHART */}
             <div className="bg-button/5 p-6 rounded-2xl mb-10">
               <h2 className="text-xl font-bold mb-6">
                 Product Sales Performance

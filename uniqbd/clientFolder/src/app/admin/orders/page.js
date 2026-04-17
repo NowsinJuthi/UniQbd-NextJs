@@ -141,7 +141,6 @@ const Orders = () => {
       <div className="col-span-12 md:col-span-9">
         <h1 className="text-3xl font-bold mb-6">Orders Dashboard</h1>
 
-        {/* ✅ SEARCH INPUT (NEW) */}
         <input
           type="text"
           placeholder="Search by note..."
