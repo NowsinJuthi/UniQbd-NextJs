@@ -21,7 +21,7 @@ const HomeSlider = () => {
         if (res.data.success) {
           setImages(res.data.data);
           setPreviewImages(
-            res.data.data.map((img) => `http://localhost:3001${img}`)
+            res.data.data.map((img) => `https://uniqbd-nextjs-3.onrender.com${img}`)
           );
         }
       } catch (err) {

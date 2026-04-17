@@ -13,7 +13,7 @@ const AllProductpage = () => {
   const toggleFeatured = async (id) => {
     try {
       const { data } = await axios.patch(
-        `http://localhost:3001/api/v1/product/featured/${id}`,
+        `https://uniqbd-nextjs-3.onrender.com/api/v1/product/featured/${id}`,
       );
 
       setProducts((prev) => prev.map((p) => (p._id === id ? data.product : p)));
