@@ -42,7 +42,7 @@ const HomeSliderDisplay = () => {
           <div key={index} className="relative">
             <img
               className="w-full rounded-3xl shadow-2xl h-[320px] md:h-[440px] lg:h-[560px] object-cover"
-               src={`http://localhost:3001${src}`} 
+               src={`https://uniqbd-nextjs-3.onrender.com${src}`} 
               alt={`slider${index + 1}`}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/30 to-transparent rounded-3xl"></div>
