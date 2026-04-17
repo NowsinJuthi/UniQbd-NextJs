@@ -84,7 +84,7 @@ const Topup = () => {
   };
 
   return (
-    <section className="relative py-16 px-4 md:px-10  overflow-hidden">
+    <section className="relative py-16 px-4 md:px-10 overflow-hidden">
 
       {/* Background Glow (GiftCard style) */}
       <div className="absolute top-10 left-10 w-72 h-72 bg-cyan-500/10 blur-3xl rounded-full animate-pulse"></div>

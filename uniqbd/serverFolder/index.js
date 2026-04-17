@@ -19,7 +19,7 @@ const server = http.createServer(app);
 
 export const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://uniqbd-nextjs-3.onrender.com/"],
+    origin: ["https://uniqbd-nextjs-3.onrender.com/"],
     credentials: true,
   },
 });
