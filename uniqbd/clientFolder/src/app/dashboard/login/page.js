@@ -49,16 +49,15 @@ const LoginPage = () => {
 
       toast.success("Login successful");
 
-      localStorage.setItem("accessToken", res?.data?.data?.accessToken);
-
+      // cookies set
       Cookies.set("userEmail", res?.data?.email);
       Cookies.set("userName", res?.data?.userName);
       Cookies.set("actionType", "verifyEmail");
 
       setUser({
-        email: res?.data?.data?.userEmail,
-        name:res?.data?.data?.userName,
-        role: res?.data?.data?.role
+        email: res?.data?.email,
+        name: res?.data?.userName,
+        role: res?.data?.role,
       });
 
       setIsLogin(true);
@@ -68,6 +67,7 @@ const LoginPage = () => {
       } else {
         router.push("/my-account");
       }
+
     } catch (err) {
       toast.error("Server error ⚠️");
     } finally {

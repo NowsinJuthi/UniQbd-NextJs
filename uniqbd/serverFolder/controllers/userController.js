@@ -65,7 +65,6 @@ export async function registerController(req, res) {
       success: true,
       error: false,
     });
-   
   } catch (error) {
     return res.status(500).json({
       message: error.message || error,
@@ -152,17 +151,19 @@ export async function loginController(req, res) {
       return res.status(400).json({ message: "Wrong password" });
     }
 
-    const accessToken = await generateAccessToken(user);
-    const refreshToken = await generateRefreshToken(user);
+    const accessToken = await generateAccessToken(user._id);
+    const refreshToken = await generateRefreshToken(user._id);
 
     user.last_login_date = new Date();
     await user.save();
 
+
     const cookieOptions = {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: false,       
+      sameSite: "lax",   
     };
+
     res.cookie("accessToken", accessToken, cookieOptions);
     res.cookie("refreshToken", refreshToken, cookieOptions);
 
@@ -173,7 +174,7 @@ export async function loginController(req, res) {
         userEmail: user.email,
         userName: user.name,
         role: user.role,
-        accessToken, 
+        accessToken, // optional
       },
     });
   } catch (error) {
@@ -347,7 +348,10 @@ export async function changePasswordController(req, res) {
     }
 
     // check current password
-    const isMatch = await bcryptjs.compare(currentPassword, user.password);
+    const isMatch = await bcryptjs.compare(
+      currentPassword,
+      user.password
+    );
 
     if (!isMatch) {
       return res.status(400).json({
@@ -366,6 +370,7 @@ export async function changePasswordController(req, res) {
       message: "Password changed successfully",
       success: true,
     });
+
   } catch (error) {
     return res.status(500).json({
       message: error.message,
@@ -504,6 +509,7 @@ export const updateProfileController = async (req, res) => {
   }
 };
 
+
 export const updateUserRoleController = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -571,6 +577,7 @@ export const deleteUserController = async (req, res) => {
   try {
     const { userId } = req.params;
 
+
     const user = await userModel.findById(userId);
 
     if (!user) {
@@ -580,6 +587,7 @@ export const deleteUserController = async (req, res) => {
         error: true,
       });
     }
+
 
     if (user.role === "ADMIN") {
       return res.status(400).json({
@@ -595,6 +603,7 @@ export const deleteUserController = async (req, res) => {
       message: "User deleted successfully",
       success: true,
     });
+
   } catch (error) {
     return res.status(500).json({
       message: error.message,
