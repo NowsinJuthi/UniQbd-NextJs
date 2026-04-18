@@ -13,7 +13,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
 } from "recharts";
 import AdminMenuPage from "./Menu/page";
 
@@ -26,16 +25,25 @@ const AdminDashboard = () => {
   const fetchDashboard = async () => {
     try {
       setLoading(true);
-
-      const res = await axios.get("https://uniqbd-nextjs-3.onrender.com/api/v1/admin", {
-        withCredentials: true,
-      });
+      const token = localStorage.getItem("accessToken");
+      console.log("TOKEN FROM STORAGE:", token);
+      const res = await axios.get(
+        "https://uniqbd-nextjs-3.onrender.com/api/v1/admin",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+        {
+          withCredentials: true,
+        },
+      );
 
       setStats(res.data);
 
       const orderRes = await axios.get(
         "https://uniqbd-nextjs-3.onrender.com/api/v1/orders",
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       setOrders(orderRes.data.orders || []);
@@ -51,7 +59,6 @@ const AdminDashboard = () => {
     const interval = setInterval(fetchDashboard, 30000);
     return () => clearInterval(interval);
   }, []);
-
 
   const monthlyData = useMemo(() => {
     const map = {};
@@ -71,12 +78,11 @@ const AdminDashboard = () => {
     return Object.values(map);
   }, [orders]);
 
-
   const productData = useMemo(() => {
     const map = {};
 
     orders.forEach((order) => {
-      order.products.forEach((p) => {
+      (order.products || []).forEach((p) => {
         const name = p.productTitle;
 
         if (!map[name]) {
@@ -99,7 +105,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="grid grid-cols-12 gap-6 p-6 min-h-screen">
-
       {/* Sidebar */}
       <div className="md:col-span-3 p-6 border-r bg-button/5 rounded-xl">
         <AdminMenuPage />
@@ -107,14 +112,11 @@ const AdminDashboard = () => {
 
       {/* Main */}
       <div className="col-span-12 md:col-span-9">
-
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 gap-4">
           <div>
             <h1 className="text-3xl font-bold">Admin Analytics</h1>
-            <p className="text-gray-400 mt-1">
-              Product & Sales Insights
-            </p>
+            <p className="text-gray-400 mt-1">Product & Sales Insights</p>
           </div>
 
           <button
@@ -151,21 +153,17 @@ const AdminDashboard = () => {
             {/* TOP PRODUCT CARD */}
             {topProduct && (
               <div className="mb-8 p-6 bg-button/5 rounded-2xl shadow-lg">
-                <h2 className="text-lg font-bold mb-2">
-                   Top Selling Product
-                </h2>
-                <p className="text-2xl font-bold">
-                  {topProduct.name}
-                </p>
+                <h2 className="text-lg font-bold mb-2">Top Selling Product</h2>
+                <p className="text-2xl font-bold">{topProduct.name}</p>
                 <p className="text-gray-400">
-                  Sold: {topProduct.quantity} pcs | Revenue: {topProduct.revenue} TK
+                  Sold: {topProduct.quantity} pcs | Revenue:{" "}
+                  {topProduct.revenue} TK
                 </p>
               </div>
             )}
 
             {/* STATS */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-
               <div className="bg-button/5 p-6 rounded-2xl">
                 <p className="text-gray-400">Total Orders</p>
                 <h2 className="text-3xl font-bold">{stats.totalOrders}</h2>
@@ -200,11 +198,9 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            {/* 📈 MONTHLY REVENUE */}
+            {/* MONTHLY REVENUE */}
             <div className="bg-button/5 p-6 rounded-2xl">
-              <h2 className="text-xl font-bold mb-6">
-                Monthly Revenue Trend
-              </h2>
+              <h2 className="text-xl font-bold mb-6">Monthly Revenue Trend</h2>
 
               <div style={{ width: "100%", height: 350 }}>
                 <LineChart width={800} height={350} data={monthlyData}>
@@ -221,7 +217,6 @@ const AdminDashboard = () => {
                 </LineChart>
               </div>
             </div>
-
           </>
         )}
       </div>

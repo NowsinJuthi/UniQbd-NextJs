@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3001;
 
 
 const server = http.createServer(app);
-
+app.set("trust proxy", 1);
 app.use(
   cors({
     origin: [
@@ -24,6 +24,7 @@ app.use(
       "https://uniqbd-nextjs-5.onrender.com",
     ],
     credentials: true,
+   
   }),
 );
 

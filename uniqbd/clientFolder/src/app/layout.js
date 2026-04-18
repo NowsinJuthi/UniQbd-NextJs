@@ -33,6 +33,7 @@ export default function RootLayout({ children }) {
                 <div className="relative z-5">
                   <div className="color">{children}</div>
                 </div>
+                <BubbleRain/>
               </main>
               <Socialicones/>
               <Footer />

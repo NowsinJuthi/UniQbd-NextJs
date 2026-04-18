@@ -3,7 +3,7 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import BubbleBackground from "../../BubbleBackground";
+
 
 const Topup = () => {
   const [topupProducts, setTopupProducts] = useState([]);
@@ -25,8 +25,6 @@ const Topup = () => {
           setTopupProducts([]);
           return;
         }
-
-
         const { data: productsRes } = await axios.get(
           `https://uniqbd-nextjs-3.onrender.com/api/v1/product?category=${topupCategory._id}`
         );
@@ -75,27 +73,16 @@ const Topup = () => {
               key={product._id}
               href={`/products/${product.slug}`}
              
-              className={`group relative overflow-hidden transition-all duration-300 cursor-pointer
+              className={`bg-top-glow group relative overflow-hidden transition-all duration-300 cursor-pointer
       flex flex-col items-center justify-center px-4 py-6 text-sm font-medium text-text
-      bg-white/10 backdrop-blur-2xl
+      bg-white/10 backdrop-blur
       rounded-[1rem] 
       border border-white/5
       shadow-[inset_0_4px_8px_rgba(255,255,255,0.6)]
       hover:shadow-2xl hover:-translate-y-2 
       ${index === 4 ? "col-span-2 row-span-2" : ""}`}
             >
-              {/* This creates the SECOND inner glow/curve visible in your image */}
-              <div className="absolute bg-radial-[at_3%_1%] from-[#9bddf5] to-[#c9effa] to-30% -top-1 left-0 w-full 
-               inset-[3.03px] rounded-t-[1rem] border-t-[3px] overflow-hidden border-white/10 pointer-events-none"></div>
-              <div className="absolute  
-    rounded-[2.7rem] 
-    border-t-[3px] border-white/20 opacity-80">
-              </div>
-
-         
-              <div className="absolute top-0 left-0 w-full h-20 
-    bg-gradient-to-b from-white/10 to-transparent">
-              </div>
+              
               <img
                 src={`https://uniqbd-nextjs-3.onrender.com/uploads/${product.photo}`}
                 alt={product.name}

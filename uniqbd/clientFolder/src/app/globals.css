@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+
+
 .bubble-rain {
     position: fixed;
     /* FULL SCREEN FIX */
@@ -66,7 +68,7 @@
     padding: 24px;
     text-align: center;
     transition: 0.4s;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+   
 }
 
 .card:hover {
@@ -86,8 +88,6 @@
     opacity: 0.8;
 }
 
-
-/* 3D Cube */
 
 .cube-container {
     width: 40px;
@@ -113,7 +113,6 @@
     width: 40px;
     height: 40px;
     background: rgba(255, 255, 255, 0.05);
-    /* stronger visible border */
     border: 1.5px solid rgba(255, 255, 255, 0.25);
     display: flex;
     align-items: center;
@@ -313,7 +312,7 @@
     --glass-border: rgba(255, 255, 255, 0.15);
     --cyan-glow: #00f2ff;
     --radius: 0.625rem;
-    --background: oklch(96.988% 0.02725 202.551);
+    --background: oklch(100% 0.00011 271.152);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
@@ -351,7 +350,20 @@
     --imgcard: oklch(97.837% 0.0011 202.716 / 0.925);
     --text: oklch(39.716% 0.06984 227.223 / 0.925);
     --package: oklch(81.247% 0.07135 220.504 / 0.521);
+    --packagebg: oklch(93.947% 0.22307 120.053 / 0.521);
 }
+:root {
+  --top-glow: radial-gradient(
+    circle at 3% 1%,
+    #9bddf5 0%,
+    #c9effa 30%
+  );
+}
+.bg-top-glow {
+  background: var(--top-glow);
+}
+
+
 .inverted-card {
   clip-path: polygon(
     20px 0%, 
@@ -364,9 +376,7 @@
     0% 20px
   );
 }
-:root .bg{
-    --bg: bg-linear-to-t from-sky-500 to-indigo-500;
-}
+
 :root .package {
     position: relative;
     overflow: hidden;
@@ -381,30 +391,8 @@
     height: 6px;
     border-radius: 2rem;
     filter: blur(14px);
-    box-shadow: 0 1px 30px rgba(0, 0, 0, 0.55), 0 5px 15px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(12, 125, 170, 0.788);
 }
 
-:root .shadow {
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45), 0 15px 40px rgba(0, 0, 0, 0.137);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-.dark .shadow {
-    box-shadow: 0 0px 30px oklch(76.338% 0.07908 221.588 / 0.1), 0 0px 20px oklch(64.262% 0.12597 229.676 / 0.178);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-:root .package::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 6px;
-    border-radius: 2rem;
-    filter: blur(14px);
-    box-shadow: 0 1px 30px rgba(0, 0, 0, 0.55), 0 5px 15px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(12, 125, 170, 0.788);
-}
 
 @keyframes waterSplash {
     0% {
@@ -420,8 +408,19 @@
 .animate-waterSplash {
     animation: waterSplash 0.8s ease-out forwards;
 }
+@keyframes waterFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
 
 .dark {
+    
+    --packagebg: none;
+    --top-glow: none;
     --package: oklch(64.262% 0.12597 229.676 / 0.39);
     --text: oklch(100% 0.00011 271.152 / 0.877);
     --imgcard: oklch(22.474% 0.03702 226.944 / 0.925);
@@ -469,6 +468,3 @@
     }
 }
 
-.shadow-card {
-    box-shadow: var(--shadow-card);
-}

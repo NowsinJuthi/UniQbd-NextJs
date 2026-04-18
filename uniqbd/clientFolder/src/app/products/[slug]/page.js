@@ -112,17 +112,14 @@ const ProductDetails = () => {
                     key={index}
                     onClick={() => setSelectedPackage(pack)}
                     className={`package relative group cursor-pointer
-                      transform-gpu transition-all duration-500
-                      hover:-translate-y-1 hover:scale-[1.03]
-                      active:scale-[0.97] 
                       flex flex-col items-center justify-center
                       py-1 rounded-md text-sm font-semibold text-text
-                      bg-gradient-to-br from-package/40 via-package/10 to-transparent
-                      backdrop-blur-3xl border border-white/10
+                      bg-gradient-to-br from-package/100 via-package/80 to-transparent
+                      backdrop-blur-3xl 
                       ${
                         selectedPackage?._id === pack._id
-                          ? "-translate-y-1 scale-[1.05] shadow "
-                          : "shadow-md hover:shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
+                          ? "-translate-y-1 scale-[1.05] bg-gradient-to-tl from-packagebg/0 via-packagebg/0 to-transparent border-[0.1px] border-black/20"
+                          : "shadow-[0_1px_0px] "
                       }`}
                   >
                     <span className="text-lg font-bold tracking-wide">
